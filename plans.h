@@ -3,7 +3,7 @@
  * Partial plans, and their components.
  *
  * Copyright (C) 2002-2004 Carnegie Mellon University
- * Written by Håkan L. S. Younes.
+ * Written by Hï¿½kan L. S. Younes.
  *
  * Permission is hereby granted to distribute this software for
  * non-commercial research purposes, provided that this copyright
@@ -144,7 +144,7 @@ struct Plan {
 
   /* Returns the number of unique steps in this plan. */
   size_t num_steps() const { return num_steps_; }
-  
+
   /* Returns the links of this plan. */
   const Chain<Link>* links() const { return links_; }
 
@@ -215,7 +215,7 @@ struct Plan {
   /* Counts the number of reuse-step refinements for the given literal
      open condition, and returns true iff the number of refinements
      does not exceed the given limit. */
-  bool reusable_steps(int& refinements, const Literal& open_cond,
+  bool reusable_steps(int& refinements, const Literal& open_cond_literal,
 		      const OpenCondition& open_cond, int limit) const;
 
 private:
