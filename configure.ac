@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 #
 # Copyright (C) 2002-2004 Carnegie Mellon University
-# Written by Håkan L. S. Younes.
+# Written by HÃ¥kan L. S. Younes.
 #
 # Permission is hereby granted to distribute this software for
 # non-commercial research purposes, provided that this copyright
@@ -16,7 +16,7 @@
 #
 # $Id: configure.ac,v 1.9 2003-03-01 18:56:48 lorens Exp $
 
-AC_INIT(VHPOP, 3.0, lorens@cs.cmu.edu)
+AC_INIT(VHPOP, 3.1, recardon@ncsu.edu)
 AC_CONFIG_SRCDIR(vhpop.cc)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
