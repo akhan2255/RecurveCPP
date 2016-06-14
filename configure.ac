@@ -37,7 +37,8 @@ AC_SEARCH_LIBS(gettext, intl)
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
-AC_CHECK_HEADERS([libintl.h stdlib.h string.h strings.h sys/time.h unistd.h sstream])
+AC_CHECK_HEADERS([libintl.h stdlib.h string.h strings.h sys/time.h unistd.h sstream malloc.h stddef.h])
+AC_CHECK_HEADER_STDBOOL
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -46,6 +47,7 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
+AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit memset select strcasecmp strerror strncasecmp])
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ(getopt) AC_LIBOBJ(getopt1)])
 AC_CHECK_FUNCS(isinf, , [AC_EGREP_HEADER(finite, math.h, ,
