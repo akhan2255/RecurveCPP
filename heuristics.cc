@@ -28,7 +28,7 @@
 #include <typeinfo>
 #include <set>
 #include <utility>
-
+#include <string.h>
 
 /* Generates a random number in the interval [0,1). */
 static double rand01ex() {
