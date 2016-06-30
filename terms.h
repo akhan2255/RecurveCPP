@@ -25,7 +25,6 @@
 #ifndef TERMS_H
 #define TERMS_H
 
-#include <config.h>
 #include "types.h"
 #include <iostream>
 #include <map>

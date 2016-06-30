@@ -25,7 +25,6 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <config.h>
 #include <iostream>
 #include <map>
 #include <set>

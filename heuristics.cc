@@ -28,6 +28,15 @@
 #include <typeinfo>
 #include <set>
 #include <utility>
+#include <algorithm>
+
+/* To handle lack of strcasecmp in MSVCPP */
+#if defined(_WIN32) || defined(_WIN64)
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
 
 
 /* Generates a random number in the interval [0,1). */

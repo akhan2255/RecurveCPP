@@ -23,7 +23,7 @@
  */
 #include "expressions.h"
 #include <stdexcept>
-
+#include <algorithm>
 
 /* ====================================================================== */
 /* Expression */

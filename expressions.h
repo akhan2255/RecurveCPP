@@ -25,7 +25,6 @@
 #ifndef EXPRESSIONS_H
 #define EXPRESSIONS_H
 
-#include <config.h>
 #include "refcount.h"
 #include "functions.h"
 #include "terms.h"

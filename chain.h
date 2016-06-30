@@ -21,7 +21,6 @@
 #ifndef CHAIN_H
 #define CHAIN_H
 
-#include <config.h>
 #include "refcount.h"
 
 

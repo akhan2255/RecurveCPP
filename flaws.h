@@ -21,7 +21,6 @@
 #ifndef FLAWS_H
 #define FLAWS_H
 
-#include <config.h>
 #include "formulas.h"
 #include "chain.h"
 #include <iostream>

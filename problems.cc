@@ -20,14 +20,8 @@
 #include "bindings.h"
 #include <iostream>
 #include <typeinfo>
-#if HAVE_SSTREAM
+#include <string>
 #include <sstream>
-#else
-#include <strstream>
-namespace std {
-  typedef std::ostrstream ostringstream;
-}
-#endif
 
 
 /* ====================================================================== */
@@ -119,7 +113,7 @@ void Problem::add_init_literal(float time, const Literal& literal) {
       action = (*ai).second;
     } else {
       std::ostringstream ss;
-      ss << "<init " << time << '>';
+	  ss << "<init " << time << '>';
 #if !HAVE_SSTREAM
       ss << '\0';
 #endif

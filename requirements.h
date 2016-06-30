@@ -21,7 +21,6 @@
 #ifndef REQUIREMENTS_H
 #define REQUIREMENTS_H
 
-#include <config.h>
 
 
 /* ====================================================================== */

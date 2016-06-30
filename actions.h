@@ -21,7 +21,6 @@
 #ifndef ACTIONS_H
 #define ACTIONS_H
 
-#include <config.h>
 #include "effects.h"
 
 struct Expression;

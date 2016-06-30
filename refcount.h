@@ -25,7 +25,6 @@
 #ifndef REFCOUNT_H
 #define REFCOUNT_H
 
-#include <config.h>
 #ifdef DEBUG_MEMORY
 # include <iostream>
 # include <map>

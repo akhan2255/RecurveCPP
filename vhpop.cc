@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cerrno>
+#include <algorithm>
 #include <sys/time.h>
 #if HAVE_GETOPT_LONG
 #ifndef _GNU_SOURCE

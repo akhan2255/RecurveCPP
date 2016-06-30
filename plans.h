@@ -21,7 +21,6 @@
 #ifndef PLANS_H
 #define PLANS_H
 
-#include <config.h>
 #include "chain.h"
 #include "flaws.h"
 #include "orderings.h"
@@ -215,7 +214,7 @@ struct Plan {
   /* Counts the number of reuse-step refinements for the given literal
      open condition, and returns true iff the number of refinements
      does not exceed the given limit. */
-  bool reusable_steps(int& refinements, const Literal& open_cond,
+  bool reusable_steps(int& refinements, const Literal& literal_open_cond,
 		      const OpenCondition& open_cond, int limit) const;
 
 private:
