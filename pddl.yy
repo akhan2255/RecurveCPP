@@ -33,6 +33,23 @@
 /* Workaround for bug in Bison 1.35 that disables stack growth. */
 #define YYLTYPE_IS_TRIVIAL 1
 
+/* Name of package */
+#define PACKAGE "vhpop"
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "lorens@cs.cmu.edu"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "VHPOP"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "VHPOP 3.0"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "vhpop"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "3.0"
 
 /*
  * Context of free variables.
