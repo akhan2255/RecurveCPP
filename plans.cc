@@ -28,7 +28,7 @@
 #include <limits>
 #include <queue>
 #include <typeinfo>
-#include <sys/time.h>
+//#include <sys/time.h>
 
 
 /*
@@ -627,18 +627,18 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p,
 	  dead_queues.pop_back();
 	}
       }
-      struct itimerval timer;
-#ifdef PROFILING
-      getitimer(ITIMER_VIRTUAL, &timer);
-#else
-      getitimer(ITIMER_PROF, &timer);
-#endif
-      double t = 1000000.9
-	- (timer.it_value.tv_sec + timer.it_value.tv_usec*1e-6);
-      if (t >= 60.0*params->time_limit) {
-	/* Time limit exceeded. */
-	break;
-      }
+//      struct itimerval timer;
+//#ifdef PROFILING
+//      getitimer(ITIMER_VIRTUAL, &timer);
+//#else
+//      getitimer(ITIMER_PROF, &timer);
+//#endif
+//      double t = 1000000.9
+//	- (timer.it_value.tv_sec + timer.it_value.tv_usec*1e-6);
+//      if (t >= 60.0*params->time_limit) {
+//	/* Time limit exceeded. */
+//	break;
+//      }
 
       /*
        * Visiting a new plan.
@@ -649,10 +649,10 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p,
 	  std::cerr << '.';
 	  last_dot += 1000;
 	}
-	while (t - 60.0*last_hash >= 60.0) {
+	/*while (t - 60.0*last_hash >= 60.0) {
 	  std::cerr << '#';
 	  last_hash++;
-	}
+	}*/
       }
       if (verbosity > 1) {
 	std::cerr << std::endl << (num_visited_plans - num_static) << ": "
