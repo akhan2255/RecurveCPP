@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="BisonFlex Files">
+      <UniqueIdentifier>{388e2838-ad80-442f-833e-8d33957847d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Autotools Files">
+      <UniqueIdentifier>{9f12aeba-bdc2-4306-9efb-3b6829a4d838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Metadata Files">
+      <UniqueIdentifier>{db1cda91-8b6a-4752-94e6-399353567e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script Files">
+      <UniqueIdentifier>{f8f15498-1b8e-4f97-9942-0aefeb652151}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="actions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bindings.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="domains.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="effects.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="expressions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flaws.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="formulas.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="heuristics.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="orderings.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parameters.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pddl.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plans.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="predicates.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="problems.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="refcount.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="requirements.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="terms.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tokens.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="types.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vhpop.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="actions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bindings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="domains.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="expressions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flaws.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="formulas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="getopt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heuristics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="orderings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pddl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plans.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="predicates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="problems.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="refcount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="requirements.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="aclocal.m4">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="config.h.in">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="configure">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="configure.ac">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="depcomp">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="install-sh">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="Makefile.am">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="Makefile.in">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="missing">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="mkinstalldirs">
+      <Filter>Autotools Files</Filter>
+    </None>
+    <None Include="AUTHORS">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="CHANGELOG">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="COPYING">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="INSTALL">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="README">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="NEWS">
+      <Filter>Metadata Files</Filter>
+    </None>
+    <None Include="ipc3-vhpop">
+      <Filter>Script Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="tokens.ll">
+      <Filter>BisonFlex Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="pddl.yy">
+      <Filter>BisonFlex Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
