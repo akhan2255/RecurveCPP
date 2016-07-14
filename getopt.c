@@ -202,7 +202,7 @@ static char *posixly_correct;
 # if HAVE_STRING_H
 #  include <string.h>
 # else
-#  include <strings.h>
+#  include <string.h> // @recardon: I recognize this is redundant - it is the minimal amount of editing to preserve this file.
 # endif
 
 /* Avoid depending on library functions or files
