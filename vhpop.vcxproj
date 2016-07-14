@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{289ADA33-F300-43C4-B2F4-84DB67E8033D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;VHPOP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VHPOP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="actions.cc" />
+    <ClCompile Include="bindings.cc" />
+    <ClCompile Include="domains.cc" />
+    <ClCompile Include="effects.cc" />
+    <ClCompile Include="expressions.cc" />
+    <ClCompile Include="flaws.cc" />
+    <ClCompile Include="formulas.cc" />
+    <ClCompile Include="functions.cc" />
+    <ClCompile Include="getopt.c" />
+    <ClCompile Include="getopt1.c" />
+    <ClCompile Include="heuristics.cc" />
+    <ClCompile Include="orderings.cc" />
+    <ClCompile Include="parameters.cc" />
+    <ClCompile Include="pddl.cc">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BISONFLEX_INC)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="plans.cc" />
+    <ClCompile Include="predicates.cc" />
+    <ClCompile Include="problems.cc" />
+    <ClCompile Include="refcount.cc" />
+    <ClCompile Include="requirements.cc" />
+    <ClCompile Include="terms.cc" />
+    <ClCompile Include="tokens.cc">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BISONFLEX_INC);</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="types.cc" />
+    <ClCompile Include="vhpop.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="actions.h" />
+    <ClInclude Include="bindings.h" />
+    <ClInclude Include="chain.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="domains.h" />
+    <ClInclude Include="effects.h" />
+    <ClInclude Include="expressions.h" />
+    <ClInclude Include="flaws.h" />
+    <ClInclude Include="formulas.h" />
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="getopt.h" />
+    <ClInclude Include="heuristics.h" />
+    <ClInclude Include="orderings.h" />
+    <ClInclude Include="parameters.h" />
+    <ClInclude Include="pddl.h" />
+    <ClInclude Include="plans.h" />
+    <ClInclude Include="predicates.h" />
+    <ClInclude Include="problems.h" />
+    <ClInclude Include="refcount.h" />
+    <ClInclude Include="requirements.h" />
+    <ClInclude Include="terms.h" />
+    <ClInclude Include="types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="aclocal.m4" />
+    <None Include="AUTHORS" />
+    <None Include="CHANGELOG" />
+    <None Include="config.h.in" />
+    <None Include="configure" />
+    <None Include="configure.ac" />
+    <None Include="COPYING" />
+    <None Include="depcomp" />
+    <None Include="INSTALL" />
+    <None Include="install-sh" />
+    <None Include="ipc3-vhpop" />
+    <None Include="Makefile.am" />
+    <None Include="Makefile.in" />
+    <None Include="missing" />
+    <None Include="mkinstalldirs" />
+    <None Include="NEWS" />
+    <CustomBuild Include="pddl.yy">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -o%(Filename).cc %(Identity)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating %(Filename).cc ...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cc;%(Filename).h</Outputs>
+    </CustomBuild>
+    <None Include="README" />
+    <CustomBuild Include="tokens.ll">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Flex -o%(Filename).cc %(Identity)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating %(Filename).cc ...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cc</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pddl.h</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
