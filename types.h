@@ -25,12 +25,6 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#ifdef VHPOP_EXPORTS
-#define API __declspec(dllexport)
-#else
-#define API __declspec(dllimport)
-#endif
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -44,7 +38,7 @@
 /*
  * A type.
  */
-struct API Type {
+struct Type {
   /* Constructs a type. */
   explicit Type(int index) : index_(index) {}
 
@@ -103,7 +97,7 @@ struct TypeSet : public std::set<Type> {
 struct TypeTable {
 
   /* The object type. */
-  static const API Type OBJECT;
+  static const Type OBJECT;
   /* Name of object type. */
   static const std::string OBJECT_NAME;
   /* Name of number type. */
