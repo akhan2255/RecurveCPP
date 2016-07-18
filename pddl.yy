@@ -18,6 +18,9 @@
  *
  * $Id: pddl.yy,v 6.9 2003-12-05 23:17:07 lorens Exp $
  */
+
+%defines /* instructs to generate an include file 'pddl.hh' */
+
 %{
 #include "requirements.h"
 #include "problems.h"
