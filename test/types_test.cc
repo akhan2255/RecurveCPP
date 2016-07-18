@@ -1,12 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "../types.h"
-
-#ifdef VHPOP_EXPORTS
-#define API __declspec(dllexport)
-#else
-#define API __declspec(dllimport)
-#endif
+#include <string>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -58,6 +53,15 @@ namespace test
         {
             Type obj_type = TypeTable::OBJECT;
             Assert::IsTrue(obj_type.simple(), L"The higher level Object type registered to the type table is a simple type.");
+
+            std::string obj_name = TypeTable::OBJECT_NAME;
+            std::string expected = "object";
+            Assert::AreEqual(expected, obj_name, L"The top level object should be called 'object' ");
+
+
+            std::string number_name = TypeTable::NUMBER_NAME;
+            expected = "number";
+            Assert::AreEqual(expected, number_name, L"The top level number type should be called 'type'");
         }
 
     };
