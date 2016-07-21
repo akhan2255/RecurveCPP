@@ -29,5 +29,8 @@
     <ClCompile Include="types_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terms_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
