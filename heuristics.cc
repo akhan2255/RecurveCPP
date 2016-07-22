@@ -1015,7 +1015,7 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
     HVal h = *hi;
     switch (h) {
     case LIFO:
-      rank.push_back(-1.0*plan.serial_no());
+      rank.push_back(-1.0f*plan.serial_no());
       break;
     case FIFO:
       rank.push_back(plan.serial_no());
@@ -1027,7 +1027,8 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
       rank.push_back(plan.num_unsafes());
       break;
     case BUC:
-      rank.push_back((plan.num_unsafes() > 0) ? 1 : 0);
+        int val = (plan.num_unsafes() > 0) ? 1 : 0;
+        rank.push_back((float) val);
       break;
     case S_PLUS_OC:
       rank.push_back(plan.num_steps() + weight*plan.num_open_conds());
@@ -1702,7 +1703,7 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
 	      plan.unsafe_refinements(refinements, separable, promotable,
 				      demotable, unsafe,
                                       std::numeric_limits<int>::max());
-	      selection.rank = refinements;
+	      selection.rank = (float) refinements;
 	      last_criterion = (refinements == 0) ? c - 1 : c;
 	      if (verbosity > 1) {
 		std::cerr << "selecting ";
@@ -1720,7 +1721,7 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
 		|| refinements > selection.rank) {
 	      selection.flaw = &unsafe;
 	      selection.criterion = c;
-	      selection.rank = refinements;
+	      selection.rank = (float) refinements;
 	      last_criterion = (refinements == 3) ? c - 1 : c;
 	      if (verbosity > 1) {
 		std::cerr << "selecting ";
@@ -1849,7 +1850,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 	      plan.open_cond_refinements(refinements, addable, reusable,
 					 open_cond,
                                          std::numeric_limits<int>::max());
-	      selection.rank = refinements;
+	      selection.rank = (float) refinements;
 	      last_criterion = (refinements == 0) ? c - 1 : c;
 	      if (verbosity > 1) {
 		std::cerr << "selecting ";
@@ -1867,7 +1868,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 		|| refinements > selection.rank) {
 	      selection.flaw = &open_cond;
 	      selection.criterion = c;
-	      selection.rank = refinements;
+	      selection.rank = (float) refinements;
 	      last_criterion = c;
 	      if (verbosity > 1) {
 		std::cerr << "selecting ";
@@ -1984,7 +1985,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 	      if (c < selection.criterion || rank < selection.rank) {
 		selection.flaw = &open_cond;
 		selection.criterion = c;
-		selection.rank = rank;
+		selection.rank = (float) rank;
 		last_criterion = (rank == 0) ? c - 1 : c;
 		if (verbosity > 1) {
 		  std::cerr << "selecting ";
@@ -2004,7 +2005,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 	      if (c < selection.criterion || rank > selection.rank) {
 		selection.flaw = &open_cond;
 		selection.criterion = c;
-		selection.rank = rank;
+		selection.rank = (float) rank;
 		last_criterion = c;
 		if (verbosity > 1) {
 		  std::cerr << "selecting ";

@@ -335,7 +335,7 @@ int main(int argc, char* argv[]) {
       if (optarg == std::string("unlimited")) {
 	Orderings::threshold = UINT_MAX;
       } else {
-	Orderings::threshold = atof(optarg);
+	Orderings::threshold = (float) atof(optarg);
       }
       break;
     case 'T':
@@ -348,7 +348,7 @@ int main(int argc, char* argv[]) {
       display_version();
       return 0;
     case 'w':
-      params.weight = atof(optarg);
+      params.weight = (float) atof(optarg);
       break;
     case 'W':
       warning_level = (optarg != NULL) ? atoi(optarg) : 1;

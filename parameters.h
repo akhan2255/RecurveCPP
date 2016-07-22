@@ -72,7 +72,7 @@ struct Parameters {
   /* Action cost. */
   ActionCost action_cost;
   /* Weight to use with heuristic. */
-  float weight;
+  double weight;
   /* Flaw selecion orders. */
   std::vector<FlawSelectionOrder> flaw_orders;
   /* Search limits. */
