@@ -77,7 +77,7 @@ Type TypeTable::union_type(const TypeSet& types) {
     }
     else {
         utypes_.push_back(types);
-        return Type(-utypes_.size());
+        return Type(utypes_.size()-1);
     }
 }
 
