@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <algorithm>
+#include <limits>
 //#include <sys/time.h>
 #if HAVE_GETOPT_LONG
 #ifndef _GNU_SOURCE
@@ -333,7 +334,7 @@ int main(int argc, char* argv[]) {
       break;
     case 't':
       if (optarg == std::string("unlimited")) {
-	Orderings::threshold = UINT_MAX;
+	Orderings::threshold = std::numeric_limits<float>::max();
       } else {
 	Orderings::threshold = (float) atof(optarg);
       }

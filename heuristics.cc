@@ -1018,17 +1018,16 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
       rank.push_back(-1.0f*plan.serial_no());
       break;
     case FIFO:
-      rank.push_back(plan.serial_no());
+      rank.push_back((float) plan.serial_no());
       break;
     case OC:
-      rank.push_back(plan.num_open_conds());
+      rank.push_back((float) plan.num_open_conds());
       break;
     case UC:
-      rank.push_back(plan.num_unsafes());
+      rank.push_back((float) plan.num_unsafes());
       break;
     case BUC:
-        int val = (plan.num_unsafes() > 0) ? 1 : 0;
-        rank.push_back((float) val);
+      rank.push_back((float) ((plan.num_unsafes() > 0) ? 1 : 0));
       break;
     case S_PLUS_OC:
       rank.push_back(plan.num_steps() + weight*plan.num_open_conds());
@@ -1066,7 +1065,7 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
 	}
       } else {
 	if (add_work < std::numeric_limits<int>::max()) {
-	  rank.push_back(add_work);
+	  rank.push_back((float) add_work);
 	} else {
 	  rank.push_back(std::numeric_limits<float>::infinity());
 	}
@@ -1101,7 +1100,7 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
 	}
       } else {
 	if (addr_work < std::numeric_limits<int>::max()) {
-	  rank.push_back(addr_work);
+	  rank.push_back((float) addr_work);
 	} else {
 	  rank.push_back(std::numeric_limits<float>::infinity());
 	}
@@ -1961,7 +1960,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 	      formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
 			    plan, *pg, criterion.reuse);
 	      float rank = ((criterion.heuristic == SelectionCriterion::ADD)
-			    ? h.add_cost() : h.makespan() + 0.5);
+			    ? h.add_cost() : h.makespan() + 0.5f);
 	      if (c < selection.criterion || rank > selection.rank) {
 		selection.flaw = &open_cond;
 		selection.criterion = c;
