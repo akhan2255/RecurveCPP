@@ -35,7 +35,8 @@ struct Bindings;
  * Abstract action definition.
  */
 struct Action {
-    /* Deletes this action. */
+    
+	/* Deletes this action. */
     virtual ~Action();
 
     /* Sets the condition for this action. */
@@ -68,6 +69,9 @@ struct Action {
     /* Whether this is a durative action. */
     bool durative() const { return durative_; }
 
+	/* Whether this is a composite action. */
+	bool composite() const { return composite_; }
+
     /* Minimum duration of this action. */
     const Expression& min_duration() const { return *min_duration_; }
 
@@ -82,27 +86,38 @@ struct Action {
         size_t step_id, const Bindings& bindings) const = 0;
 
 protected:
-    /* Constructs an action with the given name. */
-    Action(const std::string& name, bool durative);
+    
+	/* Constructs an action with the given name. */
+    Action(const std::string& name, bool durative, bool composite);
 
 private:
-    /* Next action id. */
+
+	/* Next action id. */
     static size_t next_id;
 
     /* Unique id for actions. */
     size_t id_;
-    /* Name of this action. */
+
+	/* Name of this action. */
     std::string name_;
-    /* Action condition. */
+    
+	/* Action condition. */
     const Formula* condition_;
-    /* List of action effects. */
+    
+	/* List of action effects. */
     EffectList effects_;
-    /* Whether this is a durative action. */
+    
+	/* Whether this is a durative action. */
     bool durative_;
-    /* Minimum duration of this action. */
+    
+	/* Minimum duration of this action. */
     const Expression* min_duration_;
-    /* Maximum duration of this action. */
+    
+	/* Maximum duration of this action. */
     const Expression* max_duration_;
+
+	/* Whether this is a composite action. */
+	bool composite_;
 };
 
 /*
@@ -140,8 +155,9 @@ struct GroundActionList;
  * Action schema definition.
  */
 struct ActionSchema : public Action {
-    /* Constructs an action schema with the given name. */
-    ActionSchema(const std::string& name, bool durative);
+    
+	/* Constructs an action schema with the given name. */
+    ActionSchema(const std::string& name, bool durative, bool composite);
 
     /* Adds a parameter to this action schema. */
     void add_parameter(Variable var);
@@ -197,8 +213,9 @@ struct ActionSchemaMap : public std::map < std::string, const ActionSchema* > {
  * Ground action.
  */
 struct GroundAction : public Action {
-    /* Constructs a ground action with the given name. */
-    GroundAction(const std::string& name, bool durative);
+    
+	/* Constructs a ground action with the given name. */
+    GroundAction(const std::string& name, bool durative, bool composite);
 
     /* Adds an argument to this ground action. */
     void add_argument(Object arg);

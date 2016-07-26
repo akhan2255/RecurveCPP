@@ -31,11 +31,15 @@ size_t Action::next_id = 0;
 
 
 /* Constructs an action with the given name. */
-Action::Action(const std::string& name, bool durative)
-  : id_(next_id++), name_(name), condition_(&Formula::TRUE),
-    durative_(durative), min_duration_(new Value(0.0f)),
-    max_duration_(new Value(durative ?
-                            std::numeric_limits<float>::infinity() : 0.0f)) {
+Action::Action(const std::string& name, bool durative, bool composite)
+  : id_(next_id++), 
+    name_(name), 
+	condition_(&Formula::TRUE),
+    durative_(durative),
+	composite_(composite),
+	min_duration_(new Value(0.0f)),
+    max_duration_(new Value(durative ? std::numeric_limits<float>::infinity() : 0.0f)) 
+{
   Formula::register_use(condition_);
   RCObject::ref(min_duration_);
   RCObject::ref(max_duration_);
@@ -157,8 +161,8 @@ void Action::strengthen_effects(const Domain& domain) {
 /* ActionSchema */
 
 /* Constructs an action schema with the given name. */
-ActionSchema::ActionSchema(const std::string& name, bool durative)
-  : Action(name, durative) {}
+ActionSchema::ActionSchema(const std::string& name, bool durative, bool composite)
+  : Action(name, durative, composite) {}
 
 
 /* Adds a parameter to this action schema. */
@@ -249,7 +253,7 @@ ActionSchema::instantiation(const SubstitutionMap& args,
     (*ei)->instantiations(inst_effects, useful, args, problem);
   }
   if (useful > 0) {
-    GroundAction& ga = *new GroundAction(name(), durative());
+    GroundAction& ga = *new GroundAction(name(), durative(), composite());
     size_t n = parameters().size();
     for (size_t i = 0; i < n; i++) {
       SubstitutionMap::const_iterator si = args.find(parameters()[i]);
@@ -326,8 +330,8 @@ void ActionSchema::print(std::ostream& os,
 /* GroundAction */
 
 /* Constructs a ground action with the given name. */
-GroundAction::GroundAction(const std::string& name, bool durative)
-  : Action(name, durative) {}
+GroundAction::GroundAction(const std::string& name, bool durative, bool composite)
+  : Action(name, durative, composite) {}
 
 
 /* Adds an argument to this ground action. */

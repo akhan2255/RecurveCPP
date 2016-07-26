@@ -180,7 +180,7 @@ static void make_predicate(const std::string* name);
 /* Creates a function with the given name. */
 static void make_function(const std::string* name);
 /* Creates an action with the given name. */
-static void make_action(const std::string* name, bool durative);
+static void make_action(const std::string* name, bool durative, bool composite);
 /* Adds the current action to the current domain. */ 
 static void add_action();
 /* Prepares for the parsing of a universally quantified effect. */ 
@@ -438,9 +438,11 @@ function_decl : '(' function { make_function($2); } variables ')'
 /* ====================================================================== */
 /* Actions. */
 
-action_def : '(' ACTION name { make_action($3, false); }
+/* This is where the composite action definition needs to be! */
+
+action_def : '(' ACTION name { make_action($3, false, false); }
                parameters action_body ')' { add_action(); }
-           | '(' DURATIVE_ACTION name { make_action($3, true); }
+           | '(' DURATIVE_ACTION name { make_action($3, true, false); }
                parameters DURATION duration_constraint da_body ')'
                { add_action(); }
            ;
@@ -1042,7 +1044,7 @@ static void make_function(const std::string* name) {
 
 
 /* Creates an action with the given name. */
-static void make_action(const std::string* name, bool durative) {
+static void make_action(const std::string* name, bool durative, bool composite) {
   if (durative) {
     if (!requirements->durative_actions) {
       yywarning("assuming `:durative-actions' requirement");
@@ -1050,7 +1052,7 @@ static void make_action(const std::string* name, bool durative) {
     }
   }
   context.push_frame();
-  action = new ActionSchema(*name, durative);
+  action = new ActionSchema(*name, durative, composite);
   delete name;
 }
 

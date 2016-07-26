@@ -64,7 +64,7 @@ void Problem::clear() {
 /* Constructs a problem. */
 Problem::Problem(const std::string& name, const Domain& domain)
   : name_(name), domain_(&domain), terms_(TermTable(domain.terms())),
-    init_action_(GroundAction("<init 0>", false)), goal_(&Formula::TRUE),
+    init_action_(GroundAction("<init 0>", false, false)), goal_(&Formula::TRUE),
     metric_(new Value(0)) {
   Formula::register_use(goal_);
   RCObject::ref(metric_);
@@ -117,7 +117,7 @@ void Problem::add_init_literal(float time, const Literal& literal) {
 #if !HAVE_SSTREAM
       ss << '\0';
 #endif
-      action = new GroundAction(ss.str(), false);
+      action = new GroundAction(ss.str(), false, false);
       timed_actions_.insert(std::make_pair(time, action));
     }
     action->add_effect(*new Effect(literal, Effect::AT_END));

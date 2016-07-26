@@ -441,12 +441,12 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
    * Create goal of problem.
    */
   if (params->ground_actions) {
-    goal_action = new GroundAction("", false);
+    goal_action = new GroundAction("", false, false);
     const Formula& goal_formula =
       problem.goal().instantiation(SubstitutionMap(), problem);
     goal_action->set_condition(goal_formula);
   } else {
-    goal_action = new ActionSchema("", false);
+    goal_action = new ActionSchema("", false, false);
     goal_action->set_condition(problem.goal());
   }
   /* Chain of open conditions. */
