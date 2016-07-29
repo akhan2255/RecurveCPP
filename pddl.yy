@@ -299,6 +299,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token NUMBER_TOKEN OBJECT_TOKEN EITHER
 %token LE GE NAME DURATION_VAR VARIABLE NUMBER
 %token ILLEGAL_TOKEN
+%token DECOMPOSITIONS
 
 %union {
   const Formula* formula;
@@ -444,9 +445,10 @@ require_key : STRIPS { requirements->strips = true; }
                 { yyerror("`:continuous-effects' not supported"); }
             | TIMED_INITIAL_LITERALS
                 {
-		  requirements->durative_actions = true;
-		  requirements->timed_initial_literals = true;
-		}
+					requirements->durative_actions = true;
+					requirements->timed_initial_literals = true;
+				}
+			| DECOMPOSITIONS { requirements->decompositions = true; }
             ;
 
 types_def : '(' TYPES { require_typing(); name_kind = TYPE_KIND; }
