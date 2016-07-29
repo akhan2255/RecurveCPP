@@ -76,6 +76,7 @@ problem				return make_string(yytext, PROBLEM);
 :duration-inequalities		return DURATION_INEQUALITIES;
 :continuous-effects		return CONTINUOUS_EFFECTS;
 :timed-initial-literals		return TIMED_INITIAL_LITERALS;
+:decompositions		return DECOMPOSITIONS;
 :action				return ACTION;
 :durative-action		return DURATIVE_ACTION;
 :parameters			return PARAMETERS;
