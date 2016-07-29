@@ -100,128 +100,185 @@ private:
 
 /* The lexer. */
 extern int yylex();
+
 /* Current line number. */
 extern size_t line_number;
+
 /* Name of current file. */
 extern std::string current_file;
+
 /* Level of warnings. */
 extern int warning_level;
 
 /* Whether the last parsing attempt succeeded. */
 static bool success = true;
+
 /* Current domain. */
 static Domain* domain;
+
 /* Domains. */
 static std::map<std::string, Domain*> domains;
+
 /* Problem being parsed, or 0 if no problem is being parsed. */
 static Problem* problem;
+
 /* Current requirements. */
 static Requirements* requirements;
+
 /* Predicate being parsed. */
 static const Predicate* predicate;
+
 /* Whether predicate declaration is repeated. */
 static bool repeated_predicate;
+
 /* Function being parsed. */
 static const Function* function;
+
 /* Whether function declaration is repeated. */
 static bool repeated_function;
+
 /* Action being parsed, or 0 if no action is being parsed. */
 static ActionSchema* action;
+
 /* Time of current condition. */ 
 static FormulaTime formula_time; 
+
 /* Time of current effect. */
 static Effect::EffectTime effect_time;
+
 /* Condition for effect being parsed, or 0 if unconditional effect. */
 static const Formula* effect_condition; 
+
 /* Current variable context. */
 static Context context;
+
 /* Predicate for atomic formula being parsed. */
 static const Predicate* atom_predicate;
+
 /* Whether the predicate of the currently parsed atom was undeclared. */
 static bool undeclared_atom_predicate;
+
 /* Whether parsing metric fluent. */
 static bool metric_fluent;
+
 /* Function for fluent being parsed. */
 static const Function* fluent_function;
+
 /* Whether the function of the currently parsed fluent was undeclared. */
 static bool undeclared_fluent_function;
+
 /* Paramerers for atomic formula or fluent being parsed. */
 static TermList term_parameters;
+
 /* Quantified variables for effect or formula being parsed. */
 static TermList quantified;
+
 /* Kind of name map being parsed. */
 static enum { TYPE_KIND, CONSTANT_KIND, OBJECT_KIND, VOID_KIND } name_kind;
 
 /* Outputs an error message. */
 static void yyerror(const std::string& s); 
+
 /* Outputs a warning message. */
 static void yywarning(const std::string& s);
+
 /* Creates an empty domain with the given name. */
 static void make_domain(const std::string* name);
+
 /* Creates an empty problem with the given name. */
 static void make_problem(const std::string* name,
 			 const std::string* domain_name);
+
 /* Adds :typing to the requirements. */
 static void require_typing();
+
 /* Adds :fluents to the requirements. */
 static void require_fluents();
+
 /* Adds :disjunctive-preconditions to the requirements. */
 static void require_disjunction();
+
 /* Adds :duration-inequalities to the requirements. */
 static void require_duration_inequalities();
+
 /* Returns a simple type with the given name. */
 static const Type& make_type(const std::string* name);
+
 /* Returns the union of the given types. */
 static Type make_type(const TypeSet& types);
+
 /* Returns a simple term with the given name. */
 static Term make_term(const std::string* name);
+
 /* Creates a predicate with the given name. */
 static void make_predicate(const std::string* name);
+
 /* Creates a function with the given name. */
 static void make_function(const std::string* name);
+
 /* Creates an action with the given name. */
 static void make_action(const std::string* name, bool durative, bool composite);
+
 /* Adds the current action to the current domain. */ 
 static void add_action();
+
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
+
 /* Prepares for the parsing of a conditional effect. */ 
 static void prepare_conditional_effect(const Formula& condition);
+
 /* Adds types, constants, or objects to the current domain or problem. */
 static void add_names(const std::vector<const std::string*>* names,
 		      const Type& type);
+
 /* Adds variables to the current variable list. */
 static void add_variables(const std::vector<const std::string*>* names,
 			  const Type& type);
+
 /* Prepares for the parsing of an atomic formula. */ 
 static void prepare_atom(const std::string* name);
+
 /* Prepares for the parsing of a fluent. */ 
 static void prepare_fluent(const std::string* name);
+
 /* Adds a term with the given name to the current atomic formula. */
 static void add_term(const std::string* name);
+
 /* Creates the atomic formula just parsed. */
 static const Atom* make_atom();
+
 /* Creates the fluent just parsed. */
 static const Fluent* make_fluent();
+
 /* Creates a subtraction. */
 static const Expression* make_subtraction(const Expression& term,
 					  const Expression* opt_term);
+
 /* Creates an equality formula. */
 static const Formula* make_equality(const Term* term1, const Term* term2);
+
 /* Creates a negation. */
 static const Formula* make_negation(const Formula& negand);
+
 /* Prepares for the parsing of an existentially quantified formula. */
 static void prepare_exists();
+
 /* Prepares for the parsing of a universally quantified formula. */
 static void prepare_forall();
+
 /* Creates an existentially quantified formula. */
 static const Formula* make_exists(const Formula& body);
+
 /* Creates a universally quantified formula. */
 static const Formula* make_forall(const Formula& body);
+
 /* Adds the given literal as an effect to the currect action. */
 static void add_effect(const Literal& literal);
+
 /* Pops the top-most universally quantified variables. */
 static void pop_forall_effect();
+
 /* Adds a timed initial literal to the current problem. */
 static void add_init_literal(float time, const Literal& literal);
 %}

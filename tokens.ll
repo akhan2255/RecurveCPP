@@ -41,6 +41,7 @@ size_t line_number;
 /* Allocates a string containing the lowercase characters of the given
    C string, and returns the given token. */
 static int make_string(const char* s, int token);
+
 /* Makes a number of the given string, and return the NUMBER token. */
 static int make_number(const char* s);
 
