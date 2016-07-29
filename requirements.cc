@@ -28,7 +28,7 @@ Requirements::Requirements()
     existential_preconditions(false), universal_preconditions(false),
     conditional_effects(false), durative_actions(false),
     duration_inequalities(false), fluents(false),
-    timed_initial_literals(false) {}
+    timed_initial_literals(false), decompositions(false) {}
 
 
 /* Enables quantified preconditions. */
