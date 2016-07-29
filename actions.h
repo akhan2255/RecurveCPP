@@ -120,6 +120,7 @@ private:
 	bool composite_;
 };
 
+
 /*
  * Less than function object for action pointers.
  */
