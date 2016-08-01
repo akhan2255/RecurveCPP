@@ -105,9 +105,9 @@ void Unsafe::print(std::ostream& os, const Bindings& bindings) const {
 
 /* Prints this object on the given stream. */
 void MutexThreat::print(std::ostream& os, const Bindings& bindings) const {
-  os << "#<MUTEX " << step_id1() << ' ';
-  effect1().literal().print(os, step_id1(), bindings);
-  os << ' ' << step_id2() << ' ';
-  effect2().literal().print(os, step_id2(), bindings);
-  os << '>';
+    os << "#<MUTEX " << step_id1() << ' ';
+    effect1().literal().print(os, step_id1(), bindings);
+    os << ' ' << step_id2() << ' ';
+    effect2().literal().print(os, step_id2(), bindings);
+    os << '>';
 }
