@@ -46,46 +46,47 @@ struct FlawSelectionOrder;
  * Causal link.
  */
 struct Link {
-  /* Constructs a causal link. */
-  Link(size_t from_id, StepTime effect_time, const OpenCondition& open_cond);
+    /* Constructs a causal link. */
+    Link(size_t from_id, StepTime effect_time, const OpenCondition& open_cond);
 
-  /* Constructs a causal link. */
-  Link(const Link& l);
+    /* Constructs a causal link. */
+    Link(const Link& l);
 
-  /* Deletes this causal link. */
-  ~Link();
+    /* Deletes this causal link. */
+    ~Link();
 
-  /* Returns the id of step that link goes from. */
-  size_t from_id() const { return from_id_; }
+    /* Returns the id of step that link goes from. */
+    size_t from_id() const { return from_id_; }
 
-  /* Returns the time of effect satisfying link. */
-  StepTime effect_time() const { return effect_time_; }
+    /* Returns the time of effect satisfying link. */
+    StepTime effect_time() const { return effect_time_; }
 
-  /* Returns the id of step that link goes to. */
-  size_t to_id() const { return  to_id_; }
+    /* Returns the id of step that link goes to. */
+    size_t to_id() const { return  to_id_; }
 
-  /* Returns the condition satisfied by link. */
-  const Literal& condition() const { return *condition_; }
+    /* Returns the condition satisfied by link. */
+    const Literal& condition() const { return *condition_; }
 
-  /* Returns the time of the condition satisfied by this link. */
-  FormulaTime condition_time() const { return condition_time_; }
+    /* Returns the time of the condition satisfied by this link. */
+    FormulaTime condition_time() const { return condition_time_; }
 
 private:
-  /* Id of step that link goes from. */
-  size_t from_id_;
-  /* Time of effect satisfying link. */
-  StepTime effect_time_;
-  /* Id of step that link goes to. */
-  size_t to_id_;
-  /* Condition satisfied by link. */
-  const Literal* condition_;
-  /* Time of condition satisfied by link. */
-  FormulaTime condition_time_;
+    /* Id of step that link goes from. */
+    size_t from_id_;
+    /* Time of effect satisfying link. */
+    StepTime effect_time_;
+    /* Id of step that link goes to. */
+    size_t to_id_;
+    /* Condition satisfied by link. */
+    const Literal* condition_;
+    /* Time of condition satisfied by link. */
+    FormulaTime condition_time_;
 };
 
 /* Equality operator for links. */
 inline bool operator==(const Link& l1, const Link& l2) {
-  return &l1 == &l2;
+    return &l1 == &l2;
+}
 }
 
 
@@ -96,25 +97,25 @@ inline bool operator==(const Link& l1, const Link& l2) {
  * Plan step.
  */
 struct Step {
-  /* Constructs a step instantiated from an action. */
-  Step(size_t id, const Action& action)
-    : id_(id), action_(&action) {}
+    /* Constructs a step instantiated from an action. */
+    Step(size_t id, const Action& action)
+        : id_(id), action_(&action) {}
 
-  /* Constructs a step. */
-  Step(const Step& s)
-    : id_(s.id_), action_(s.action_) {}
+    /* Constructs a step. */
+    Step(const Step& s)
+        : id_(s.id_), action_(s.action_) {}
 
-  /* Returns the step id. */
-  size_t id() const { return id_; }
+    /* Returns the step id. */
+    size_t id() const { return id_; }
 
-  /* Returns the action that this step is instantiated from. */
-  const Action& action() const { return *action_; }
+    /* Returns the action that this step is instantiated from. */
+    const Action& action() const { return *action_; }
 
 private:
-  /* Step id. */
-  size_t id_;
-  /* Action that this step is instantiated from. */
-  const Action* action_;
+    /* Step id. */
+    size_t id_;
+    /* Action that this step is instantiated from. */
+    const Action* action_;
 };
 
 
