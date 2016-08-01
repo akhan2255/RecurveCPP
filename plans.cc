@@ -40,18 +40,25 @@ struct PredicateAchieverMap : public std::map < Predicate, ActionEffectMap > {
 
 /* Planning parameters. */
 static const Parameters* params;
+
 /* Domain of problem currently being solved. */
 static const Domain* domain = NULL;
+
 /* Problem currently being solved. */
 static const Problem* problem = NULL;
+
 /* Planning graph. */
 static const PlanningGraph* planning_graph;
+
 /* The goal action. */
 static Action* goal_action;
+
 /* Maps predicates to actions. */
 static PredicateAchieverMap achieves_pred;
+
 /* Maps negated predicates to actions. */
 static PredicateAchieverMap achieves_neg_pred;
+
 /* Whether last flaw was a static predicate. */
 static bool static_pred_flaw;
 
@@ -113,10 +120,14 @@ const size_t Plan::GOAL_ID = std::numeric_limits<size_t>::max();
 
 /* Adds goal to chain of open conditions, and returns true if and only
    if the goal is consistent. */
-static bool add_goal(const Chain<OpenCondition>*& open_conds,
-    size_t& num_open_conds, BindingList& new_bindings,
-    const Formula& goal, size_t step_id,
-    bool test_only = false) {
+static bool add_goal(
+    const Chain<OpenCondition>*& open_conds,
+    size_t& num_open_conds, 
+    BindingList& new_bindings,
+    const Formula& goal, 
+    size_t step_id,
+    bool test_only = false) 
+{
     if (goal.tautology()) {
         return true;
     }
@@ -460,25 +471,27 @@ static const Bindings* step_instantiation(const Chain<Step>* steps, size_t n,
 /* Returns the initial plan representing the given problem, or NULL
    if initial conditions or goals of the problem are inconsistent. */
 const Plan* Plan::make_initial_plan(const Problem& problem) {
-    /*
-     * Create goal of problem.
-     */
+    
+    /* Create goal of problem. */
     if (params->ground_actions) {
         goal_action = new GroundAction("", false, false);
-        const Formula& goal_formula =
-            problem.goal().instantiation(SubstitutionMap(), problem);
+        const Formula& goal_formula = problem.goal().instantiation(SubstitutionMap(), problem);
         goal_action->set_condition(goal_formula);
     }
     else {
         goal_action = new ActionSchema("", false, false);
         goal_action->set_condition(problem.goal());
     }
+
     /* Chain of open conditions. */
     const Chain<OpenCondition>* open_conds = NULL;
+
     /* Number of open conditions. */
     size_t num_open_conds = 0;
+    
     /* Bindings introduced by goal. */
     BindingList new_bindings;
+    
     /* Add goals as open conditions. */
     if (!add_goal(open_conds, num_open_conds, new_bindings,
         goal_action->condition(), GOAL_ID)) {
@@ -487,18 +500,21 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
         RCObject::destructive_deref(open_conds);
         return NULL;
     }
+    
     /* Make chain of mutex threat place holder. */
-    const Chain<MutexThreat>* mutex_threats =
-        new Chain<MutexThreat>(MutexThreat(), NULL);
+    const Chain<MutexThreat>* mutex_threats = new Chain<MutexThreat>(MutexThreat(), NULL);
     /* Make chain of initial steps. */
     const Chain<Step>* steps =
         new Chain<Step>(Step(0, problem.init_action()),
         new Chain<Step>(Step(GOAL_ID, *goal_action), NULL));
     size_t num_steps = 0;
+    
     /* Variable bindings. */
     const Bindings* bindings = &Bindings::EMPTY;
+    
     /* Step orderings. */
     const Orderings* orderings;
+    
     if (domain->requirements.durative_actions) {
         const TemporalOrderings* to = new TemporalOrderings();
         /*
@@ -524,6 +540,7 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
     else {
         orderings = new BinaryOrderings();
     }
+    
     /* Return initial plan. */
     return new Plan(steps, num_steps, NULL, 0, *orderings, *bindings,
         NULL, 0, open_conds, num_open_conds, mutex_threats, NULL);
