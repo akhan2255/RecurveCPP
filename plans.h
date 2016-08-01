@@ -87,6 +87,52 @@ private:
 inline bool operator==(const Link& l1, const Link& l2) {
     return &l1 == &l2;
 }
+
+
+/* ====================================================================== */
+/* Decomposition Link */
+
+/*
+ * A DecompositionLink is used to record the fact that the purpose of some
+ * step s is to be part of a more-primitive realization of some other step.
+ */
+struct DecompositionLink {
+
+    /* Constructs a decomposition link. */
+    DecompositionLink(size_t composite_id, size_t initial_id, size_t final_id);
+
+    /* Copy-constructor for a decomposition link. */
+    DecompositionLink(const DecompositionLink& dl);
+
+    /* Deletes this decomposition link. */
+    ~DecompositionLink();
+
+    /* Returns the id of the composite step being decomposed. */
+    size_t composite_id() const { return composite_id_; }
+
+    /* Returns the id of the initial step of some decomposition of the composite step.*/
+    size_t initial_id() const { return initial_id_; }
+
+    /* Returns the id of the final step of some decomposition of the composite step. */
+    size_t final_id() const { return final_id_; }
+
+
+private:
+
+    /* Id of the composite step being decomposed. */
+    size_t composite_id_;
+
+    /* Id of the initial step of some decomposition of the composite step. */
+    size_t initial_id_;
+
+    /* Id of the final step of some decomposition of the composite step. */
+    size_t final_id_;
+
+};
+
+/* Equality operator for decomposition links. */
+inline bool operator==(const DecompositionLink& l1, const DecompositionLink& l2) {
+    return &l1 == &l2;
 }
 
 
