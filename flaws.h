@@ -187,6 +187,37 @@ private:
 inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
     return &mt1 == &mt2;
 }
+
+
+/* ====================================================================== */
+/* UnexpandedCompositeStep */
+
+/*
+ * An unexpanded composite step flaw is when a composite step is added to
+ * the plan, and there exists no decomposition link in the plan that
+ * specifies its decomposition into more primitive steps.
+ */
+struct UnexpandedCompositeStep : public Flaw {
+
+    /* Constructs a threatened causal link. */
+    UnexpandedCompositeStep(size_t step_id) : step_id_(step_id) {}
+
+    /* Returns the id of the unexpanded composite step. */
+    size_t step_id() const { return step_id_; }
+
+    /* Prints this object on the given stream. */
+    virtual void print(std::ostream& os, const Bindings& bindings) const;
+
+private:
+
+    /* Id of the unexpanded composite step. */
+    size_t step_id_;
+
+};
+
+/* Equality operator for unexpanded composite steps. */
+inline bool operator==(const UnexpandedCompositeStep& ucs1, const UnexpandedCompositeStep& ucs2) {
+    return &ucs1 == &ucs2;
 }
 
 

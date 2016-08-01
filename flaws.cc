@@ -111,3 +111,16 @@ void MutexThreat::print(std::ostream& os, const Bindings& bindings) const {
     effect2().literal().print(os, step_id2(), bindings);
     os << '>';
 }
+
+/* ====================================================================== */
+/* UnexpandedCompositeStep */
+
+/* Prints this object on the given stream. */
+void UnexpandedCompositeStep::print(std::ostream& os) const {
+    os << "#<UNEXPANDED " << step_id() << '>';
+}
+
+
+
+
+
