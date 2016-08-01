@@ -548,71 +548,116 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
 
 
 /* Returns plan for given problem. */
-const Plan* Plan::plan(const Problem& problem, const Parameters& p,
-    bool last_problem) {
+const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_problem) {
+
+    /* ---------------------------------------------------------------- */
+    /* Setup */
+
+
     /* Set planning parameters. */
     params = &p;
-    /* Set current domain. */
+
+    /* Set current domain and problem. */
     domain = &problem.domain();
     ::problem = &problem;
 
-    /*
-     * Initialize planning graph and maps from predicates to actions.
-     */
-    bool need_pg = (params->ground_actions || params->domain_constraints
-        || params->heuristic.needs_planning_graph());
+
+    /* ---------------------------------------------------------------- */
+    /* Planning Graph Pre-processing */
+
+
+    /* Check if we need to use a planning graph at all. */
+    bool need_pg = (params->ground_actions || 
+                    params->domain_constraints || 
+                    params->heuristic.needs_planning_graph());
+
     for (size_t i = 0; !need_pg && i < params->flaw_orders.size(); i++) {
         if (params->flaw_orders[i].needs_planning_graph()) {
             need_pg = true;
         }
     }
+
+    /* If so, initialize the planning graph. */
     if (need_pg) {
         planning_graph = new PlanningGraph(problem, *params);
     }
     else {
         planning_graph = NULL;
     }
-    if (!params->ground_actions) {
+
+    /*
+     * Initialize the <predicate, action> map. This dictionary maps predicates
+     * to the actions that achieve them.
+     */
+    if (!params->ground_actions) 
+    {
         achieves_pred.clear();
         achieves_neg_pred.clear();
+
+        // For each action schema in the domain...
         for (ActionSchemaMap::const_iterator ai = domain->actions().begin();
-            ai != domain->actions().end(); ai++) {
+             ai != domain->actions().end(); 
+             ai++) 
+        {
             const ActionSchema* as = (*ai).second;
+
+            // ...for each effect of the action schema...
             for (EffectList::const_iterator ei = as->effects().begin();
-                ei != as->effects().end(); ei++) {
+                 ei != as->effects().end(); 
+                 ei++) 
+            {
+
+                // Get the effect as a Literal,
                 const Literal& literal = (*ei)->literal();
+
+                // And see if it's an Atom or its negation.
+                // If the former, it belongs in the "achieves_pred" map.
+                // If the latter, it belongs in the "achieves_neg_pred" map.
                 if (typeid(literal) == typeid(Atom)) {
                     achieves_pred[literal.predicate()].insert(std::make_pair(as, *ei));
                 }
+
                 else {
-                    achieves_neg_pred[literal.predicate()].insert(std::make_pair(as,
-                        *ei));
+                    achieves_neg_pred[literal.predicate()].insert(std::make_pair(as, *ei));
                 }
             }
         }
+
+        // We also need to add the initial dummy action to the map.
         const GroundAction& ia = problem.init_action();
         for (EffectList::const_iterator ei = ia.effects().begin();
-            ei != ia.effects().end(); ei++) {
+             ei != ia.effects().end(); 
+             ei++) 
+        {
             const Literal& literal = (*ei)->literal();
             achieves_pred[literal.predicate()].insert(std::make_pair(&ia, *ei));
         }
+
+        // And because we're also dealing with timed actions, we repeat the process
+        // for these as well.
         for (TimedActionTable::const_iterator ai = problem.timed_actions().begin();
-            ai != problem.timed_actions().end(); ai++) {
+             ai != problem.timed_actions().end(); 
+             ai++) 
+        {
             const GroundAction& action = *(*ai).second;
             for (EffectList::const_iterator ei = action.effects().begin();
-                ei != action.effects().end(); ei++) {
+                 ei != action.effects().end(); 
+                 ei++) 
+            {
                 const Literal& literal = (*ei)->literal();
+                
                 if (typeid(literal) == typeid(Atom)) {
-                    achieves_pred[literal.predicate()].insert(std::make_pair(&action,
-                        *ei));
+                    achieves_pred[literal.predicate()].insert(std::make_pair(&action, *ei));
                 }
+
                 else {
-                    achieves_neg_pred[literal.predicate()].insert(std::make_pair(&action,
-                        *ei));
+                    achieves_neg_pred[literal.predicate()].insert(std::make_pair(&action, *ei));
                 }
             }
         }
     }
+
+
     static_pred_flaw = false;
 
     /* Number of visited plan. */
@@ -641,9 +686,9 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p,
     /* Variable for progress bar (time). */
     size_t last_hash = 0;
 
-    /*
-     * Search for complete plan.
-     */
+    /* ---------------------------------------------------------------- */
+    /* Searching for Complete Plan */
+
     size_t current_flaw_order = 0;
     size_t flaw_orders_left = params->flaw_orders.size();
     size_t next_switch = 1000;
