@@ -586,8 +586,8 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
     }
 
     /*
-     * Initialize the <predicate, action> map. This dictionary maps predicates
-     * to the actions that achieve them.
+     * Initialize the <predicate, action> map. 
+     * This dictionary maps predicates to the actions that achieve them.
      */
     if (!params->ground_actions) 
     {
@@ -660,64 +660,97 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
 
     static_pred_flaw = false;
 
-    /* Number of visited plan. */
+    /* Number of visited plans. */
     size_t num_visited_plans = 0;
+
     /* Number of generated plans. */
     size_t num_generated_plans = 0;
+    
     /* Number of static preconditions encountered. */
     size_t num_static = 0;
+    
     /* Number of dead ends encountered. */
     size_t num_dead_ends = 0;
 
     /* Generated plans for different flaw selection orders. */
     std::vector<size_t> generated_plans(params->flaw_orders.size(), 0);
+    
     /* Queues of pending plans. */
     std::vector<PlanQueue> plans(params->flaw_orders.size(), PlanQueue());
+    
     /* Dead plan queues. */
     std::vector<PlanQueue*> dead_queues;
-    /* Construct the initial plan. */
-    const Plan* initial_plan = make_initial_plan(problem);
-    if (initial_plan != NULL) {
-        initial_plan->id_ = 0;
-    }
 
     /* Variable for progress bar (number of generated plans). */
     size_t last_dot = 0;
+
     /* Variable for progress bar (time). */
     size_t last_hash = 0;
 
     /* ---------------------------------------------------------------- */
     /* Searching for Complete Plan */
 
+    /* 
+     * Flaw repair strategies are used in a round-robin fashion. Here, we
+     * initialize some auxiliary variables to track which strategy we're
+     * using, as well as the number of expansions to allow before switching
+     * between strategies.
+     */
     size_t current_flaw_order = 0;
     size_t flaw_orders_left = params->flaw_orders.size();
     size_t next_switch = 1000;
+
+    /* Construct the initial plan. */
+    const Plan* initial_plan = make_initial_plan(problem);
+    if (initial_plan != NULL) {
+        initial_plan->id_ = 0;
+    }
+
+    /* Set the current plan under consideration to the initial. */
     const Plan* current_plan = initial_plan;
     generated_plans[current_flaw_order]++;
     num_generated_plans++;
+    
+
     if (verbosity > 1) {
         std::cerr << "using flaw order " << current_flaw_order << std::endl;
     }
+    
+    /* 
+     * In the case of IDA_STAR, we need an additional 
+     * parameter: the upper limit for A_STAR search. 
+     */
     float f_limit;
-    if (current_plan != NULL
-        && params->search_algorithm == Parameters::IDA_STAR) {
+    if (current_plan != NULL && 
+        params->search_algorithm == Parameters::IDA_STAR) {
         f_limit = current_plan->primary_rank();
     }
+    
     else {
         f_limit = std::numeric_limits<float>::infinity();
     }
+
+    /* Begin the search. */
+    // BEGIN DO-WHILE
     do {
+
         float next_f_limit = std::numeric_limits<float>::infinity();
-        while (current_plan != NULL && !current_plan->complete()) {
+        
+        while (current_plan != NULL && !current_plan->complete()) 
+        {
             /* Do a little amortized cleanup of dead queues. */
-            for (size_t dq = 0; dq < 4 && !dead_queues.empty(); dq++) {
+            for (size_t dq = 0; dq < 4 && !dead_queues.empty(); dq++) 
+            {
                 PlanQueue& dead_queue = *dead_queues.back();
                 delete dead_queue.top();
+               
                 dead_queue.pop();
                 if (dead_queue.empty()) {
                     dead_queues.pop_back();
                 }
             }
+
+
             //      struct itimerval timer;
             //#ifdef PROFILING
             //      getitimer(ITIMER_VIRTUAL, &timer);
@@ -891,11 +924,15 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                 break;
             }
         }
+
         if (current_plan != NULL && current_plan->complete()) {
             break;
         }
+
         f_limit = next_f_limit;
-        if (f_limit != std::numeric_limits<float>::infinity()) {
+        
+        if (f_limit != std::numeric_limits<float>::infinity()) 
+        {
             /* Restart search. */
             if (current_plan != NULL && current_plan != initial_plan) {
                 delete current_plan;
@@ -903,21 +940,27 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
             current_plan = initial_plan;
         }
     } while (f_limit != std::numeric_limits<float>::infinity());
+    // END DO-WHILE
+
+
+    /* Print statistics if the verbosity level calls for it. */
     if (verbosity > 0) {
-        /*
-         * Print statistics.
-         */
+
         std::cerr << std::endl << "Plans generated: " << num_generated_plans;
+
         if (num_static > 0) {
             std::cerr << " [" << (num_generated_plans - num_static) << "]";
         }
+
         std::cerr << std::endl << "Plans visited: " << num_visited_plans;
+
         if (num_static > 0) {
             std::cerr << " [" << (num_visited_plans - num_static) << "]";
         }
-        std::cerr << std::endl << "Dead ends encountered: " << num_dead_ends
-            << std::endl;
+
+        std::cerr << std::endl << "Dead ends encountered: " << num_dead_ends << std::endl;
     }
+
     /*
      * Discard the rest of the plan queue and some other things, unless
      * this is the last problem in which case we can save time by just
