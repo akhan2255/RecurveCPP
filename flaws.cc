@@ -116,7 +116,7 @@ void MutexThreat::print(std::ostream& os, const Bindings& bindings) const {
 /* UnexpandedCompositeStep */
 
 /* Prints this object on the given stream. */
-void UnexpandedCompositeStep::print(std::ostream& os) const {
+void UnexpandedCompositeStep::print(std::ostream& os, const Bindings& bindings) const {
     os << "#<UNEXPANDED " << step_id() << '>';
 }
 
