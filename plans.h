@@ -271,28 +271,46 @@ private:
 
     /* Chain of steps. */
     const Chain<Step>* steps_;
+
     /* Number of unique steps in plan. */
     size_t num_steps_;
+    
     /* Chain of causal links. */
     const Chain<Link>* links_;
+    
     /* Number of causal links. */
     size_t num_links_;
+    
     /* Ordering constraints of this plan. */
     const Orderings* orderings_;
+    
     /* Binding constraints of this plan. */
     const Bindings* bindings_;
+    
     /* Chain of potentially threatened links. */
     const Chain<Unsafe>* unsafes_;
+    
     /* Number of potentially threatened links. */
     size_t num_unsafes_;
+    
     /* Chain of open conditions. */
     const Chain<OpenCondition>* open_conds_;
+    
     /* Number of open conditions. */
     const size_t num_open_conds_;
+    
     /* Chain of mutex threats. */
     const Chain<MutexThreat>* mutex_threats_;
+
+    /* Chain of unexpanded composite steps. */
+    const Chain<UnexpandedCompositeStep>* unexpanded_steps_;
+
+    /* Number of unexpanded composite steps. */
+    const size_t num_unexpanded_steps_;
+    
     /* Rank of this plan. */
     mutable std::vector<float> rank_;
+    
     /* Plan id (serial number). */
     mutable size_t id_;
 #ifdef DEBUG
