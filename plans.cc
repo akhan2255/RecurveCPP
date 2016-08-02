@@ -764,10 +764,9 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
             //	break;
             //      }
 
-            /*
-             * Visiting a new plan.
-             */
+            /* Visiting a new plan. */
             num_visited_plans++;
+            
             if (verbosity == 1) {
                 while (num_generated_plans - num_static - last_dot >= 1000) {
                     std::cerr << '.';
@@ -778,6 +777,7 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                   last_hash++;
                   }*/
             }
+
             if (verbosity > 1) {
                 std::cerr << std::endl << (num_visited_plans - num_static) << ": "
                     << "!!!!CURRENT PLAN (id " << current_plan->id_ << ")"
@@ -787,11 +787,13 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                 }
                 std::cerr << ")" << std::endl << *current_plan << std::endl;
             }
+
             /* List of children to current plan. */
             PlanList refinements;
+            
             /* Get plan refinements. */
-            current_plan->refinements(refinements,
-                params->flaw_orders[current_flaw_order]);
+            current_plan->refinements(refinements, params->flaw_orders[current_flaw_order]);
+            
             /* Add children to queue of pending plans. */
             bool added = false;
             for (PlanList::const_iterator pi = refinements.begin();
@@ -1163,6 +1165,10 @@ bool Plan::unsafe_refinements(int& refinements, int& separable,
 }
 
 
+/* ====================================================================== */
+/* Unsafe Flaw Handling */
+
+
 /* Handles an unsafe link. */
 void Plan::handle_unsafe(PlanList& plans, const Unsafe& unsafe) const {
     BindingList unifier;
@@ -1373,6 +1379,11 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
 }
 
 
+
+/* ====================================================================== */
+/* Mutex Threat Flaw Handling */
+
+
 /* Handles a mutex threat. */
 void Plan::handle_mutex_threat(PlanList& plans,
     const MutexThreat& mutex_threat) const {
@@ -1410,7 +1421,6 @@ void Plan::handle_mutex_threat(PlanList& plans,
             mutex_threats()->remove(mutex_threat), this));
     }
 }
-
 
 
 /* Handles a mutex threat through separation. */
@@ -1571,6 +1581,10 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
 }
 
 
+/* ====================================================================== */
+/* Open Condition Flaw Handling */
+
+
 /* Checks if the given open condition is threatened. */
 bool Plan::unsafe_open_condition(const OpenCondition& open_cond) const {
     const Literal* literal = open_cond.literal();
@@ -1652,15 +1666,19 @@ bool Plan::open_cond_refinements(int& refinements, int& addable, int& reusable,
 
 
 /* Handles an open condition. */
-void Plan::handle_open_condition(PlanList& plans,
-    const OpenCondition& open_cond) const {
+void Plan::handle_open_condition(PlanList& plans, const OpenCondition& open_cond) const 
+{
     const Literal* literal = open_cond.literal();
-    if (literal != NULL) {
+
+    if (literal != NULL) 
+    {
         const ActionEffectMap* achievers = literal_achievers(*literal);
+        
         if (achievers != NULL) {
             add_step(plans, *literal, open_cond, *achievers);
             reuse_step(plans, *literal, open_cond, *achievers);
         }
+
         const Negation* negation = dynamic_cast<const Negation*>(literal);
         if (negation != NULL) {
             new_cw_link(plans, problem->init_action().effects(),
