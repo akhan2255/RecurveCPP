@@ -1082,32 +1082,55 @@ const Flaw& Plan::get_flaw(const FlawSelectionOrder& flaw_order) const {
 
 
 /* Returns the refinements for the next flaw to work on. */
-void Plan::refinements(PlanList& plans,
-    const FlawSelectionOrder& flaw_order) const {
+void Plan::refinements(PlanList& plans, const FlawSelectionOrder& flaw_order) const 
+{
+    /* Identify the next flaw to work on. */
     const Flaw& flaw = get_flaw(flaw_order);
+
     if (verbosity > 1) {
         std::cerr << std::endl << "handle ";
         flaw.print(std::cerr, *bindings_);
         std::cerr << std::endl;
     }
+
+    /* Flaw Repair Strategies! */
+
+    // Flaw Type 1: Threatened Causal Link
     const Unsafe* unsafe = dynamic_cast<const Unsafe*>(&flaw);
     if (unsafe != NULL) {
         handle_unsafe(plans, *unsafe);
     }
-    else {
+
+    else 
+    {
+        // Flaw Type 2: Open Precondition Flaw
         const OpenCondition* open_cond = dynamic_cast<const OpenCondition*>(&flaw);
         if (open_cond != NULL) {
             handle_open_condition(plans, *open_cond);
         }
-        else {
-            const MutexThreat* mutex_threat =
-                dynamic_cast<const MutexThreat*>(&flaw);
-            if (mutex_threat != NULL) {
-                handle_mutex_threat(plans, *mutex_threat);
+
+        else 
+        {
+            // Flaw Type 3: Unexpanded Composite Step Flaw
+            const UnexpandedCompositeStep* unexpanded = 
+                dynamic_cast<const UnexpandedCompositeStep*>(&flaw);
+
+            if (unexpanded != NULL) {
+                handle_unexpanded_composite_step(plans, *unexpanded);
             }
-            else {
-                throw std::logic_error("unknown kind of flaw");
-            }
+
+            else 
+            {
+                // Flaw Type 4: Mutex Threat Flaw
+                const MutexThreat* mutex_threat = dynamic_cast<const MutexThreat*>(&flaw);
+                if (mutex_threat != NULL) {
+                    handle_mutex_threat(plans, *mutex_threat);
+                }
+
+                else {
+                    throw std::logic_error("unknown kind of flaw");
+                }
+            }            
         }
     }
 }
@@ -2161,6 +2184,17 @@ int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
             new_mutex_threats, this));
     }
     return 1;
+}
+
+
+/* ====================================================================== */
+/* Unexpanded Composite Step Flaw Handling */
+
+
+/* Handles an unexpanded composite step. */
+void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCompositeStep& open_cond) const
+{
+   // TBD
 }
 
 

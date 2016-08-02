@@ -401,6 +401,11 @@ private:
         const Literal& literal, const OpenCondition& open_cond,
         const BindingList& unifier, bool test_only = false) const;
 
+    /* Handles an unexpanded composite step. */
+    void handle_unexpanded_composite_step(PlanList& plans,
+        const UnexpandedCompositeStep& unexpanded) const;
+
+
     friend bool operator<(const Plan& p1, const Plan& p2);
     friend std::ostream& operator<<(std::ostream& os, const Plan& p);
 };
