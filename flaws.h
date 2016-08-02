@@ -199,7 +199,7 @@ inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
  */
 struct UnexpandedCompositeStep : public Flaw {
 
-    /* Constructs a threatened causal link. */
+    /* Constructs an unexpanded composite step flaw. */
     UnexpandedCompositeStep(size_t step_id) : step_id_(step_id) {}
 
     /* Returns the id of the unexpanded composite step. */
