@@ -201,6 +201,9 @@ static void require_disjunction();
 /* Adds :duration-inequalities to the requirements. */
 static void require_duration_inequalities();
 
+/* Adds: :decompositions to the requirements. */
+static void require_decompositions();
+
 /* Returns a simple type with the given name. */
 static const Type& make_type(const std::string* name);
 
@@ -499,11 +502,8 @@ function_decl : '(' function { make_function($2); } variables ')'
 
 /* This is where the composite action definition needs to be! */
 
-action_def : '(' ACTION name { make_action($3, false, false); }
-               parameters action_body ')' { add_action(); }
-           | '(' DURATIVE_ACTION name { make_action($3, true, false); }
-               parameters DURATION duration_constraint da_body ')'
-               { add_action(); }
+action_def : '(' ACTION name { make_action($3, false, false); } parameters action_body ')' { add_action(); }
+           | '(' DURATIVE_ACTION name { make_action($3, true, false); } parameters DURATION duration_constraint da_body ')' { add_action(); }
            ;
 
 parameters : /* empty */
@@ -514,16 +514,23 @@ action_body : precondition action_body2
             | action_body2
             ;
 
-action_body2 : /* empty */
-             | effect
+action_body2 : effect action_body3
+			 | action_body3
              ;
 
-precondition : PRECONDITION { formula_time = AT_START; } formula
-                 { action->set_condition(*$3); }
+action_body3 : /* empty */
+             | abstract
+			 ;
+
+precondition : PRECONDITION { formula_time = AT_START; } formula { action->set_condition(*$3); }
              ;
 
 effect : EFFECT { effect_time = Effect::AT_END; } eff_formula
        ;
+
+abstract : ABSTRACT 't' { require_decompositions(); action->set_composite(true); }
+         | ABSTRACT 'f' { require_decompositions(); action->set_composite(false); }
+		 ;
 
 da_body : CONDITION da_gd da_body2 { action->set_condition(*$2); }
         | da_body2
@@ -1012,6 +1019,14 @@ static void require_duration_inequalities() {
   if (!requirements->duration_inequalities) {
     yywarning("assuming `:duration-inequalities' requirement");
     requirements->duration_inequalities = true;
+  }
+}
+
+/* Adds :decompositions to the requirements. */
+static void require_decompositions() {
+  if (!requirements->decompositions) {
+    yywarning("assuming `:decompositions' requirement'");
+	requirements->decompositions = true;
   }
 }
 

@@ -54,6 +54,9 @@ struct Action {
     /* Sets the duration for this action. */
     void set_duration(const Expression& duration);
 
+    /* Sets the composite-ness for this action. */
+    void set_composite(const bool composite) { composite_ = composite; };
+
     /* Returns the id for this action. */
     size_t id() const { return id_; }
 
