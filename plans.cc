@@ -543,7 +543,7 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
     
     /* Return initial plan. */
     return new Plan(steps, num_steps, NULL, 0, *orderings, *bindings,
-        NULL, 0, open_conds, num_open_conds, mutex_threats, NULL);
+        NULL, 0, open_conds, num_open_conds, NULL, 0, mutex_threats, NULL);
 }
 
 
@@ -899,12 +899,20 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                         *current_plan->bindings_);
                     if (new_bindings != NULL) {
                         instantiated = true;
-                        if (new_bindings != current_plan->bindings_) {
+                        if (new_bindings != current_plan->bindings_) 
+                        {
+                            // TODO: Fix the unexpanded composite step handling.
+
                             const Plan* inst_plan =
                                 new Plan(current_plan->steps(), current_plan->num_steps(),
                                 current_plan->links(), current_plan->num_links(),
                                 current_plan->orderings(), *new_bindings,
-                                NULL, 0, NULL, 0, NULL, current_plan);
+                                NULL, 0, 
+                                NULL, 0, 
+                                NULL, 0, /* <- unexpanded composite step chain, and number */
+                                NULL, 
+                                current_plan);
+
                             delete current_plan;
                             current_plan = inst_plan;
                         }
@@ -1003,13 +1011,16 @@ Plan::Plan(const Chain<Step>* steps, size_t num_steps,
     const Orderings& orderings, const Bindings& bindings,
     const Chain<Unsafe>* unsafes, size_t num_unsafes,
     const Chain<OpenCondition>* open_conds, size_t num_open_conds,
+    const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,
     const Chain<MutexThreat>* mutex_threats, const Plan* parent)
     : steps_(steps), num_steps_(num_steps),
     links_(links), num_links_(num_links),
     orderings_(&orderings), bindings_(&bindings),
     unsafes_(unsafes), num_unsafes_(num_unsafes),
     open_conds_(open_conds), num_open_conds_(num_open_conds),
-    mutex_threats_(mutex_threats) {
+    unexpanded_steps_(unexpanded_steps), num_unexpanded_steps_(num_unexpanded_steps),
+    mutex_threats_(mutex_threats)
+    {
     RCObject::ref(steps);
     RCObject::ref(links);
     Orderings::register_use(&orderings);
@@ -1216,6 +1227,7 @@ void Plan::handle_unsafe(PlanList& plans, const Unsafe& unsafe) const {
             orderings(), *bindings_,
             unsafes()->remove(unsafe), num_unsafes() - 1,
             open_conds(), num_open_conds(),
+            unexpanded_steps(), num_unexpanded_steps(),
             mutex_threats(), this));
     }
 }
@@ -1331,6 +1343,7 @@ int Plan::separate(PlanList& plans, const Unsafe& unsafe,
                         unsafes()->remove(unsafe),
                         num_unsafes() - 1,
                         new_open_conds, new_num_open_conds,
+                        NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                         mutex_threats(), this));
                 }
                 else {
@@ -1397,6 +1410,7 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
             *new_orderings, *bindings_,
             unsafes()->remove(unsafe), num_unsafes() - 1,
             open_conds(), num_open_conds(),
+            unexpanded_steps(), num_unexpanded_steps(),
             mutex_threats(), this));
     }
 }
@@ -1419,6 +1433,7 @@ void Plan::handle_mutex_threat(PlanList& plans,
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             orderings(), *bindings_, unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
+            unexpanded_steps(), num_unexpanded_steps(),
             new_mutex_threats, this));
         return;
     }
@@ -1441,6 +1456,7 @@ void Plan::handle_mutex_threat(PlanList& plans,
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             orderings(), *bindings_, unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
+            unexpanded_steps(), num_unexpanded_steps(),
             mutex_threats()->remove(mutex_threat), this));
     }
 }
@@ -1481,6 +1497,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
                     num_links(), orderings(), *bindings,
                     unsafes(), num_unsafes(),
                     new_open_conds, new_num_open_conds,
+                    NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                     mutex_threats()->remove(mutex_threat), this));
             }
             else {
@@ -1547,6 +1564,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
                             num_links(), *new_orderings, *bindings,
                             unsafes(), num_unsafes(),
                             new_open_conds, new_num_open_conds,
+                            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                             mutex_threats()->remove(mutex_threat),
                             this));
                     }
@@ -1599,6 +1617,7 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
             *new_orderings, *bindings_,
             unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
+            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
             mutex_threats()->remove(mutex_threat), this));
     }
 }
@@ -1751,6 +1770,7 @@ int Plan::handle_disjunction(PlanList& plans, const Disjunction& disj,
                         orderings(), *bindings,
                         unsafes(), num_unsafes(),
                         new_open_conds, new_num_open_conds,
+                        NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                         mutex_threats(), this));
                 }
                 count++;
@@ -1800,6 +1820,7 @@ int Plan::handle_inequality(PlanList& plans, const Inequality& neq,
                     unsafes(), num_unsafes(),
                     open_conds()->remove(open_cond),
                     num_open_conds() - 1,
+                    NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                     mutex_threats(), this));
             }
             count++;
@@ -1995,6 +2016,7 @@ int Plan::new_cw_link(PlanList& plans, const EffectList& effects,
                     orderings(), *bindings,
                     new_unsafes, new_num_unsafes,
                     new_open_conds, new_num_open_conds,
+                    NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                     mutex_threats(), this));
             }
             count++;
@@ -2181,6 +2203,7 @@ int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
             num_links() + 1, *new_orderings, *bindings,
             new_unsafes, new_num_unsafes,
             new_open_conds, new_num_open_conds,
+            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
             new_mutex_threats, this));
     }
     return 1;
