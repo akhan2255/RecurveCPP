@@ -299,7 +299,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token NUMBER_TOKEN OBJECT_TOKEN EITHER
 %token LE GE NAME DURATION_VAR VARIABLE NUMBER
 %token ILLEGAL_TOKEN
-%token DECOMPOSITIONS
+%token DECOMPOSITIONS ABSTRACT
 
 %union {
   const Formula* formula;
