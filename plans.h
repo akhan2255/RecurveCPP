@@ -215,6 +215,12 @@ struct Plan {
     /* Returns the number of open conditions in this plan. */
     size_t num_open_conds() const { return num_open_conds_; }
 
+    /* Returns the unexpanded composite steps of this plan. */
+    const Chain<UnexpandedCompositeStep>* unexpanded_steps() const { return unexpanded_steps_; }
+
+    /* Returns the number of unexpanded composite steps of this plan. */
+    size_t num_unexpanded_steps() const { return num_unexpanded_steps_; }
+
     /* Returns the mutex threats of this plan. */
     const Chain<MutexThreat>* mutex_threats() const { return mutex_threats_; }
 
@@ -328,6 +334,7 @@ private:
         const Orderings& orderings, const Bindings& bindings,
         const Chain<Unsafe>* unsafes, size_t num_unsafes,
         const Chain<OpenCondition>* open_conds, size_t num_open_conds,
+        const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,
         const Chain<MutexThreat>* mutex_threats, const Plan* parent);
 
     /* Returns the next flaw to work on. */
