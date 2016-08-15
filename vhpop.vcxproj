@@ -106,6 +106,7 @@
     <ClInclude Include="bindings.h" />
     <ClInclude Include="chain.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="decompositions.h" />
     <ClInclude Include="domains.h" />
     <ClInclude Include="effects.h" />
     <ClInclude Include="expressions.h" />
@@ -116,7 +117,7 @@
     <ClInclude Include="heuristics.h" />
     <ClInclude Include="orderings.h" />
     <ClInclude Include="parameters.h" />
-    <ClInclude Include="pddl.h" />
+    <ClInclude Include="pddl.hh" />
     <ClInclude Include="plans.h" />
     <ClInclude Include="predicates.h" />
     <ClInclude Include="problems.h" />
