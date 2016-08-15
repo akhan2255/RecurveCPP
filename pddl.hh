@@ -104,7 +104,9 @@ extern int yydebug;
     DURATION_VAR = 314,
     VARIABLE = 315,
     NUMBER = 316,
-    ILLEGAL_TOKEN = 317
+    ILLEGAL_TOKEN = 317,
+    DECOMPOSITIONS = 318,
+    ABSTRACT = 319
   };
 #endif
 
@@ -113,7 +115,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 246 "pddl.yy" /* yacc.c:1909  */
+#line 307 "pddl.yy" /* yacc.c:1909  */
 
   const Formula* formula;
   const Literal* literal;
@@ -127,7 +129,7 @@ union YYSTYPE
   std::vector<const std::string*>* strs;
   float num;
 
-#line 131 "pddl.hh" /* yacc.c:1909  */
+#line 133 "pddl.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
