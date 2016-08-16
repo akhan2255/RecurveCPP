@@ -304,7 +304,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token NUMBER_TOKEN OBJECT_TOKEN EITHER
 %token LE GE NAME DURATION_VAR VARIABLE NUMBER
 %token ILLEGAL_TOKEN
-%token DECOMPOSITIONS ABSTRACT
+%token DECOMPOSITIONS COMPOSITE
 
 %union {
   const Formula* formula;
@@ -521,7 +521,7 @@ action_body2 : effect action_body3
              ;
 
 action_body3 : /* empty */
-             | abstract
+             | composite
 			 ;
 
 precondition : PRECONDITION { formula_time = AT_START; } formula { action->set_condition(*$3); }
@@ -530,9 +530,9 @@ precondition : PRECONDITION { formula_time = AT_START; } formula { action->set_c
 effect : EFFECT { effect_time = Effect::AT_END; } eff_formula
        ;
 
-abstract : ABSTRACT 't' { require_decompositions(); action->set_composite(true); }
-         | ABSTRACT 'f' { require_decompositions(); action->set_composite(false); }
-		 ;
+composite : COMPOSITE 't' { require_decompositions(); action->set_composite(true); }
+          | COMPOSITE 'f' { require_decompositions(); action->set_composite(false); }
+		  ;
 
 da_body : CONDITION da_gd da_body2 { action->set_condition(*$2); }
         | da_body2

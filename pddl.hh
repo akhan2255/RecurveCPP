@@ -106,7 +106,7 @@ extern int yydebug;
     NUMBER = 316,
     ILLEGAL_TOKEN = 317,
     DECOMPOSITIONS = 318,
-    ABSTRACT = 319
+    COMPOSITE = 319
   };
 #endif
 

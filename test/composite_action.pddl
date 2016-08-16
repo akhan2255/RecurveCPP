@@ -7,7 +7,7 @@
 	   :parameters (?x)
 	   :precondition (and (clear ?x) (ontable ?x) (handempty))
 	   :effect (and (not (ontable ?x)) (not (clear ?x)) (not (handempty)) (holding ?x))
-	   :abstract t)
+	   :composite t)
 
   (:action put-down
            :parameters (?x)

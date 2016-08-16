@@ -84,7 +84,7 @@ problem				return make_string(yytext, PROBLEM);
 :precondition			return PRECONDITION;
 :condition			return CONDITION;
 :effect				return EFFECT;
-:abstract			return ABSTRACT;
+:composite			return COMPOSITE;
 :domain				return PDOMAIN;
 :objects			return OBJECTS;
 :init				return INIT;

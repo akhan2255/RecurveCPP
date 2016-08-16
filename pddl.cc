@@ -425,7 +425,7 @@ extern int yydebug;
     NUMBER = 316,
     ILLEGAL_TOKEN = 317,
     DECOMPOSITIONS = 318,
-    ABSTRACT = 319
+    COMPOSITE = 319
   };
 #endif
 
@@ -823,7 +823,7 @@ static const char *const yytname[] =
   "START", "END", "ALL", "MINIMIZE", "MAXIMIZE", "TOTAL_TIME",
   "NUMBER_TOKEN", "OBJECT_TOKEN", "EITHER", "LE", "GE", "NAME",
   "DURATION_VAR", "VARIABLE", "NUMBER", "ILLEGAL_TOKEN", "DECOMPOSITIONS",
-  "ABSTRACT", "'('", "')'", "'-'", "'t'", "'f'", "'='", "'+'", "'*'",
+  "COMPOSITE", "'('", "')'", "'-'", "'t'", "'f'", "'='", "'+'", "'*'",
   "'/'", "$accept", "pddl_file", "$@1", "domains_and_problems",
   "domain_def", "$@2", "domain_body", "domain_body2", "domain_body3",
   "domain_body4", "domain_body5", "domain_body6", "domain_body7",
@@ -833,7 +833,7 @@ static const char *const yytname[] =
   "predicate_decls", "predicate_decl", "$@6", "function_decls",
   "function_decl_seq", "function_type_spec", "$@7", "function_decl", "$@8",
   "action_def", "$@9", "$@10", "parameters", "action_body", "action_body2",
-  "action_body3", "precondition", "$@11", "effect", "$@12", "abstract",
+  "action_body3", "precondition", "$@11", "effect", "$@12", "composite",
   "da_body", "da_body2", "duration_constraint",
   "simple_duration_constraint", "simple_duration_constraints", "da_gd",
   "timed_gds", "timed_gd", "$@13", "$@14", "$@15", "eff_formula", "$@16",
@@ -3437,7 +3437,7 @@ static void require_duration_inequalities() {
 /* Adds :decompositions to the requirements. */
 static void require_decompositions() {
   if (!requirements->decompositions) {
-    yywarning("assuming `:decompositions' requirement'");
+    yywarning("assuming `:decompositions' requirement");
 	requirements->decompositions = true;
   }
 }
