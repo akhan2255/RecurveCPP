@@ -983,10 +983,11 @@ Heuristic& Heuristic::operator=(const std::string& name) {
       throw InvalidHeuristic(name);
     }
     pos = next_pos;
-    if (name[pos] == '/') {
+    if (pos != std::string::npos && name[pos] == '/') 
+    {
       pos++;
       if (pos >= name.length()) {
-	throw InvalidHeuristic(name);
+	    throw InvalidHeuristic(name);
       }
     }
   }
@@ -1588,11 +1589,12 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name) {
     }
     selection_criteria_.push_back(criterion);
     pos = next_pos;
-    if (name[pos] == '/') {
-      pos++;
-      if (pos >= name.length()) {
-	throw InvalidFlawSelectionOrder(name);
-      }
+    if (pos != std::string::npos && name[pos] == '/') 
+    {
+        pos++;
+        if (pos >= name.length()) {
+            throw InvalidFlawSelectionOrder(name);
+        }
     }
   }
   if (non_separable_max_refinements < std::numeric_limits<int>::max()
