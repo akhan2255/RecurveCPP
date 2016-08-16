@@ -13,4 +13,11 @@
 // TODO: reference additional headers your program requires here
 #include <iostream>
 #include <string>
+#include <stdlib.h>
+#include "../formulas.h"
+#include "../expressions.h"
+#include "../terms.h"
+#include "../types.h"
+#include "../problems.h"
+#include "../pddl.hh"
 
