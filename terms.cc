@@ -86,7 +86,7 @@ TermTable::~TermTable() {
    and returns the variable. */
 Variable TermTable::add_variable(const Type& type) {
   variable_types_.push_back(type);
-  return Variable(variable_types_.size()-1);
+  return Variable(-variable_types_.size());
 }
 
 
