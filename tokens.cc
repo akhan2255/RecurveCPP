@@ -364,8 +364,8 @@ static void yynoreturn yy_fatal_error (yyconst char* msg  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 67
-#define YY_END_OF_BUFFER 68
+#define YY_NUM_RULES 69
+#define YY_END_OF_BUFFER 70
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -375,42 +375,42 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[481] =
     {   0,
-        0,    0,   68,   66,   64,   65,   60,   66,   59,   66,
-       66,   66,   66,   66,   56,   56,   56,   56,   56,   56,
-       56,   56,   56,   56,   56,   56,   56,   64,   59,    0,
-       59,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,   63,   61,
-       62,   58,   58,   56,   56,   56,   48,   56,   56,   56,
-       56,   56,   56,   56,   56,   56,   56,   56,   56,   44,
-       56,   56,   56,   56,   56,    0,    0,    0,    0,    0,
+        0,    0,   70,   68,   66,   67,   62,   68,   61,   68,
+       68,   68,   68,   68,   58,   58,   58,   58,   57,   58,
+       58,   58,   58,   58,   58,   56,   58,   66,   61,    0,
+       61,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,   65,   63,
+       64,   60,   60,   58,   58,   58,   48,   58,   58,   58,
+       58,   58,   58,   58,   58,   58,   58,   58,   58,   44,
+       58,   58,   58,   58,   58,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-        0,   58,   58,   52,   43,   56,   56,   56,   51,   56,
-       56,   56,   56,   56,   42,   56,   56,   56,   56,   56,
-       56,   56,    0,    0,   19,    0,    0,    0,    0,    0,
+        0,   60,   60,   52,   43,   58,   58,   58,   51,   58,
+       58,   58,   58,   58,   42,   58,   58,   58,   58,   58,
+       58,   58,    0,    0,   19,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,   58,   56,
-       56,   56,   56,   56,   56,   56,   56,   56,   56,   49,
-       56,   56,   56,   41,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,   60,   58,
+       58,   58,   58,   58,   58,   58,   58,   58,   58,   49,
+       58,   58,   58,   41,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,   36,   35,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,   58,   56,   56,   56,   56,   56,   45,
+        0,    0,    0,   60,   58,   58,   58,   58,   58,   45,
 
-       56,   56,   56,   56,   56,   50,   56,    0,    0,    0,
+       58,   58,   58,   58,   58,   50,   58,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    5,    0,    0,   58,    1,    2,   40,   46,   47,
-       56,   56,   38,   39,   56,   56,    0,   25,    0,    0,
+        0,    5,    0,    0,   60,    1,    2,   40,   46,   47,
+       58,   58,   38,   39,   58,   58,    0,   25,    0,    0,
         0,    0,    0,   33,    0,   31,    0,    0,    0,    0,
        37,    0,    0,    0,    0,    0,    0,    0,    9,    0,
-       10,    0,   58,   56,   56,    3,   56,    0,    0,    0,
+       10,    0,   60,   58,   58,    3,   58,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,   18,    0,    0,
-       34,    0,    0,    0,    0,    0,    0,    0,   58,   54,
+       34,    0,    0,    0,    0,    0,    0,    0,   60,   54,
 
-       53,   56,   32,    0,    0,    0,    0,    0,   28,    0,
+       53,   58,   32,    0,    0,    0,    0,    0,   28,    0,
        13,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,   57,   56,   30,    6,    0,    0,    0,    0,    0,
+        0,   59,   58,   30,    6,    0,    0,    0,    0,    0,
         0,    8,    0,    0,    0,    0,    0,    0,    0,    0,
        55,    0,    0,    0,    0,    0,    0,    0,    0,   27,
         0,    7,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -1434,68 +1434,78 @@ return make_string(yytext, TOTAL_TIME);
 case 56:
 YY_RULE_SETUP
 #line 111 "tokens.ll"
-return make_string(yytext, NAME);
+return yytext[0];
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
 #line 112 "tokens.ll"
-return make_string(yytext, DURATION_VAR);
+return yytext[0];
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
 #line 113 "tokens.ll"
-return make_string(yytext, VARIABLE);
+return make_string(yytext, NAME);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
 #line 114 "tokens.ll"
-return make_number(yytext);
+return make_string(yytext, DURATION_VAR);
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
 #line 115 "tokens.ll"
-return yytext[0];
+return make_string(yytext, VARIABLE);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
 #line 116 "tokens.ll"
-return LE;
+return make_number(yytext);
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
 #line 117 "tokens.ll"
-return GE;
+return yytext[0];
 	YY_BREAK
 case 63:
-*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
-(yy_c_buf_p) = yy_cp -= 1;
-YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
 #line 118 "tokens.ll"
-/* comment */
+return LE;
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
 #line 119 "tokens.ll"
-/* whitespace */
+return GE;
 	YY_BREAK
 case 65:
-/* rule 65 can match eol */
+*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
+(yy_c_buf_p) = yy_cp -= 1;
+YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
 #line 120 "tokens.ll"
-line_number++;
+/* comment */
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
 #line 121 "tokens.ll"
-return ILLEGAL_TOKEN;
+/* whitespace */
 	YY_BREAK
 case 67:
+/* rule 67 can match eol */
+YY_RULE_SETUP
+#line 122 "tokens.ll"
+line_number++;
+	YY_BREAK
+case 68:
 YY_RULE_SETUP
 #line 123 "tokens.ll"
+return ILLEGAL_TOKEN;
+	YY_BREAK
+case 69:
+YY_RULE_SETUP
+#line 125 "tokens.ll"
 ECHO;
 	YY_BREAK
-#line 1499 "tokens.cc"
+#line 1509 "tokens.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2460,7 +2470,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 123 "tokens.ll"
+#line 125 "tokens.ll"
 
 
 

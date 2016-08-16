@@ -1027,7 +1027,7 @@ static void require_duration_inequalities() {
 /* Adds :decompositions to the requirements. */
 static void require_decompositions() {
   if (!requirements->decompositions) {
-    yywarning("assuming `:decompositions' requirement'");
+    yywarning("assuming `:decompositions' requirement");
 	requirements->decompositions = true;
   }
 }

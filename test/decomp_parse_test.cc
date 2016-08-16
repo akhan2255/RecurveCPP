@@ -12,6 +12,8 @@ extern FILE* yyin;
 /* Name of current file. */
 std::string curr;
 
+extern int yydebug;
+
 /* Parses the given file, and returns true on success. */
 static bool read_file(const char* name)
 {
@@ -47,8 +49,22 @@ namespace test
                 const Domain& parsed = *(*di).second;
                 Assert::IsTrue(parsed.requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
             }
-
 		}
+
+        TEST_METHOD(ParseCompositeAction)
+        {
+            read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
+            for (Domain::DomainMap::const_iterator di = Domain::begin();
+                di != Domain::end();
+                di++)
+            {
+                const Domain& parsed = *(*di).second;
+                Assert::AreEqual("composite_action", parsed.name().c_str(), L"Parsed the 'composite_action' domain.");
+                Assert::IsTrue(parsed.requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with an abstract property.");
+            }
+
+
+        }
 
 	};
 }

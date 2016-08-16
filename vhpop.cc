@@ -64,8 +64,12 @@
 
 /* The parse function. */
 extern int yyparse();
+
 /* File to parse. */
 extern FILE* yyin;
+
+/* Parse debugging. */
+extern int yydebug;
 
 /* Name of current file. */
 std::string current_file;
@@ -244,6 +248,8 @@ size_t deleted_plans = 0;
 /* The main program. */
 int main(int argc, char* argv[])
 {
+    //yydebug = 1;
+
     atexit(cleanup);
 
     /* Default planning parameters. */

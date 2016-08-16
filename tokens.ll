@@ -108,6 +108,8 @@ all				return make_string(yytext, ALL);
 minimize			return make_string(yytext, MINIMIZE);
 maximize			return make_string(yytext, MAXIMIZE);
 total-time			return make_string(yytext, TOTAL_TIME);
+t					return yytext[0];
+f					return yytext[0];
 {IDENT}				return make_string(yytext, NAME);
 \?duration			return make_string(yytext, DURATION_VAR);
 \?{IDENT}			return make_string(yytext, VARIABLE);
