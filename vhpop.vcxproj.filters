@@ -164,6 +164,9 @@
     <ClInclude Include="pddl.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="decompositions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="aclocal.m4">
