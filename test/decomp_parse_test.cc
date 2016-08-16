@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include <stdlib.h>
 #include "CppUnitTest.h"
-
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -39,9 +37,17 @@ namespace test
 	{
 	public:
 		
-		TEST_METHOD(ParseAbstractAction)
+		TEST_METHOD(ParseDecompositionsRequirement)
 		{
-            read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
+            read_file("E:\\Developer\\vhpop\\test\\decompositions_requirement.pddl");
+            for (Domain::DomainMap::const_iterator di = Domain::begin();
+                di != Domain::end();
+                di++)
+            {
+                const Domain& parsed = *(*di).second;
+                Assert::IsTrue(parsed.requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
+            }
+
 		}
 
 	};

@@ -32,6 +32,8 @@
 #include <cstdlib>
 #include <iostream>
 
+/* Enable Bison debugging. */
+#define YYDEBUG 1
 
 /* Workaround for bug in Bison 1.35 that disables stack growth. */
 #define YYLTYPE_IS_TRIVIAL 1
