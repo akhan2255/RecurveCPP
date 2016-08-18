@@ -13,14 +13,13 @@
            :parameters (?x)
            :precondition (holding ?x)
            :effect (and (not (holding ?x)) (clear ?x) (handempty)
-			(ontable ?x)))
+			(ontable ?x))
+		:composite			t	
+			)
+
   (:action stack
            :parameters (?x ?y)
            :precondition (and (holding ?x) (clear ?y))
            :effect (and (not (holding ?x)) (not (clear ?y)) (clear ?x)
                         (handempty) (on ?x ?y)))
-  (:action unstack
-           :parameters (?x ?y)
-           :precondition (and (on ?x ?y) (clear ?x) (handempty))
-           :effect (and (holding ?x) (clear ?y) (not (clear ?x))
-                        (not (handempty)) (not (on ?x ?y)))))
+)

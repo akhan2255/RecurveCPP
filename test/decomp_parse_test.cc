@@ -42,28 +42,25 @@ namespace test
 		TEST_METHOD(ParseDecompositionsRequirement)
 		{
             read_file("E:\\Developer\\vhpop\\test\\decompositions_requirement.pddl");
-            for (Domain::DomainMap::const_iterator di = Domain::begin();
-                di != Domain::end();
-                di++)
-            {
-                const Domain& parsed = *(*di).second;
-                Assert::IsTrue(parsed.requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
-            }
+            const Domain* parsed = Domain::find("decompositions_requirement");
+
+            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
 		}
 
         TEST_METHOD(ParseCompositeAction)
         {
             read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
-            for (Domain::DomainMap::const_iterator di = Domain::begin();
-                di != Domain::end();
-                di++)
-            {
-                const Domain& parsed = *(*di).second;
-                Assert::AreEqual("composite_action", parsed.name().c_str(), L"Parsed the 'composite_action' domain.");
-                Assert::IsTrue(parsed.requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with an abstract property.");
-            }
+            const Domain* parsed = Domain::find("composite_action");            
+            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with an abstract property.");
+            
+            const ActionSchema* pick_up = parsed->find_action("pick-up");
+            Assert::IsTrue(pick_up->composite(), L"pick-up should have been parsed as a composite action.");
 
+            const ActionSchema* put_down = parsed->find_action("put-down");
+            Assert::IsTrue(put_down->composite(), L"put-down should have been parsed as a composite action.");
 
+            const ActionSchema* stack = parsed->find_action("stack");
+            Assert::IsFalse(stack->composite(), L"stack should have been parsed as a non-composite action");
         }
 
 	};
