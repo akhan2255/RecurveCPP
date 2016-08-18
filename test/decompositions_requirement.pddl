@@ -1,7 +1,7 @@
 ; The 4-operator blocks world domain from the 2nd International
 ; Planning Competition.
 
-(define (domain blocks)
+(define (domain decompositions_requirement)
   (:requirements :decompositions)
   (:predicates (on ?x ?y) (ontable ?x) (clear ?x) (handempty) (holding ?x))
   (:action pick-up
