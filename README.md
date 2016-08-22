@@ -143,6 +143,7 @@ The use of multiple flaw selection strategies is similar to running multiple ins
 * Allow secondary ordering criterion for flaw selection strategies.
 * Add support for numeric effects and preconditions (level 2 of PDDL2.1).
 * Add support for axioms (PDDL2.2).
+
 ------------
 
 
