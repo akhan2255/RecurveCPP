@@ -209,18 +209,8 @@ const Type* TypeTable::most_specific(const Type& type1, const Type& type2) {
 const Type& TypeTable::add_type(const std::string& name) {
     names_.push_back(name);
 
-    //old:
-    //std::pair<std::map<std::string, Type>::const_iterator, bool> ti = types_.insert(std::make_pair(name, names_.size()));
-
-
-    std::pair<std::map<std::string, Type>::const_iterator, bool> ti;
-
-    std::pair<std::string, std::vector<std::string>::size_type> val;
-    val = std::make_pair(name, names_.size());
-
-
-
-
+    std::pair<std::map<std::string, Type>::const_iterator, bool> ti = 
+        types_.insert(std::make_pair(name, Type(names_.size())));
 
     const Type& type = (*ti.first).second;
     if (type.index_ > 1) {
