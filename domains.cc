@@ -85,11 +85,31 @@ void Domain::add_action(const ActionSchema& action) {
 }
 
 
-/* Returns the action with the given name, or NULL if it is
-   undefined. */
+/* Returns the action with the given name, or NULL if it is undefined. */
 const ActionSchema* Domain::find_action(const std::string& name) const {
   ActionSchemaMap::const_iterator ai = actions_.find(name);
   return (ai != actions_.end()) ? (*ai).second : NULL;
+}
+
+/* Adds a decomposition to this domain. */
+void Domain::add_decomposition(const DecompositionSchema& decomposition) {
+    
+    // Get the composite action name, name and make a pair
+    std::pair<std::string, std::string> key = 
+        std::make_pair(decomposition.composite_action_name(), decomposition.name());
+
+    // Insert in decompositions map.
+    decompositions_.insert(make_pair(key, &decomposition));
+}
+
+
+/* Returns the decomposition schema with the given composite_action_name and name, 
+   or NULL if it is undefined. */
+const DecompositionSchema* Domain::find_decomposition(const std::string& composite_action_name, 
+    const std::string& name) const {
+    std::pair<std::string, std::string> key = make_pair(composite_action_name, name);
+    DecompositionSchemaMap::const_iterator di = decompositions_.find(key);
+    return (di != decompositions_.end()) ? (*di).second : NULL;
 }
 
 

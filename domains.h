@@ -23,6 +23,7 @@
 
 #include "requirements.h"
 #include "actions.h"
+#include "decompositions.h"
 #include "functions.h"
 #include "terms.h"
 #include "predicates.h"
@@ -98,9 +99,15 @@ struct Domain {
   /* Adds an action to this domain. */
   void add_action(const ActionSchema& action);
 
-  /* Returns the action schema with the given name, or NULL if it is
-     undefined. */
+  /* Returns the action schema with the given name, or NULL if it is undefined. */
   const ActionSchema* find_action(const std::string& name) const;
+
+  /* Adds a decomposition to this domain. */
+  void add_decomposition(const DecompositionSchema& decomposition);
+
+  /* Returns the decomposition schema with the given composite_action_name and name, 
+     or NULL if it is undefined. */
+  const DecompositionSchema* find_decomposition(const std::string& composite_action_name, const std::string& name) const;
 
 private:
   /* Table of all defined domains. */
@@ -108,18 +115,27 @@ private:
 
   /* Name of this domain. */
   std::string name_;
+  
   /* Domain types. */
   TypeTable types_;
+  
   /* Domain predicates. */
   PredicateTable predicates_;
+  
   /* Domain functions. */
   FunctionTable functions_;
+  
   /* The `total-time' function. */
   Function total_time_;
+  
   /* Domain terms. */
   TermTable terms_;
+  
   /* Domain action schemas. */
   ActionSchemaMap actions_;
+
+  /* Domain decomposition schemas. */
+  DecompositionSchemaMap decompositions_;
 
   friend std::ostream& operator<<(std::ostream& os, const Domain& d);
 };

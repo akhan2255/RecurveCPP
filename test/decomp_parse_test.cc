@@ -71,9 +71,8 @@ namespace test
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
             Assert::IsTrue(parsed->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
 
-
-
-
+            const DecompositionSchema* travel_drive = parsed->find_decomposition("travel", "drive");
+            Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, parsed thing.");
 
         }
 

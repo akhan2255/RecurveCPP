@@ -110,7 +110,8 @@ extern int yydebug;
     DECOMPOSITION = 320,
     STEPS = 321,
     LINKS = 322,
-    ORDERINGS = 323
+    ORDERINGS = 323,
+    DECOMPOSITION_NAME = 324
   };
 #endif
 
@@ -119,7 +120,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 310 "pddl.yy" /* yacc.c:1909  */
+#line 319 "pddl.yy" /* yacc.c:1909  */
 
   const Formula* formula;
   const Literal* literal;
@@ -133,7 +134,7 @@ union YYSTYPE
   std::vector<const std::string*>* strs;
   float num;
 
-#line 137 "pddl.hh" /* yacc.c:1909  */
+#line 138 "pddl.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

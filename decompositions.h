@@ -32,19 +32,31 @@
  */
 struct Decomposition {
 
+    /* Returns the name of the composite action this decomposition is applicable to. */
+    const std::string& composite_action_name() const { return composite_action_name_; }
 
-    
+    /* Returns the name of this decomposition. */
+    const std::string& name() const { return name_; }
+
+
+protected:
+
+    /* Constructs a decomposition for the given composite action name with the given name. */
+    Decomposition(const std::string& composite_action_name, const std::string& name);
 
 private:
+
+    /* Next decomposition id. */
+    static size_t next_id;
 
     /* Unique id for decompositions. */
     size_t id_;
 
+    /* Name of the composite action this decomposition is applicable to. */
+    std::string composite_action_name_;
+
     /* Name of this decomposition. */
     std::string name_;
-
-    /* Name of the action this decomposition is applicable to. */
-    std::string action_name_;
 
     /* Chain of pseudo steps. */
     const Chain<Step>* pseudo_steps_;
@@ -60,5 +72,46 @@ private:
 
     
 };
+
+
+/* ====================================================================== */
+/* DecompositionSchema */
+
+struct DecompositionSchema : public Decomposition {
+
+    /* Constructs a decomposition schema for the given composite action name with the given name. */
+    DecompositionSchema(const std::string& composite_action_name, const std::string& name);
+
+    /* Adds a parameter to this decomposition schema. */
+    void add_parameter(Variable var);
+
+    /* Returns the parameters of this decomposition schema. */
+    const VariableList& parameters() const { return parameters_; }
+
+    /* Prints this decomposition schema on the given stream. */
+    void print(std::ostream& os) const;
+
+
+private:
+
+    /* Decomposition parameters. */
+    VariableList parameters_;
+
+};
+
+
+/* ====================================================================== */
+/* DecompositionSchemaMap */
+
+/*
+ * Table of decomposition schema definitions. This table maps a pair of strings
+ * to a decomposition schema.  The pair of strings are (respectively):
+ * - the name of the action being decomposed (the composite action), and 
+ * - the name of a specific decomposition.
+ */
+struct DecompositionSchemaMap : 
+    public std::map < std::pair<std::string, std::string>, const DecompositionSchema* > {};
+
+
 
 #endif /* DECOMPOSITIONS_H */

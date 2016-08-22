@@ -142,6 +142,9 @@ static bool repeated_function;
 /* Action being parsed, or 0 if no action is being parsed. */
 static ActionSchema* action;
 
+/* Decomposition schema being parsed, or 0 if no decomposition is being parsed. */
+static DecompositionSchema* decomposition;
+
 /* Time of current condition. */ 
 static FormulaTime formula_time; 
 
@@ -227,6 +230,12 @@ static void make_action(const std::string* name, bool durative, bool composite);
 /* Adds the current action to the current domain. */ 
 static void add_action();
 
+/* Creates a decomposition for the given composite action name with the given name. */
+static void make_decomposition(const std::string* composite_action_name, const std::string* name);
+
+/* Adds the current decomposition to the current domain. */
+static void add_decomposition();
+
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
 
@@ -305,7 +314,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token LE GE NAME DURATION_VAR VARIABLE NUMBER
 %token ILLEGAL_TOKEN
 %token DECOMPOSITIONS COMPOSITE 
-%token DECOMPOSITION STEPS LINKS ORDERINGS
+%token DECOMPOSITION STEPS LINKS ORDERINGS DECOMPOSITION_NAME
 
 %union {
   const Formula* formula;
@@ -546,7 +555,7 @@ da_body2 : /* empty */
 /* ====================================================================== */
 /* Decompositions. */
 
-decomposition_def : '(' DECOMPOSITION name name parameters decomposition_body ')'
+decomposition_def : '(' DECOMPOSITION name DECOMPOSITION_NAME name { require_duration_inequalities(); make_decomposition($3, $5); } parameters decomposition_body ')' { add_decomposition(); }
 				  ;
 
 decomposition_body : STEPS '(' ')'
@@ -1157,9 +1166,33 @@ static void add_action() {
   action = 0;
 }
 
+/* Creates a decomposition for the given composite action name with the given name. */
+static void make_decomposition(const std::string* composite_action_name, const std::string* name) 
+{
+	context.push_frame();
+	decomposition = new DecompositionSchema(*composite_action_name, *name);
+	delete name; 
+}
 
+/* Adds the current decomposition to the current domain. */
+static void add_decomposition()
+{
+	context.pop_frame();
 
+	/* If we have not declared this decomposition in the past, */
+	if(domain->find_decomposition(decomposition->composite_action_name(), decomposition->name()) == 0) {
+		domain->add_decomposition(*decomposition);
+	}
 
+	else {
+		yywarning("ignoring repeated declaration of decomposition `" 
+			+ decomposition->name() + "' for composite action `" 
+			+ decomposition->composite_action_name() + "'");
+		delete decomposition;
+	}
+
+	decomposition = 0;
+}
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect() {
@@ -1235,33 +1268,55 @@ static void add_names(const std::vector<const std::string*>* names,
 
 
 /* Adds variables to the current variable list. */
-static void add_variables(const std::vector<const std::string*>* names,
-			  const Type& type) {
+static void add_variables(const std::vector<const std::string*>* names, const Type& type) 
+{
   for (std::vector<const std::string*>::const_iterator si = names->begin();
-       si != names->end(); si++) {
+       si != names->end(); 
+	   si++) 
+  {
     const std::string* s = *si;
-    if (predicate != 0) {
+    
+	if (predicate != 0) 
+	{
       if (!repeated_predicate) {
-	PredicateTable::add_parameter(*predicate, type);
+		PredicateTable::add_parameter(*predicate, type);
       }
-    } else if (function != 0) {
+    } 
+	
+	else if (function != 0) 
+	{
       if (!repeated_function) {
-	FunctionTable::add_parameter(*function, type);
+		FunctionTable::add_parameter(*function, type);
       }
-    } else {
+    } 
+	
+	else 
+	{
       if (context.shallow_find(*s) != 0) {
-	yyerror("repetition of parameter `" + *s + "'");
-      } else if (context.find(*s) != 0) {
-	yywarning("shadowing parameter `" + *s + "'");
+		yyerror("repetition of parameter `" + *s + "'");
+      } 
+	  
+	  else if (context.find(*s) != 0) {
+		yywarning("shadowing parameter `" + *s + "'");
       }
+
       Variable var = TermTable::add_variable(type);
       context.insert(*s, var);
-      if (!quantified.empty()) {
-	quantified.push_back(var);
-      } else { /* action != 0 */
-	action->add_parameter(var);
+      
+	  if (!quantified.empty()) {
+		quantified.push_back(var);
+      } 
+	  
+	  else { /* action != 0 */
+
+		if(action != 0) {
+		  action->add_parameter(var);
+		}
+
+		/* Need to add case for decompositions */
       }
     }
+
     delete s;
   }
   delete names;

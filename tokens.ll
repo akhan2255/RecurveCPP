@@ -77,6 +77,7 @@ problem				return make_string(yytext, PROBLEM);
 :continuous-effects		return CONTINUOUS_EFFECTS;
 :timed-initial-literals		return TIMED_INITIAL_LITERALS;
 :decompositions		return DECOMPOSITIONS;
+:name				return DECOMPOSITION_NAME;
 :action				return ACTION;
 :durative-action		return DURATIVE_ACTION;
 :decomposition		return DECOMPOSITION;

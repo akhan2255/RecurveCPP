@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="actions.cc" />
     <ClCompile Include="bindings.cc" />
+    <ClCompile Include="decompositions.cc" />
     <ClCompile Include="domains.cc" />
     <ClCompile Include="effects.cc" />
     <ClCompile Include="expressions.cc" />
