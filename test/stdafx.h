@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <vector>
 #include "../formulas.h"
 #include "../expressions.h"
 #include "../terms.h"

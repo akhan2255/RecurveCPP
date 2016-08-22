@@ -555,7 +555,9 @@ da_body2 : /* empty */
 /* ====================================================================== */
 /* Decompositions. */
 
-decomposition_def : '(' DECOMPOSITION name DECOMPOSITION_NAME name { require_duration_inequalities(); make_decomposition($3, $5); } parameters decomposition_body ')' { add_decomposition(); }
+decomposition_def : '(' DECOMPOSITION name 
+						DECOMPOSITION_NAME name { make_decomposition($3, $5); } 
+						parameters decomposition_body ')' { add_decomposition(); }
 				  ;
 
 decomposition_body : STEPS '(' ')'
@@ -1307,13 +1309,16 @@ static void add_variables(const std::vector<const std::string*>* names, const Ty
 		quantified.push_back(var);
       } 
 	  
-	  else { /* action != 0 */
+	  else { 
 
 		if(action != 0) {
 		  action->add_parameter(var);
 		}
 
-		/* Need to add case for decompositions */
+		else { /* decomposition != 0 */
+		  decomposition->add_parameter(var);
+		}
+
       }
     }
 

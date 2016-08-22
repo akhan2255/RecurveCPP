@@ -43,6 +43,10 @@ Decomposition::Decomposition(const std::string& composite_action_name, const std
 DecompositionSchema::DecompositionSchema(const std::string& composite_action_name, const std::string& name)
     : Decomposition(composite_action_name, name) {}
 
+/* Adds a parameter to this decomposition schema. */
+void DecompositionSchema::add_parameter(Variable var) {
+    parameters_.push_back(var);
+}
 
 
 
