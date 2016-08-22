@@ -46,5 +46,11 @@
     <None Include="decompositions_requirement.pddl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="car_plane_world.pddl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="depots.pddl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

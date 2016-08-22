@@ -51,7 +51,7 @@ namespace test
         {
             read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
             const Domain* parsed = Domain::find("composite_action");            
-            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with an abstract property.");
+            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
             
             const ActionSchema* pick_up = parsed->find_action("pick-up");
             Assert::IsTrue(pick_up->composite(), L"pick-up should have been parsed as a composite action.");
@@ -61,6 +61,20 @@ namespace test
 
             const ActionSchema* stack = parsed->find_action("stack");
             Assert::IsFalse(stack->composite(), L"stack should have been parsed as a non-composite action");
+        }
+
+        TEST_METHOD(ParseDecompositionSchema)
+        {
+            read_file("E:\\Developer\\vhpop\\test\\car_plane_world.pddl");
+            const Domain* parsed = Domain::find("car-plane-world");
+
+            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
+            Assert::IsTrue(parsed->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
+
+
+
+
+
         }
 
 	};

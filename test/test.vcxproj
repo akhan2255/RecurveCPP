@@ -99,6 +99,8 @@
   <ItemGroup>
     <None Include="composite_action.pddl" />
     <None Include="decompositions_requirement.pddl" />
+    <None Include="car_plane_world.pddl" />
+    <None Include="depots.pddl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

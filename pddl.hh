@@ -106,7 +106,11 @@ extern int yydebug;
     NUMBER = 316,
     ILLEGAL_TOKEN = 317,
     DECOMPOSITIONS = 318,
-    COMPOSITE = 319
+    COMPOSITE = 319,
+    DECOMPOSITION = 320,
+    STEPS = 321,
+    LINKS = 322,
+    ORDERINGS = 323
   };
 #endif
 
@@ -115,7 +119,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 309 "pddl.yy" /* yacc.c:1909  */
+#line 310 "pddl.yy" /* yacc.c:1909  */
 
   const Formula* formula;
   const Literal* literal;
@@ -129,7 +133,7 @@ union YYSTYPE
   std::vector<const std::string*>* strs;
   float num;
 
-#line 133 "pddl.hh" /* yacc.c:1909  */
+#line 137 "pddl.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -304,7 +304,8 @@ static void add_init_literal(float time, const Literal& literal);
 %token NUMBER_TOKEN OBJECT_TOKEN EITHER
 %token LE GE NAME DURATION_VAR VARIABLE NUMBER
 %token ILLEGAL_TOKEN
-%token DECOMPOSITIONS COMPOSITE
+%token DECOMPOSITIONS COMPOSITE 
+%token DECOMPOSITION STEPS LINKS ORDERINGS
 
 %union {
   const Formula* formula;
@@ -418,6 +419,7 @@ structure_defs : structure_def
                ;
 
 structure_def : action_def
+			  | decomposition_def
               ;
 
 require_def : '(' REQUIREMENTS require_keys ')'
@@ -502,8 +504,6 @@ function_decl : '(' function { make_function($2); } variables ')'
 /* ====================================================================== */
 /* Actions. */
 
-/* This is where the composite action definition needs to be! */
-
 action_def : '(' ACTION name { make_action($3, false, false); } parameters action_body ')' { add_action(); }
            | '(' DURATIVE_ACTION name { make_action($3, true, false); } parameters DURATION duration_constraint da_body ')' { add_action(); }
            ;
@@ -541,6 +541,16 @@ da_body : CONDITION da_gd da_body2 { action->set_condition(*$2); }
 da_body2 : /* empty */
          | EFFECT da_effect
          ;
+
+
+/* ====================================================================== */
+/* Decompositions. */
+
+decomposition_def : '(' DECOMPOSITION name name parameters decomposition_body ')'
+				  ;
+
+decomposition_body : STEPS '(' ')'
+				   ;
 
 
 /* ====================================================================== */
@@ -1146,6 +1156,9 @@ static void add_action() {
   }
   action = 0;
 }
+
+
+
 
 
 /* Prepares for the parsing of a universally quantified effect. */ 
