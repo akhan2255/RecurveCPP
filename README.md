@@ -16,7 +16,7 @@ UCPOP with the following main features:
 * Has several different plan ranking heuristics to choose from that can be combined into complex plan ranking functions.
 * Efficiently implements all common flaw selection strategies, including LCFR and ZLIFO, and many novel ones, and allows flaw selection strategies to be specified using a concise notation.
 * Several flaw selection strategies can be used simultaneously.
-* Implements A*, IDA*, and hill climbing search.
+* Implements A\* , IDA\*, and hill climbing search.
 * Fully supports levels 1 and 3 of PDDL2.1.
 
 For installation instructions, see `INSTALL`.
