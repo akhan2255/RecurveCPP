@@ -120,7 +120,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 322 "pddl.yy" /* yacc.c:1909  */
+#line 334 "pddl.yy" /* yacc.c:1909  */
 
   const Formula* formula;
   const Literal* literal;

@@ -142,6 +142,9 @@ static bool repeated_function;
 /* Action being parsed, or 0 if no action is being parsed. */
 static ActionSchema* action;
 
+/* Action corresponding to the pseudo-step being parsed, or 0 if no pseudo-step is being parsed. */
+static const ActionSchema* pseudo_step_action;
+
 /* Decomposition schema being parsed, or 0 if no decomposition is being parsed. */
 static DecompositionSchema* decomposition;
 
@@ -238,6 +241,15 @@ static void make_decomposition(const std::string* composite_action_name, const s
 
 /* Adds the current decomposition to the current domain. */
 static void add_decomposition();
+
+/* Prepares for the parsing of a pseudo-step. */
+static void prepare_pseudostep();
+
+/* Creates the pseudo-step just parsed. */
+static const Chain<Step>* make_pseudostep();
+
+/* Adds a pseudo-step to the current decomposition. */
+static void add_pseudostep();
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
@@ -582,20 +594,10 @@ steps : /* empty */
 step : '(' name pseudo_step ')'
 	 ;
 
-pseudo_step : '(' name terms ')' {
+pseudo_step : '(' name { }
 
-					/* 1. Verify that the name refers to an existing action. */
-					const ActionSchema* a = domain->find_action(*$2);
-					if(a == 0) {
-						yyerror("No action of type " + *$2 + " exists for pseudo-step definition");
-					}
+						terms ')' {
 
-					else 
-					{
-					  /* 2. Verify that the indicated terms match the corresponding action correctly. */
-					  /* 3. Build a pseudo-step. */
-					  /* 4. Return it. */
-					}
 				}
 			;
 
@@ -1233,6 +1235,57 @@ static void add_decomposition()
 
 	decomposition = 0;
 }
+
+
+/* Prepares for the parsing of a pseudo-step. */
+static void prepare_pseudostep(const std::string* action_name) 
+{ 
+	/* Verify that the action name refers to an existing action. */
+	pseudo_step_action = domain->find_action(*action_name);
+
+	if(pseudo_step_action == 0) {
+		yyerror("No action of type " + *action_name + " exists for pseudo-step definition.");
+	}
+
+	else {
+		term_parameters.clear();
+		delete action_name;
+	}
+}
+
+
+/* Creates the pseudo-step just parsed. */
+static const Chain<Step>* make_pseudostep()
+{
+    size_t n = term_parameters.size();
+
+    /* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
+    if (pseudo_step_action->parameters().size() != n) 
+    {
+        yyerror("incorrect number of parameters specified for pseudo-step action " 
+            + pseudo_step_action->name());
+    }
+
+    else 
+    {
+        /* Check that the names of terms matches the names specified in the decomposition's parameters.*/
+        
+        /* Check that the types of terms matches the types specified in the decomposition's parameters. */
+
+    }
+
+
+
+}
+
+
+/* Adds a pseudo-step to the current decomposition. */
+static void add_pseudostep() 
+{
+	// NOTE: *decomposition is referenceable in this function.
+	pseudo_step_action = 0;
+}
+
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect() {
