@@ -230,6 +230,9 @@ static void make_action(const std::string* name, bool durative, bool composite);
 /* Adds the current action to the current domain. */ 
 static void add_action();
 
+/* Checks whether there exists a composite action with the given name in the current domain. */
+static bool composite_action_exists(const std::string* composite_action_name);
+
 /* Creates a decomposition for the given composite action name with the given name. */
 static void make_decomposition(const std::string* composite_action_name, const std::string* name);
 
@@ -555,12 +558,21 @@ da_body2 : /* empty */
 /* ====================================================================== */
 /* Decompositions. */
 
-decomposition_def : '(' DECOMPOSITION name 
-						DECOMPOSITION_NAME name { make_decomposition($3, $5); } 
+decomposition_def : '(' DECOMPOSITION name 									
+						DECOMPOSITION_NAME name { 
+							/* Verify that there exists a composite action already defined in the domain. */
+							if(!composite_action_exists($3)) {
+								yyerror("No composite action of type $3 exists for decomposition $5");
+							}
+
+							else {
+								make_decomposition($3, $5); 
+							}
+						} 
 						parameters decomposition_body ')' { add_decomposition(); }
 				  ;
 
-decomposition_body : STEPS '(' ')'
+decomposition_body : STEPS '('  ')'
 				   ;
 
 
@@ -614,11 +626,8 @@ timed_gd : '(' at start { formula_time = AT_START; } formula ')' { $$ = $5; }
 
 eff_formula : term_literal
             | '(' and eff_formulas ')'
-            | '(' forall { prepare_forall_effect(); }
-                '(' variables ')' eff_formula ')' { pop_forall_effect(); }
-            | '(' when { formula_time = AT_START; } formula
-                { prepare_conditional_effect(*$4); }
-                one_eff_formula ')' { effect_condition = 0; }
+            | '(' forall { prepare_forall_effect(); } '(' variables ')' eff_formula ')' { pop_forall_effect(); }
+            | '(' when { formula_time = AT_START; } formula { prepare_conditional_effect(*$4); } one_eff_formula ')' { effect_condition = 0; }
             ;
 
 eff_formulas : /* empty */
@@ -630,8 +639,7 @@ one_eff_formula : term_literal
                 ;
 
 term_literal : atomic_term_formula { add_effect(*$1); }
-             | '(' not atomic_term_formula ')'
-                 { add_effect(Negation::make(*$3)); }
+             | '(' not atomic_term_formula ')' { add_effect(Negation::make(*$3)); }
              ;
 
 term_literals : /* empty */
@@ -1166,6 +1174,12 @@ static void add_action() {
     delete action;
   }
   action = 0;
+}
+
+/* Checks whether there exists a composite action with the given name in the current domain. */
+static bool composite_action_exists(const std::string* composite_action_name)
+{
+	return (domain->find_action(*composite_action_name) != 0);
 }
 
 /* Creates a decomposition for the given composite action name with the given name. */

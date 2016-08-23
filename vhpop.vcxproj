@@ -151,7 +151,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating %(Filename).cc ...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cc;%(Filename).h</Outputs>
     </CustomBuild>
-    <None Include="README" />
+    <None Include="README.md" />
     <CustomBuild Include="tokens.ll">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Flex -o%(Filename).cc %(Identity)</Command>

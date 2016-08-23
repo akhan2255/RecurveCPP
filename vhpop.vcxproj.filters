@@ -214,14 +214,14 @@
     <None Include="INSTALL">
       <Filter>Metadata Files</Filter>
     </None>
-    <None Include="README">
-      <Filter>Metadata Files</Filter>
-    </None>
     <None Include="NEWS">
       <Filter>Metadata Files</Filter>
     </None>
     <None Include="ipc3-vhpop">
       <Filter>Script Files</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>Metadata Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
