@@ -3625,7 +3625,8 @@ static void add_action() {
 /* Checks whether there exists a composite action with the given name in the current domain. */
 static bool composite_action_exists(const std::string* composite_action_name)
 {
-	return (domain->find_action(*composite_action_name) != 0);
+	const ActionSchema* a = domain->find_action(*composite_action_name);
+	return (a != 0 && a->composite());
 }
 
 /* Creates a decomposition for the given composite action name with the given name. */

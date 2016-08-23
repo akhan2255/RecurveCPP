@@ -1862,16 +1862,18 @@ bool Plan::addable_steps(int& refinements, const Literal& literal,
 
 
 /* Handles a literal open condition by adding a new step. */
-void Plan::add_step(PlanList& plans, const Literal& literal,
-    const OpenCondition& open_cond,
-    const ActionEffectMap& achievers) const {
+void Plan::add_step(PlanList& plans, const Literal& literal, const OpenCondition& open_cond, const ActionEffectMap& achievers) const 
+{
     for (ActionEffectMap::const_iterator ai = achievers.begin();
-        ai != achievers.end(); ai++) {
+        ai != achievers.end(); 
+        ai++) 
+    {
         const Action& action = *(*ai).first;
-        if (action.name().substr(0, 1) != "<") {
+        
+        if (action.name().substr(0, 1) != "<") 
+        {
             const Effect& effect = *(*ai).second;
-            new_link(plans, Step(num_steps() + 1, action), effect,
-                literal, open_cond);
+            new_link(plans, Step(num_steps() + 1, action), effect, literal, open_cond);
         }
     }
 }
@@ -1947,15 +1949,22 @@ void Plan::reuse_step(PlanList& plans, const Literal& literal,
 
 /* Adds plans to the given plan list with a link from the given step
    to the given open condition added. */
-int Plan::new_link(PlanList& plans, const Step& step, const Effect& effect,
-    const Literal& literal, const OpenCondition& open_cond,
-    bool test_only) const {
+int Plan::new_link(
+    PlanList& plans, 
+    const Step& step, 
+    const Effect& effect, 
+    const Literal& literal, 
+    const OpenCondition& open_cond, 
+    bool test_only) const 
+{
     BindingList mgu;
-    if (bindings_->unify(mgu, effect.literal(), step.id(),
-        literal, open_cond.step_id())) {
+    if (bindings_->unify(mgu, effect.literal(), step.id(), literal, open_cond.step_id())) 
+    {
         return make_link(plans, step, effect, literal, open_cond, mgu, test_only);
     }
-    else {
+    
+    else 
+    {
         return 0;
     }
 }
