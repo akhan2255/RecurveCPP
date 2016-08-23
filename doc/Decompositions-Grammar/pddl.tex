@@ -1,0 +1,144 @@
+\documentclass[10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+
+\title{Decompositional Planning PDDL Extension \\ \normalsize{Version 0.1}}
+
+\author{Rogelio E. Cardona-Rivera, Camille Barot}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    This manual describes the extension to PDDL syntax needed to represent decompositional planning constructs. Decompositional planning is a planning model that combines hierarchical reasoning as discussed in hierarchical task networks and least-commitment refinement reasoning as discussed in partial-order causal link planning in a unified knowledge representation, and a sound and primitive complete reasoning procedure.
+\end{abstract}
+
+%================================================================
+\section{Introduction}
+
+This manual describes the syntax and discusses the semantics of an extension to the Planning Domain Definition Language needed to encode decompositional planning constructs. These constructs are centered on representing action decomposition as discussed in hierarchical task networks.
+
+\newpage
+%================================================================
+\section{A Simple Example}
+
+We begin by an example of the decompositional planning extension in use. The example is listed in Figure~\ref{figure:example}, and represents a travel domain that describes an \emph{abstract action} of traveling from one place to another, and a \emph{decomposition schema} that refines the abstract action in terms of (other defined) concrete ones that accomplish it.
+
+\begin{figure}[h!]
+\begin{lstlisting}[language=Lisp]
+(define (domain travel)
+  (:requirements :strips :decompositions)
+  (:types  plane car - transport 
+           person place transport - object)
+  (:predicates
+      (in  ?p - person ?t - transport)
+      (at  ?t - transport ?p - place)
+      (at  ?pe - person ?pl - place))
+
+  (:action travel
+      :parameters   (?p - person ?f - place ?to - place ?tr - transport)
+      :precondition (at ?p ?f)
+      :effect       (and (not (at ?p ?f)) (at ?p ?t))
+      :composite    t)
+
+  (:action get-in-car
+      :parameters   (?pe - person ?c - car ?pl - place)
+      :precondition (and (at ?pe ?pl) (at ?c ?pl))
+      :effect       (and (not (at ?pe ?pl)) (in ?pe ?c))
+      :composite    f)
+                      
+  (:action drive
+      :parameters   (?p - person ?c - car ?f - place ?t - place)
+      :precondition (and (at ?c ?f) (in ?p ?c))
+      :effect       (and (not (at ?c ?f)) (at ?c ?t)))
+
+  (:action get-out-of-car
+      :parameters   (?pe - person ?c - car ?pl - place)
+      :precondition (and (at ?c ?pl) (in ?pe ?c))
+      :effect       (and (not (in ?pe ?c)) (at ?pe ?pl)))
+
+  (:decomposition travel
+      :name drive
+      :parameters (?p - person ?f - place ?t - place ?c - car)
+      :steps      ( (step1 (get-in-car ?p ?c ?t))
+                    (step2 (drive ?p ?c ?f ?t))
+                    (step3 (get-out-of-car ?p ?c ?f)))
+      :links      ( (step1 (in ?p ?c) step2)
+                    (step1 (in ?p ?c) step3)
+                    (step2 (at ?c ?t) step3) )))
+\end{lstlisting}
+\caption{An example decompositional domain definition. This listing encodes actions in a travel domain.}
+\label{figure:example}
+\end{figure}
+
+%================================================================
+\section{Requirements flags}
+
+\begin{tabular}{l p{12cm}}
+\textit{Requirement} & \textit{Description} \\ 
+\texttt{:decomposition} & Allows action to have associated \texttt{:decomposition} operators \\ 
+
+\end{tabular} 
+
+
+
+%================================================================
+\section{Composite actions and Decomposition schemata}
+
+\begin{flushleft}
+
+In this section, we present our notation for encoding composite actions and decomposition schemata using an Extended Backus-Naur Form (EBNF).  We borrow the definitions and conventions outlined in version 1.2 of the Planning Domain Definition Language~\cite{mcdermott1998pddl}.
+
+\end{flushleft}
+
+\begin{flushleft}
+If an action is composite, it must be marked explicitly as being non-primitive within the action's definition:
+
+\begin{tabbing}
+	\begin{tabular}{l l l}
+		\texttt{$<$action-def body$>$} & \texttt{::$=$} & \textit{Definitions as in PDDL1.2~\cite{mcdermott1998pddl}}  \\
+		& & \texttt{[:composite $<$boolean$>$]} \\
+	\end{tabular}
+\end{tabbing}
+
+
+\end{flushleft}
+
+\begin{flushleft}
+When an action is marked as composite, it means that it is not directly executable in a planning domain. In order to execute it, an appropriate decomposition must be specified. Decompositions are defined outside of actions:
+
+\begin{tabbing}
+\begin{tabular}{l l}
+\texttt{$<$decomposition-def$>$} & \texttt{::$=$ (:decomposition $<$action functor$>$} \\
+  & \hspace{7 mm} \texttt{$<$decomposition-body$>$)} \\
+  
+\end{tabular}
+\end{tabbing}
+
+
+A decomposition contains a subplan, consisting of a set of steps, causal links, and temporal orderings.
+
+\begin{tabbing}
+\begin{tabular}{l l}
+\texttt{$<$decomposition-body$>$} & \texttt{::$=$ [:name $<$name$>$]} \\
+  & \hspace{7 mm} \texttt{:parameters ($<$typed list (variable)$>$)} \\
+  & \hspace{7 mm} \texttt{:steps ($<$step$>$$^*$)} \\
+  & \hspace{7 mm} \texttt{[:links ($<$link$>$$^*$)]} \\
+  & \hspace{7 mm} \texttt{[:orderings ($<$ordering$>$$^*$)]} \\
+\texttt{$<$step$>$} & \texttt{::$=$$^{ \texttt{:conditional-components}}$}\\
+\texttt{$<$step$>$} & \texttt{::$=$ ($<$name$>$ ($<$action functor$>$ $<$term$>$$^*$))}\\
+\texttt{$<$link$>$} & \texttt{::$=$ ($<$name$>$ $<$condition$>$ $<$name$>$)}\\
+\texttt{$<$condition$>$} & \texttt{::$=$ $<$atomic formula(term)$>$}\\
+\texttt{$<$condition$>$} & \texttt{::$=$ (not $<$atomic formula(term)$>$)}\\
+\texttt{$<$ordering$>$} & \texttt{::$=$ ($<$name$>$ $<$name$>$)} \\
+\end{tabular}
+\end{tabbing}
+
+\end{flushleft}
+
+
+\bibliographystyle{apalike}
+\bibliography{pddl}
+
+\end{document}
