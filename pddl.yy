@@ -562,7 +562,7 @@ decomposition_def : '(' DECOMPOSITION name
 						DECOMPOSITION_NAME name { 
 							/* Verify that there exists a composite action already defined in the domain. */
 							if(!composite_action_exists($3)) {
-								yyerror("No composite action of type $3 exists for decomposition $5");
+								yyerror("No composite action of type " + *$3 + " exists for decomposition " + *$5);
 							}
 
 							else {
@@ -572,9 +572,32 @@ decomposition_def : '(' DECOMPOSITION name
 						parameters decomposition_body ')' { add_decomposition(); }
 				  ;
 
-decomposition_body : STEPS '('  ')'
+decomposition_body : STEPS '(' steps ')'
 				   ;
 
+steps : /* empty */
+	  | steps step
+	  ;
+
+step : '(' name pseudo_step ')'
+	 ;
+
+pseudo_step : '(' name terms ')' {
+
+					/* 1. Verify that the name refers to an existing action. */
+					const ActionSchema* a = domain->find_action(*$2);
+					if(a == 0) {
+						yyerror("No action of type " + *$2 + " exists for pseudo-step definition");
+					}
+
+					else 
+					{
+					  /* 2. Verify that the indicated terms match the corresponding action correctly. */
+					  /* 3. Build a pseudo-step. */
+					  /* 4. Return it. */
+					}
+				}
+			;
 
 /* ====================================================================== */
 /* Duration constraints. */
