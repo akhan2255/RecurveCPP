@@ -1254,24 +1254,66 @@ static void prepare_pseudostep(const std::string* pseudo_step_action_name)
 /* Creates the pseudo-step just parsed. */
 static const Chain<Step>* make_pseudostep()
 {
-    size_t n = term_parameters.size();
+	/* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
+	size_t n = term_parameters.size();
 
-    /* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
-    if (pseudo_step_action->parameters().size() != n) 
+	if(pseudo_step_action->parameters().size() != n) 
+	{
+		yyerror("incorrect number of parameters specified for pseudo-step action "
+			+ pseudo_step_action->name());
+	}
+
+	else 
     {
-        yyerror("incorrect number of parameters specified for pseudo-step action " 
-            + pseudo_step_action->name());
+        /* 
+         * Here, I have to iterate through the parsed terms, and do different things 
+         * depending on whether the term is an object constant, or a variable.
+         */
+        for (TermList::size_type pi = 0; pi < term_parameters.size(); ++pi)
+        {
+            Term t = term_parameters[pi];
+
+            if (t.object()) 
+            {
+                // In this case, I need to check two things:
+                // (1) That the object t exists in the domain's definition of constants
+                //  -> Actually, this is not needed because if it doesn't exist, it will create the object implicitly and issue a warning.
+
+                // (2) That the object t is type-compatible in the action schema's corresponding index.
+
+                // Find all the objects compatible with the type of the action schema's parameter at the current index.
+                Variable action_parameter = pseudo_step_action->parameters()[pi];
+                Type typeof_parameter = TermTable::type(action_parameter);
+                ObjectList ol = domain->terms().compatible_objects(typeof_parameter); 
+
+                // See if we can find the current term in that list.
+                ObjectList::iterator oitr = std::find(ol.begin(), ol.end(), t);
+                if (oitr == ol.end()) 
+                { // not found!
+                    yywarning("we could not find a compatible type to the parameter");
+                }
+
+                else 
+                { // found!
+                    yywarning("we found a compatible type to the parameter!");
+                }
+               
+
+                // If it satisfies both, then I need to add a binding to the decomposition...
+                // of this pseudo-step's term to the domain defined object.
+
+                
+
+            }
+
+            else // t is a variable
+            { 
+
+            }
+        }
     }
-
-    else 
-    {
-        /* Check that the names of terms matches the names specified in the decomposition's parameters.*/
-        
-        /* Check that the types of terms matches the types specified in the decomposition's parameters. */
-
-    }
-
-
+	
+    return NULL;
 
 }
 
