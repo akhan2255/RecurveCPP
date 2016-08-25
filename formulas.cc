@@ -500,7 +500,7 @@ Negation::Negation(const Atom& atom)
 Negation::~Negation() {
   unregister_use(atom_);
   NegationTable::const_iterator ni = negations.find(this);
-  if (*ni == this) {
+  if (ni != negations.end() && *ni == this) {
     negations.erase(ni);
   }
 }
