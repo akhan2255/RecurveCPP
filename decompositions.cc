@@ -27,10 +27,11 @@
 size_t Decomposition::next_id = 0;
 
 /* Constructs a decomposition for the given composite action name with the given name. */
-Decomposition::Decomposition(const std::string& composite_action_name, const std::string& name)
+Decomposition::Decomposition(const ActionSchema* composite_action_schema, const std::string& name)
     : id_(next_id++),
-      composite_action_name_(composite_action_name),
+      composite_action_schema_(composite_action_schema),
       name_(name),
+      next_pseudo_step_id_(0),
       pseudo_steps_(NULL),
       bindings_(NULL),
       orderings_(NULL),
@@ -40,8 +41,8 @@ Decomposition::Decomposition(const std::string& composite_action_name, const std
 /* DecompositionSchema */
 
 /* Constructs a decomposition schema for the given composite action name with the given name. */
-DecompositionSchema::DecompositionSchema(const std::string& composite_action_name, const std::string& name)
-    : Decomposition(composite_action_name, name) {}
+DecompositionSchema::DecompositionSchema(const ActionSchema* composite_action_schema, const std::string& name)
+    : Decomposition(composite_action_schema, name) {}
 
 /* Adds a parameter to this decomposition schema. */
 void DecompositionSchema::add_parameter(Variable var) {

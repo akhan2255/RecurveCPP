@@ -105,8 +105,7 @@ struct Domain {
   /* Adds a decomposition to this domain. */
   void add_decomposition(const DecompositionSchema& decomposition);
 
-  /* Returns the decomposition schema with the given composite_action_name and name, 
-     or NULL if it is undefined. */
+  /* Returns the decomposition schema with the given composite_action_name and name, or NULL if it is undefined. */
   const DecompositionSchema* find_decomposition(const std::string& composite_action_name, const std::string& name) const;
 
 private:

@@ -233,9 +233,6 @@ static void make_action(const std::string* name, bool durative, bool composite);
 /* Adds the current action to the current domain. */ 
 static void add_action();
 
-/* Checks whether there exists a composite action with the given name in the current domain. */
-static bool composite_action_exists(const std::string* composite_action_name);
-
 /* Creates a decomposition for the given composite action name with the given name. */
 static void make_decomposition(const std::string* composite_action_name, const std::string* name);
 
@@ -571,16 +568,7 @@ da_body2 : /* empty */
 /* Decompositions. */
 
 decomposition_def : '(' DECOMPOSITION name 									
-						DECOMPOSITION_NAME name { 
-							/* Verify that there exists a composite action already defined in the domain. */
-							if(!composite_action_exists($3)) {
-								yyerror("No composite action of type " + *$3 + " exists for decomposition " + *$5);
-							}
-
-							else {
-								make_decomposition($3, $5); 
-							}
-						} 
+						DECOMPOSITION_NAME name { make_decomposition($3, $5); }
 						parameters decomposition_body ')' { add_decomposition(); }
 				  ;
 
@@ -1198,19 +1186,24 @@ static void add_action() {
   action = 0;
 }
 
-/* Checks whether there exists a composite action with the given name in the current domain. */
-static bool composite_action_exists(const std::string* composite_action_name)
-{
-	const ActionSchema* a = domain->find_action(*composite_action_name);
-	return (a != 0 && a->composite());
-}
-
 /* Creates a decomposition for the given composite action name with the given name. */
 static void make_decomposition(const std::string* composite_action_name, const std::string* name) 
 {
 	context.push_frame();
-	decomposition = new DecompositionSchema(*composite_action_name, *name);
-	delete name; 
+
+	const ActionSchema* composite_action = domain->find_action(*composite_action_name);
+	if(composite_action == 0) {
+		yyerror("no action labeled " + *composite_action_name + " exists");
+	}
+
+	else if(!(composite_action->composite())) {
+		yyerror("action " + *composite_action_name + " is not composite");
+	}
+
+	else {
+		decomposition = new DecompositionSchema(composite_action, *name);
+		delete name;
+	}
 }
 
 /* Adds the current decomposition to the current domain. */
@@ -1219,14 +1212,14 @@ static void add_decomposition()
 	context.pop_frame();
 
 	/* If we have not declared this decomposition in the past, */
-	if(domain->find_decomposition(decomposition->composite_action_name(), decomposition->name()) == 0) {
+	if(domain->find_decomposition(decomposition->composite_action_schema().name(), decomposition->name()) == 0) {
 		domain->add_decomposition(*decomposition);
 	}
 
 	else {
 		yywarning("ignoring repeated declaration of decomposition `" 
 			+ decomposition->name() + "' for composite action `" 
-			+ decomposition->composite_action_name() + "'");
+			+ decomposition->composite_action_schema().name() + "'");
 		delete decomposition;
 	}
 

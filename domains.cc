@@ -96,7 +96,7 @@ void Domain::add_decomposition(const DecompositionSchema& decomposition) {
     
     // Get the composite action name, name and make a pair
     std::pair<std::string, std::string> key = 
-        std::make_pair(decomposition.composite_action_name(), decomposition.name());
+        std::make_pair(decomposition.composite_action_schema().name(), decomposition.name());
 
     // Insert in decompositions map.
     decompositions_.insert(make_pair(key, &decomposition));

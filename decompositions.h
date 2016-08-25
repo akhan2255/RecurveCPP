@@ -21,6 +21,7 @@
 #define DECOMPOSITIONS_H
 
 #include <string>
+#include "actions.h"
 #include "plans.h"
 
 /* ====================================================================== */
@@ -32,28 +33,30 @@
  */
 struct Decomposition {
 
-    /* Returns the name of the composite action this decomposition is applicable to. */
-    const std::string& composite_action_name() const { return composite_action_name_; }
+    /* Returns the composite action this decomposition is appliable to. */
+    const ActionSchema& composite_action_schema() const { return *composite_action_schema_; }
 
     /* Returns the name of this decomposition. */
     const std::string& name() const { return name_; }
 
-
 protected:
 
-    /* Constructs a decomposition for the given composite action name with the given name. */
-    Decomposition(const std::string& composite_action_name, const std::string& name);
+    /* Constructs a decomposition for the given composite action with the given name. */
+    Decomposition(const ActionSchema* composite_action_schema, const std::string& name);
 
 private:
 
     /* Next decomposition id. */
     static size_t next_id;
 
+    /* Next pseudo-step id. */
+    size_t next_pseudo_step_id_;
+
     /* Unique id for decompositions. */
     size_t id_;
 
-    /* Name of the composite action this decomposition is applicable to. */
-    std::string composite_action_name_;
+    /* The composite action this decomposition is applicable to. */
+    const ActionSchema* composite_action_schema_;
 
     /* Name of this decomposition. */
     std::string name_;
@@ -80,7 +83,7 @@ private:
 struct DecompositionSchema : public Decomposition {
 
     /* Constructs a decomposition schema for the given composite action name with the given name. */
-    DecompositionSchema(const std::string& composite_action_name, const std::string& name);
+    DecompositionSchema(const ActionSchema* composite_action_schema, const std::string& name);
 
     /* Adds a parameter to this decomposition schema. */
     void add_parameter(Variable var);
@@ -89,8 +92,7 @@ struct DecompositionSchema : public Decomposition {
     const VariableList& parameters() const { return parameters_; }
 
     /* Prints this decomposition schema on the given stream. */
-    void print(std::ostream& os) const;
-
+    // void print(std::ostream& os) const;
 
 private:
 
@@ -98,6 +100,15 @@ private:
     VariableList parameters_;
 
 };
+
+
+
+/* ====================================================================== */
+/* PseudostepMap */
+
+
+
+
 
 
 /* ====================================================================== */
