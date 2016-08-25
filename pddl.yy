@@ -1275,12 +1275,6 @@ static const Chain<Step>* make_pseudostep()
 
             if (t.object()) 
             {
-                // In this case, I need to check two things:
-                // (1) That the object t exists in the domain's definition of constants
-                //  -> Actually, this is not needed because if it doesn't exist, it will create the object implicitly and issue a warning.
-
-                // (2) That the object t is type-compatible in the action schema's corresponding index.
-
                 // Find all the objects compatible with the type of the action schema's parameter at the current index.
                 Variable action_parameter = pseudo_step_action->parameters()[pi];
                 Type typeof_parameter = TermTable::type(action_parameter);
@@ -1288,9 +1282,8 @@ static const Chain<Step>* make_pseudostep()
 
                 // See if we can find the current term in that list.
                 ObjectList::iterator oitr = std::find(ol.begin(), ol.end(), t);
-                if (oitr == ol.end()) 
-                { // not found!
-                    yywarning("we could not find a compatible type to the parameter");
+                if (oitr == ol.end()) { // not found!
+                    yyerror("type-incompatible object for pseudo-step action parameter");
                 }
 
                 else 

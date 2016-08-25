@@ -285,7 +285,7 @@ static void make_decomposition(const std::string* composite_action_name, const s
 static void add_decomposition();
 
 /* Prepares for the parsing of a pseudo-step. */
-static void prepare_pseudostep();
+static void prepare_pseudostep(const std::string* pseudo_step_action_name);
 
 /* Creates the pseudo-step just parsed. */
 static const Chain<Step>* make_pseudostep();
@@ -810,29 +810,29 @@ static const yytype_uint16 yyrline[] =
      531,   531,   532,   532,   535,   536,   539,   540,   543,   544,
      547,   548,   551,   551,   554,   554,   557,   558,   561,   562,
      565,   566,   574,   573,   587,   590,   591,   594,   597,   597,
-     607,   608,   612,   617,   622,   626,   627,   635,   636,   639,
-     640,   643,   643,   644,   644,   645,   645,   652,   653,   654,
-     654,   655,   655,   655,   658,   659,   662,   663,   666,   667,
-     670,   671,   674,   675,   676,   676,   678,   678,   682,   683,
-     687,   686,   690,   689,   694,   695,   696,   696,   698,   698,
-     702,   703,   711,   710,   715,   716,   719,   720,   723,   724,
-     727,   727,   731,   734,   735,   738,   738,   740,   740,   742,
-     744,   746,   750,   751,   754,   757,   757,   759,   759,   767,
-     768,   769,   770,   771,   771,   772,   772,   774,   774,   776,
-     776,   780,   781,   784,   785,   788,   788,   792,   792,   796,
-     797,   804,   805,   806,   807,   808,   809,   812,   813,   816,
-     816,   818,   821,   822,   824,   826,   828,   830,   833,   834,
-     837,   837,   839,   846,   847,   848,   851,   852,   855,   856,
-     859,   860,   861,   861,   865,   866,   869,   870,   871,   871,
-     874,   875,   878,   878,   881,   882,   883,   886,   887,   888,
-     889,   892,   899,   902,   905,   908,   911,   914,   917,   920,
-     923,   926,   929,   932,   935,   938,   941,   944,   947,   950,
-     953,   956,   959,   962,   962,   962,   963,   964,   964,   964,
-     964,   964,   965,   965,   965,   966,   969,   970,   970,   973,
-     973,   973,   974,   975,   975,   975,   975,   976,   976,   976,
-     977,   978,   978,   981,   984,   984,   984,   985,   985,   985,
-     986,   986,   986,   986,   986,   986,   986,   987,   987,   987,
-     987,   987,   988,   988,   988,   989,   992
+     604,   605,   609,   614,   619,   623,   624,   632,   633,   636,
+     637,   640,   640,   641,   641,   642,   642,   649,   650,   651,
+     651,   652,   652,   652,   655,   656,   659,   660,   663,   664,
+     667,   668,   671,   672,   673,   673,   675,   675,   679,   680,
+     684,   683,   687,   686,   691,   692,   693,   693,   695,   695,
+     699,   700,   708,   707,   712,   713,   716,   717,   720,   721,
+     724,   724,   728,   731,   732,   735,   735,   737,   737,   739,
+     741,   743,   747,   748,   751,   754,   754,   756,   756,   764,
+     765,   766,   767,   768,   768,   769,   769,   771,   771,   773,
+     773,   777,   778,   781,   782,   785,   785,   789,   789,   793,
+     794,   801,   802,   803,   804,   805,   806,   809,   810,   813,
+     813,   815,   818,   819,   821,   823,   825,   827,   830,   831,
+     834,   834,   836,   843,   844,   845,   848,   849,   852,   853,
+     856,   857,   858,   858,   862,   863,   866,   867,   868,   868,
+     871,   872,   875,   875,   878,   879,   880,   883,   884,   885,
+     886,   889,   896,   899,   902,   905,   908,   911,   914,   917,
+     920,   923,   926,   929,   932,   935,   938,   941,   944,   947,
+     950,   953,   956,   959,   959,   959,   960,   961,   961,   961,
+     961,   961,   962,   962,   962,   963,   966,   967,   967,   970,
+     970,   970,   971,   972,   972,   972,   972,   973,   973,   973,
+     974,   975,   975,   978,   981,   981,   981,   982,   982,   982,
+     983,   983,   983,   983,   983,   983,   983,   984,   984,   984,
+     984,   984,   985,   985,   985,   986,   989
 };
 #endif
 
@@ -2422,812 +2422,810 @@ yyreduce:
 
   case 118:
 #line 597 "pddl.yy" /* yacc.c:1646  */
-    { }
+    { prepare_pseudostep((yyvsp[0].str)); }
 #line 2427 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 599 "pddl.yy" /* yacc.c:1646  */
-    {
-
-				}
-#line 2435 "pddl.cc" /* yacc.c:1646  */
+#line 598 "pddl.yy" /* yacc.c:1646  */
+    { make_pseudostep(); }
+#line 2433 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 609 "pddl.yy" /* yacc.c:1646  */
+#line 606 "pddl.yy" /* yacc.c:1646  */
     { require_duration_inequalities(); }
-#line 2441 "pddl.cc" /* yacc.c:1646  */
+#line 2439 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 613 "pddl.yy" /* yacc.c:1646  */
+#line 610 "pddl.yy" /* yacc.c:1646  */
     {
 				 require_duration_inequalities();
 				 action->set_max_duration(*(yyvsp[-1].expr));
 			       }
-#line 2450 "pddl.cc" /* yacc.c:1646  */
+#line 2448 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 618 "pddl.yy" /* yacc.c:1646  */
+#line 615 "pddl.yy" /* yacc.c:1646  */
     {
 				 require_duration_inequalities();
 				 action->set_min_duration(*(yyvsp[-1].expr));
 			       }
-#line 2459 "pddl.cc" /* yacc.c:1646  */
+#line 2457 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 623 "pddl.yy" /* yacc.c:1646  */
+#line 620 "pddl.yy" /* yacc.c:1646  */
     { action->set_duration(*(yyvsp[-1].expr)); }
-#line 2465 "pddl.cc" /* yacc.c:1646  */
+#line 2463 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 636 "pddl.yy" /* yacc.c:1646  */
+#line 633 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2471 "pddl.cc" /* yacc.c:1646  */
+#line 2469 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 639 "pddl.yy" /* yacc.c:1646  */
+#line 636 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &Formula::TRUE; }
-#line 2477 "pddl.cc" /* yacc.c:1646  */
+#line 2475 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 640 "pddl.yy" /* yacc.c:1646  */
+#line 637 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &(*(yyvsp[-1].formula) && *(yyvsp[0].formula)); }
-#line 2483 "pddl.cc" /* yacc.c:1646  */
+#line 2481 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 643 "pddl.yy" /* yacc.c:1646  */
+#line 640 "pddl.yy" /* yacc.c:1646  */
     { formula_time = AT_START; }
-#line 2489 "pddl.cc" /* yacc.c:1646  */
+#line 2487 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 643 "pddl.yy" /* yacc.c:1646  */
+#line 640 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2495 "pddl.cc" /* yacc.c:1646  */
+#line 2493 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 644 "pddl.yy" /* yacc.c:1646  */
+#line 641 "pddl.yy" /* yacc.c:1646  */
     { formula_time = AT_END; }
-#line 2501 "pddl.cc" /* yacc.c:1646  */
+#line 2499 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 644 "pddl.yy" /* yacc.c:1646  */
+#line 641 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2507 "pddl.cc" /* yacc.c:1646  */
+#line 2505 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 645 "pddl.yy" /* yacc.c:1646  */
+#line 642 "pddl.yy" /* yacc.c:1646  */
     { formula_time = OVER_ALL; }
-#line 2513 "pddl.cc" /* yacc.c:1646  */
+#line 2511 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 645 "pddl.yy" /* yacc.c:1646  */
+#line 642 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2519 "pddl.cc" /* yacc.c:1646  */
+#line 2517 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 654 "pddl.yy" /* yacc.c:1646  */
+#line 651 "pddl.yy" /* yacc.c:1646  */
     { prepare_forall_effect(); }
-#line 2525 "pddl.cc" /* yacc.c:1646  */
+#line 2523 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 654 "pddl.yy" /* yacc.c:1646  */
+#line 651 "pddl.yy" /* yacc.c:1646  */
     { pop_forall_effect(); }
-#line 2531 "pddl.cc" /* yacc.c:1646  */
+#line 2529 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 655 "pddl.yy" /* yacc.c:1646  */
+#line 652 "pddl.yy" /* yacc.c:1646  */
     { formula_time = AT_START; }
-#line 2537 "pddl.cc" /* yacc.c:1646  */
+#line 2535 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 655 "pddl.yy" /* yacc.c:1646  */
+#line 652 "pddl.yy" /* yacc.c:1646  */
     { prepare_conditional_effect(*(yyvsp[0].formula)); }
-#line 2543 "pddl.cc" /* yacc.c:1646  */
+#line 2541 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 655 "pddl.yy" /* yacc.c:1646  */
+#line 652 "pddl.yy" /* yacc.c:1646  */
     { effect_condition = 0; }
-#line 2549 "pddl.cc" /* yacc.c:1646  */
+#line 2547 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 666 "pddl.yy" /* yacc.c:1646  */
+#line 663 "pddl.yy" /* yacc.c:1646  */
     { add_effect(*(yyvsp[0].atom)); }
-#line 2555 "pddl.cc" /* yacc.c:1646  */
+#line 2553 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 667 "pddl.yy" /* yacc.c:1646  */
+#line 664 "pddl.yy" /* yacc.c:1646  */
     { add_effect(Negation::make(*(yyvsp[-1].atom))); }
-#line 2561 "pddl.cc" /* yacc.c:1646  */
+#line 2559 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 154:
-#line 676 "pddl.yy" /* yacc.c:1646  */
+#line 673 "pddl.yy" /* yacc.c:1646  */
     { prepare_forall_effect(); }
-#line 2567 "pddl.cc" /* yacc.c:1646  */
+#line 2565 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 155:
-#line 677 "pddl.yy" /* yacc.c:1646  */
+#line 674 "pddl.yy" /* yacc.c:1646  */
     { pop_forall_effect(); }
-#line 2573 "pddl.cc" /* yacc.c:1646  */
+#line 2571 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 678 "pddl.yy" /* yacc.c:1646  */
+#line 675 "pddl.yy" /* yacc.c:1646  */
     { prepare_conditional_effect(*(yyvsp[0].formula)); }
-#line 2579 "pddl.cc" /* yacc.c:1646  */
+#line 2577 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 679 "pddl.yy" /* yacc.c:1646  */
+#line 676 "pddl.yy" /* yacc.c:1646  */
     { effect_condition = 0; }
-#line 2585 "pddl.cc" /* yacc.c:1646  */
+#line 2583 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 160:
-#line 687 "pddl.yy" /* yacc.c:1646  */
+#line 684 "pddl.yy" /* yacc.c:1646  */
     { effect_time = Effect::AT_START; formula_time = AT_START; }
-#line 2591 "pddl.cc" /* yacc.c:1646  */
+#line 2589 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 162:
-#line 690 "pddl.yy" /* yacc.c:1646  */
+#line 687 "pddl.yy" /* yacc.c:1646  */
     { effect_time = Effect::AT_END; formula_time = AT_END; }
-#line 2597 "pddl.cc" /* yacc.c:1646  */
+#line 2595 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 166:
-#line 696 "pddl.yy" /* yacc.c:1646  */
+#line 693 "pddl.yy" /* yacc.c:1646  */
     { prepare_forall_effect(); }
-#line 2603 "pddl.cc" /* yacc.c:1646  */
+#line 2601 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 167:
-#line 697 "pddl.yy" /* yacc.c:1646  */
+#line 694 "pddl.yy" /* yacc.c:1646  */
     { pop_forall_effect(); }
-#line 2609 "pddl.cc" /* yacc.c:1646  */
+#line 2607 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 168:
-#line 698 "pddl.yy" /* yacc.c:1646  */
+#line 695 "pddl.yy" /* yacc.c:1646  */
     { prepare_conditional_effect(*(yyvsp[0].formula)); }
-#line 2615 "pddl.cc" /* yacc.c:1646  */
+#line 2613 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 169:
-#line 699 "pddl.yy" /* yacc.c:1646  */
+#line 696 "pddl.yy" /* yacc.c:1646  */
     { effect_condition = 0; }
-#line 2621 "pddl.cc" /* yacc.c:1646  */
+#line 2619 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 172:
-#line 711 "pddl.yy" /* yacc.c:1646  */
+#line 708 "pddl.yy" /* yacc.c:1646  */
     { make_problem((yyvsp[-5].str), (yyvsp[-1].str)); }
-#line 2627 "pddl.cc" /* yacc.c:1646  */
+#line 2625 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 173:
-#line 712 "pddl.yy" /* yacc.c:1646  */
+#line 709 "pddl.yy" /* yacc.c:1646  */
     { delete requirements; }
-#line 2633 "pddl.cc" /* yacc.c:1646  */
+#line 2631 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 180:
-#line 727 "pddl.yy" /* yacc.c:1646  */
+#line 724 "pddl.yy" /* yacc.c:1646  */
     { name_kind = OBJECT_KIND; }
-#line 2639 "pddl.cc" /* yacc.c:1646  */
+#line 2637 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 181:
-#line 728 "pddl.yy" /* yacc.c:1646  */
+#line 725 "pddl.yy" /* yacc.c:1646  */
     { name_kind = VOID_KIND; }
-#line 2645 "pddl.cc" /* yacc.c:1646  */
+#line 2643 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 185:
-#line 738 "pddl.yy" /* yacc.c:1646  */
+#line 735 "pddl.yy" /* yacc.c:1646  */
     { prepare_atom((yyvsp[0].str)); }
-#line 2651 "pddl.cc" /* yacc.c:1646  */
+#line 2649 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 186:
-#line 739 "pddl.yy" /* yacc.c:1646  */
+#line 736 "pddl.yy" /* yacc.c:1646  */
     { problem->add_init_atom(*make_atom()); }
-#line 2657 "pddl.cc" /* yacc.c:1646  */
+#line 2655 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 187:
-#line 740 "pddl.yy" /* yacc.c:1646  */
+#line 737 "pddl.yy" /* yacc.c:1646  */
     { prepare_atom((yyvsp[0].str)); }
-#line 2663 "pddl.cc" /* yacc.c:1646  */
+#line 2661 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 188:
-#line 741 "pddl.yy" /* yacc.c:1646  */
+#line 738 "pddl.yy" /* yacc.c:1646  */
     { problem->add_init_atom(*make_atom()); }
-#line 2669 "pddl.cc" /* yacc.c:1646  */
+#line 2667 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 189:
-#line 743 "pddl.yy" /* yacc.c:1646  */
+#line 740 "pddl.yy" /* yacc.c:1646  */
     { Formula::register_use((yyvsp[-1].atom)); Formula::unregister_use((yyvsp[-1].atom)); }
-#line 2675 "pddl.cc" /* yacc.c:1646  */
+#line 2673 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 190:
-#line 745 "pddl.yy" /* yacc.c:1646  */
+#line 742 "pddl.yy" /* yacc.c:1646  */
     { problem->add_init_value(*(yyvsp[-2].fluent), (yyvsp[-1].num)); }
-#line 2681 "pddl.cc" /* yacc.c:1646  */
+#line 2679 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 191:
-#line 747 "pddl.yy" /* yacc.c:1646  */
+#line 744 "pddl.yy" /* yacc.c:1646  */
     { add_init_literal((yyvsp[-2].num), *(yyvsp[-1].literal)); }
-#line 2687 "pddl.cc" /* yacc.c:1646  */
+#line 2685 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 194:
-#line 754 "pddl.yy" /* yacc.c:1646  */
+#line 751 "pddl.yy" /* yacc.c:1646  */
     { problem->set_goal(*(yyvsp[-1].formula)); }
-#line 2693 "pddl.cc" /* yacc.c:1646  */
+#line 2691 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 195:
-#line 757 "pddl.yy" /* yacc.c:1646  */
+#line 754 "pddl.yy" /* yacc.c:1646  */
     { metric_fluent = true; }
-#line 2699 "pddl.cc" /* yacc.c:1646  */
+#line 2697 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 196:
-#line 758 "pddl.yy" /* yacc.c:1646  */
+#line 755 "pddl.yy" /* yacc.c:1646  */
     { problem->set_metric(*(yyvsp[-1].expr), true); metric_fluent = false; }
-#line 2705 "pddl.cc" /* yacc.c:1646  */
+#line 2703 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 197:
-#line 759 "pddl.yy" /* yacc.c:1646  */
+#line 756 "pddl.yy" /* yacc.c:1646  */
     { metric_fluent = true; }
-#line 2711 "pddl.cc" /* yacc.c:1646  */
+#line 2709 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 198:
-#line 760 "pddl.yy" /* yacc.c:1646  */
+#line 757 "pddl.yy" /* yacc.c:1646  */
     { problem->set_metric(*(yyvsp[-1].expr)); metric_fluent = false; }
-#line 2717 "pddl.cc" /* yacc.c:1646  */
+#line 2715 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 199:
-#line 767 "pddl.yy" /* yacc.c:1646  */
+#line 764 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &TimedLiteral::make(*(yyvsp[0].atom), formula_time); }
-#line 2723 "pddl.cc" /* yacc.c:1646  */
+#line 2721 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 200:
-#line 768 "pddl.yy" /* yacc.c:1646  */
+#line 765 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = make_equality((yyvsp[-2].term), (yyvsp[-1].term)); }
-#line 2729 "pddl.cc" /* yacc.c:1646  */
+#line 2727 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 201:
-#line 769 "pddl.yy" /* yacc.c:1646  */
+#line 766 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = make_negation(*(yyvsp[-1].formula)); }
-#line 2735 "pddl.cc" /* yacc.c:1646  */
+#line 2733 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 202:
-#line 770 "pddl.yy" /* yacc.c:1646  */
+#line 767 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2741 "pddl.cc" /* yacc.c:1646  */
+#line 2739 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 203:
-#line 771 "pddl.yy" /* yacc.c:1646  */
+#line 768 "pddl.yy" /* yacc.c:1646  */
     { require_disjunction(); }
-#line 2747 "pddl.cc" /* yacc.c:1646  */
+#line 2745 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 204:
-#line 771 "pddl.yy" /* yacc.c:1646  */
+#line 768 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = (yyvsp[-1].formula); }
-#line 2753 "pddl.cc" /* yacc.c:1646  */
+#line 2751 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 205:
-#line 772 "pddl.yy" /* yacc.c:1646  */
+#line 769 "pddl.yy" /* yacc.c:1646  */
     { require_disjunction(); }
-#line 2759 "pddl.cc" /* yacc.c:1646  */
+#line 2757 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 206:
-#line 773 "pddl.yy" /* yacc.c:1646  */
+#line 770 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &(!*(yyvsp[-2].formula) || *(yyvsp[-1].formula)); }
-#line 2765 "pddl.cc" /* yacc.c:1646  */
+#line 2763 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 207:
-#line 774 "pddl.yy" /* yacc.c:1646  */
+#line 771 "pddl.yy" /* yacc.c:1646  */
     { prepare_exists(); }
-#line 2771 "pddl.cc" /* yacc.c:1646  */
+#line 2769 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 208:
-#line 775 "pddl.yy" /* yacc.c:1646  */
+#line 772 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = make_exists(*(yyvsp[-1].formula)); }
-#line 2777 "pddl.cc" /* yacc.c:1646  */
+#line 2775 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 209:
-#line 776 "pddl.yy" /* yacc.c:1646  */
+#line 773 "pddl.yy" /* yacc.c:1646  */
     { prepare_forall(); }
-#line 2783 "pddl.cc" /* yacc.c:1646  */
+#line 2781 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 210:
-#line 777 "pddl.yy" /* yacc.c:1646  */
+#line 774 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = make_forall(*(yyvsp[-1].formula)); }
-#line 2789 "pddl.cc" /* yacc.c:1646  */
+#line 2787 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 211:
-#line 780 "pddl.yy" /* yacc.c:1646  */
+#line 777 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &Formula::TRUE; }
-#line 2795 "pddl.cc" /* yacc.c:1646  */
+#line 2793 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 212:
-#line 781 "pddl.yy" /* yacc.c:1646  */
+#line 778 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &(*(yyvsp[-1].formula) && *(yyvsp[0].formula)); }
-#line 2801 "pddl.cc" /* yacc.c:1646  */
+#line 2799 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 213:
-#line 784 "pddl.yy" /* yacc.c:1646  */
+#line 781 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &Formula::FALSE; }
-#line 2807 "pddl.cc" /* yacc.c:1646  */
+#line 2805 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 214:
-#line 785 "pddl.yy" /* yacc.c:1646  */
+#line 782 "pddl.yy" /* yacc.c:1646  */
     { (yyval.formula) = &(*(yyvsp[-1].formula) || *(yyvsp[0].formula)); }
-#line 2813 "pddl.cc" /* yacc.c:1646  */
+#line 2811 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 215:
-#line 788 "pddl.yy" /* yacc.c:1646  */
+#line 785 "pddl.yy" /* yacc.c:1646  */
     { prepare_atom((yyvsp[0].str)); }
-#line 2819 "pddl.cc" /* yacc.c:1646  */
+#line 2817 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 216:
-#line 789 "pddl.yy" /* yacc.c:1646  */
+#line 786 "pddl.yy" /* yacc.c:1646  */
     { (yyval.atom) = make_atom(); }
-#line 2825 "pddl.cc" /* yacc.c:1646  */
+#line 2823 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 217:
-#line 792 "pddl.yy" /* yacc.c:1646  */
+#line 789 "pddl.yy" /* yacc.c:1646  */
     { prepare_atom((yyvsp[0].str)); }
-#line 2831 "pddl.cc" /* yacc.c:1646  */
+#line 2829 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 218:
-#line 793 "pddl.yy" /* yacc.c:1646  */
+#line 790 "pddl.yy" /* yacc.c:1646  */
     { (yyval.atom) = make_atom(); }
-#line 2837 "pddl.cc" /* yacc.c:1646  */
+#line 2835 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 219:
-#line 796 "pddl.yy" /* yacc.c:1646  */
+#line 793 "pddl.yy" /* yacc.c:1646  */
     { (yyval.literal) = (yyvsp[0].atom); }
-#line 2843 "pddl.cc" /* yacc.c:1646  */
+#line 2841 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 220:
-#line 797 "pddl.yy" /* yacc.c:1646  */
+#line 794 "pddl.yy" /* yacc.c:1646  */
     { (yyval.literal) = &Negation::make(*(yyvsp[-1].atom)); }
-#line 2849 "pddl.cc" /* yacc.c:1646  */
+#line 2847 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 221:
-#line 804 "pddl.yy" /* yacc.c:1646  */
+#line 801 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = new Value((yyvsp[0].num)); }
-#line 2855 "pddl.cc" /* yacc.c:1646  */
+#line 2853 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 222:
-#line 805 "pddl.yy" /* yacc.c:1646  */
+#line 802 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Addition::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2861 "pddl.cc" /* yacc.c:1646  */
+#line 2859 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 223:
-#line 806 "pddl.yy" /* yacc.c:1646  */
+#line 803 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = make_subtraction(*(yyvsp[-2].expr), (yyvsp[-1].expr)); }
-#line 2867 "pddl.cc" /* yacc.c:1646  */
+#line 2865 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 224:
-#line 807 "pddl.yy" /* yacc.c:1646  */
+#line 804 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Multiplication::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2873 "pddl.cc" /* yacc.c:1646  */
+#line 2871 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 225:
-#line 808 "pddl.yy" /* yacc.c:1646  */
+#line 805 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Division::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2879 "pddl.cc" /* yacc.c:1646  */
+#line 2877 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 226:
-#line 809 "pddl.yy" /* yacc.c:1646  */
+#line 806 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].fluent); }
-#line 2885 "pddl.cc" /* yacc.c:1646  */
+#line 2883 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 227:
-#line 812 "pddl.yy" /* yacc.c:1646  */
+#line 809 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = 0; }
-#line 2891 "pddl.cc" /* yacc.c:1646  */
+#line 2889 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 229:
-#line 816 "pddl.yy" /* yacc.c:1646  */
+#line 813 "pddl.yy" /* yacc.c:1646  */
     { prepare_fluent((yyvsp[0].str)); }
-#line 2897 "pddl.cc" /* yacc.c:1646  */
+#line 2895 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 230:
-#line 817 "pddl.yy" /* yacc.c:1646  */
+#line 814 "pddl.yy" /* yacc.c:1646  */
     { (yyval.fluent) = make_fluent(); }
-#line 2903 "pddl.cc" /* yacc.c:1646  */
+#line 2901 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 231:
-#line 818 "pddl.yy" /* yacc.c:1646  */
+#line 815 "pddl.yy" /* yacc.c:1646  */
     { prepare_fluent((yyvsp[0].str)); (yyval.fluent) = make_fluent(); }
-#line 2909 "pddl.cc" /* yacc.c:1646  */
+#line 2907 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 232:
-#line 821 "pddl.yy" /* yacc.c:1646  */
+#line 818 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = new Value((yyvsp[0].num)); }
-#line 2915 "pddl.cc" /* yacc.c:1646  */
+#line 2913 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 233:
-#line 823 "pddl.yy" /* yacc.c:1646  */
+#line 820 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Addition::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2921 "pddl.cc" /* yacc.c:1646  */
+#line 2919 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 234:
-#line 825 "pddl.yy" /* yacc.c:1646  */
+#line 822 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = make_subtraction(*(yyvsp[-2].expr), (yyvsp[-1].expr)); }
-#line 2927 "pddl.cc" /* yacc.c:1646  */
+#line 2925 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 235:
-#line 827 "pddl.yy" /* yacc.c:1646  */
+#line 824 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Multiplication::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2933 "pddl.cc" /* yacc.c:1646  */
+#line 2931 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 236:
-#line 829 "pddl.yy" /* yacc.c:1646  */
+#line 826 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = &Division::make(*(yyvsp[-2].expr), *(yyvsp[-1].expr)); }
-#line 2939 "pddl.cc" /* yacc.c:1646  */
+#line 2937 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 237:
-#line 830 "pddl.yy" /* yacc.c:1646  */
+#line 827 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].fluent); }
-#line 2945 "pddl.cc" /* yacc.c:1646  */
+#line 2943 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 238:
-#line 833 "pddl.yy" /* yacc.c:1646  */
+#line 830 "pddl.yy" /* yacc.c:1646  */
     { (yyval.expr) = 0; }
-#line 2951 "pddl.cc" /* yacc.c:1646  */
+#line 2949 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 240:
-#line 837 "pddl.yy" /* yacc.c:1646  */
+#line 834 "pddl.yy" /* yacc.c:1646  */
     { prepare_fluent((yyvsp[0].str)); }
-#line 2957 "pddl.cc" /* yacc.c:1646  */
+#line 2955 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 241:
-#line 838 "pddl.yy" /* yacc.c:1646  */
+#line 835 "pddl.yy" /* yacc.c:1646  */
     { (yyval.fluent) = make_fluent(); }
-#line 2963 "pddl.cc" /* yacc.c:1646  */
+#line 2961 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 242:
-#line 839 "pddl.yy" /* yacc.c:1646  */
+#line 836 "pddl.yy" /* yacc.c:1646  */
     { prepare_fluent((yyvsp[0].str)); (yyval.fluent) = make_fluent(); }
-#line 2969 "pddl.cc" /* yacc.c:1646  */
+#line 2967 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 244:
-#line 847 "pddl.yy" /* yacc.c:1646  */
+#line 844 "pddl.yy" /* yacc.c:1646  */
     { add_term((yyvsp[0].str)); }
-#line 2975 "pddl.cc" /* yacc.c:1646  */
+#line 2973 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 245:
-#line 848 "pddl.yy" /* yacc.c:1646  */
+#line 845 "pddl.yy" /* yacc.c:1646  */
     { add_term((yyvsp[0].str)); }
-#line 2981 "pddl.cc" /* yacc.c:1646  */
+#line 2979 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 247:
-#line 852 "pddl.yy" /* yacc.c:1646  */
+#line 849 "pddl.yy" /* yacc.c:1646  */
     { add_term((yyvsp[0].str)); }
-#line 2987 "pddl.cc" /* yacc.c:1646  */
+#line 2985 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 248:
-#line 855 "pddl.yy" /* yacc.c:1646  */
+#line 852 "pddl.yy" /* yacc.c:1646  */
     { (yyval.term) = new Term(make_term((yyvsp[0].str))); }
-#line 2993 "pddl.cc" /* yacc.c:1646  */
+#line 2991 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 249:
-#line 856 "pddl.yy" /* yacc.c:1646  */
+#line 853 "pddl.yy" /* yacc.c:1646  */
     { (yyval.term) = new Term(make_term((yyvsp[0].str))); }
-#line 2999 "pddl.cc" /* yacc.c:1646  */
+#line 2997 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 251:
-#line 860 "pddl.yy" /* yacc.c:1646  */
+#line 857 "pddl.yy" /* yacc.c:1646  */
     { add_variables((yyvsp[0].strs), TypeTable::OBJECT); }
-#line 3005 "pddl.cc" /* yacc.c:1646  */
+#line 3003 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 252:
-#line 861 "pddl.yy" /* yacc.c:1646  */
+#line 858 "pddl.yy" /* yacc.c:1646  */
     { add_variables((yyvsp[-1].strs), *(yyvsp[0].type)); delete (yyvsp[0].type); }
-#line 3011 "pddl.cc" /* yacc.c:1646  */
+#line 3009 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 254:
-#line 865 "pddl.yy" /* yacc.c:1646  */
+#line 862 "pddl.yy" /* yacc.c:1646  */
     { (yyval.strs) = new std::vector<const std::string*>(1, (yyvsp[0].str)); }
-#line 3017 "pddl.cc" /* yacc.c:1646  */
+#line 3015 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 255:
-#line 866 "pddl.yy" /* yacc.c:1646  */
+#line 863 "pddl.yy" /* yacc.c:1646  */
     { (yyval.strs) = (yyvsp[-1].strs); (yyval.strs)->push_back((yyvsp[0].str)); }
-#line 3023 "pddl.cc" /* yacc.c:1646  */
+#line 3021 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 257:
-#line 870 "pddl.yy" /* yacc.c:1646  */
+#line 867 "pddl.yy" /* yacc.c:1646  */
     { add_names((yyvsp[0].strs), TypeTable::OBJECT); }
-#line 3029 "pddl.cc" /* yacc.c:1646  */
+#line 3027 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 258:
-#line 871 "pddl.yy" /* yacc.c:1646  */
+#line 868 "pddl.yy" /* yacc.c:1646  */
     { add_names((yyvsp[-1].strs), *(yyvsp[0].type)); delete (yyvsp[0].type); }
-#line 3035 "pddl.cc" /* yacc.c:1646  */
+#line 3033 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 260:
-#line 874 "pddl.yy" /* yacc.c:1646  */
+#line 871 "pddl.yy" /* yacc.c:1646  */
     { (yyval.strs) = new std::vector<const std::string*>(1, (yyvsp[0].str)); }
-#line 3041 "pddl.cc" /* yacc.c:1646  */
+#line 3039 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 261:
-#line 875 "pddl.yy" /* yacc.c:1646  */
+#line 872 "pddl.yy" /* yacc.c:1646  */
     { (yyval.strs) = (yyvsp[-1].strs); (yyval.strs)->push_back((yyvsp[0].str)); }
-#line 3047 "pddl.cc" /* yacc.c:1646  */
+#line 3045 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 262:
-#line 878 "pddl.yy" /* yacc.c:1646  */
+#line 875 "pddl.yy" /* yacc.c:1646  */
     { require_typing(); }
-#line 3053 "pddl.cc" /* yacc.c:1646  */
+#line 3051 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 263:
-#line 878 "pddl.yy" /* yacc.c:1646  */
+#line 875 "pddl.yy" /* yacc.c:1646  */
     { (yyval.type) = (yyvsp[0].type); }
-#line 3059 "pddl.cc" /* yacc.c:1646  */
+#line 3057 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 264:
-#line 881 "pddl.yy" /* yacc.c:1646  */
+#line 878 "pddl.yy" /* yacc.c:1646  */
     { (yyval.type) = new Type(TypeTable::OBJECT); }
-#line 3065 "pddl.cc" /* yacc.c:1646  */
+#line 3063 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 265:
-#line 882 "pddl.yy" /* yacc.c:1646  */
+#line 879 "pddl.yy" /* yacc.c:1646  */
     { (yyval.type) = new Type(make_type((yyvsp[0].str))); }
-#line 3071 "pddl.cc" /* yacc.c:1646  */
+#line 3069 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 266:
-#line 883 "pddl.yy" /* yacc.c:1646  */
+#line 880 "pddl.yy" /* yacc.c:1646  */
     { (yyval.type) = new Type(make_type(*(yyvsp[-1].types))); delete (yyvsp[-1].types); }
-#line 3077 "pddl.cc" /* yacc.c:1646  */
+#line 3075 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 267:
-#line 886 "pddl.yy" /* yacc.c:1646  */
+#line 883 "pddl.yy" /* yacc.c:1646  */
     { (yyval.types) = new TypeSet(); }
-#line 3083 "pddl.cc" /* yacc.c:1646  */
+#line 3081 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 268:
-#line 887 "pddl.yy" /* yacc.c:1646  */
+#line 884 "pddl.yy" /* yacc.c:1646  */
     { (yyval.types) = new TypeSet(); (yyval.types)->insert(make_type((yyvsp[0].str))); }
-#line 3089 "pddl.cc" /* yacc.c:1646  */
+#line 3087 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 269:
-#line 888 "pddl.yy" /* yacc.c:1646  */
+#line 885 "pddl.yy" /* yacc.c:1646  */
     { (yyval.types) = (yyvsp[-1].types); }
-#line 3095 "pddl.cc" /* yacc.c:1646  */
+#line 3093 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 270:
-#line 889 "pddl.yy" /* yacc.c:1646  */
+#line 886 "pddl.yy" /* yacc.c:1646  */
     { (yyval.types) = (yyvsp[-1].types); (yyval.types)->insert(make_type((yyvsp[0].str))); }
-#line 3101 "pddl.cc" /* yacc.c:1646  */
+#line 3099 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 272:
-#line 899 "pddl.yy" /* yacc.c:1646  */
+#line 896 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3107 "pddl.cc" /* yacc.c:1646  */
+#line 3105 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 273:
-#line 902 "pddl.yy" /* yacc.c:1646  */
+#line 899 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3113 "pddl.cc" /* yacc.c:1646  */
+#line 3111 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 274:
-#line 905 "pddl.yy" /* yacc.c:1646  */
+#line 902 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3119 "pddl.cc" /* yacc.c:1646  */
+#line 3117 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 275:
-#line 908 "pddl.yy" /* yacc.c:1646  */
+#line 905 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3125 "pddl.cc" /* yacc.c:1646  */
+#line 3123 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 276:
-#line 911 "pddl.yy" /* yacc.c:1646  */
+#line 908 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3131 "pddl.cc" /* yacc.c:1646  */
+#line 3129 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 277:
-#line 914 "pddl.yy" /* yacc.c:1646  */
+#line 911 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3137 "pddl.cc" /* yacc.c:1646  */
+#line 3135 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 278:
-#line 917 "pddl.yy" /* yacc.c:1646  */
+#line 914 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3143 "pddl.cc" /* yacc.c:1646  */
+#line 3141 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 279:
-#line 920 "pddl.yy" /* yacc.c:1646  */
+#line 917 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3149 "pddl.cc" /* yacc.c:1646  */
+#line 3147 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 280:
-#line 923 "pddl.yy" /* yacc.c:1646  */
+#line 920 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3155 "pddl.cc" /* yacc.c:1646  */
+#line 3153 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 281:
-#line 926 "pddl.yy" /* yacc.c:1646  */
+#line 923 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3161 "pddl.cc" /* yacc.c:1646  */
+#line 3159 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 282:
-#line 929 "pddl.yy" /* yacc.c:1646  */
+#line 926 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3167 "pddl.cc" /* yacc.c:1646  */
+#line 3165 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 283:
-#line 932 "pddl.yy" /* yacc.c:1646  */
+#line 929 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3173 "pddl.cc" /* yacc.c:1646  */
+#line 3171 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 284:
-#line 935 "pddl.yy" /* yacc.c:1646  */
+#line 932 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3179 "pddl.cc" /* yacc.c:1646  */
+#line 3177 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 285:
-#line 938 "pddl.yy" /* yacc.c:1646  */
+#line 935 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3185 "pddl.cc" /* yacc.c:1646  */
+#line 3183 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 286:
-#line 941 "pddl.yy" /* yacc.c:1646  */
+#line 938 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3191 "pddl.cc" /* yacc.c:1646  */
+#line 3189 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 287:
-#line 944 "pddl.yy" /* yacc.c:1646  */
+#line 941 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3197 "pddl.cc" /* yacc.c:1646  */
+#line 3195 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 288:
-#line 947 "pddl.yy" /* yacc.c:1646  */
+#line 944 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3203 "pddl.cc" /* yacc.c:1646  */
+#line 3201 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 289:
-#line 950 "pddl.yy" /* yacc.c:1646  */
+#line 947 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3209 "pddl.cc" /* yacc.c:1646  */
+#line 3207 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 290:
-#line 953 "pddl.yy" /* yacc.c:1646  */
+#line 950 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3215 "pddl.cc" /* yacc.c:1646  */
+#line 3213 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 291:
-#line 956 "pddl.yy" /* yacc.c:1646  */
+#line 953 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3221 "pddl.cc" /* yacc.c:1646  */
+#line 3219 "pddl.cc" /* yacc.c:1646  */
     break;
 
   case 292:
-#line 959 "pddl.yy" /* yacc.c:1646  */
+#line 956 "pddl.yy" /* yacc.c:1646  */
     { delete (yyvsp[0].str); }
-#line 3227 "pddl.cc" /* yacc.c:1646  */
+#line 3225 "pddl.cc" /* yacc.c:1646  */
     break;
 
 
-#line 3231 "pddl.cc" /* yacc.c:1646  */
+#line 3229 "pddl.cc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3455,7 +3453,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 995 "pddl.yy" /* yacc.c:1906  */
+#line 992 "pddl.yy" /* yacc.c:1906  */
 
 
 /* Outputs an error message. */
@@ -3588,20 +3586,15 @@ static Term make_term(const std::string* name) {
   } else {
     TermTable& terms = (problem != 0) ? problem->terms() : domain->terms();
     const Object* o = terms.find_object(*name);
-    if (o == 0) 
-	{
+    if (o == 0) {
       size_t n = term_parameters.size();
       if (atom_predicate != 0
-	      && PredicateTable::parameters(*atom_predicate).size() > n) 
-		  {
-			const Type& t = PredicateTable::parameters(*atom_predicate)[n];
-			o = &terms.add_object(*name, t);
-          } 
-		  
-	  else {
-		o = &terms.add_object(*name, TypeTable::OBJECT);
+	  && PredicateTable::parameters(*atom_predicate).size() > n) {
+	const Type& t = PredicateTable::parameters(*atom_predicate)[n];
+	o = &terms.add_object(*name, t);
+      } else {
+	o = &terms.add_object(*name, TypeTable::OBJECT);
       }
-
       yywarning("implicit declaration of object `" + *name + "'");
     }
     delete name;
@@ -3707,18 +3700,18 @@ static void add_decomposition()
 
 
 /* Prepares for the parsing of a pseudo-step. */
-static void prepare_pseudostep(const std::string* action_name) 
+static void prepare_pseudostep(const std::string* pseudo_step_action_name) 
 { 
 	/* Verify that the action name refers to an existing action. */
-	pseudo_step_action = domain->find_action(*action_name);
+	pseudo_step_action = domain->find_action(*pseudo_step_action_name);
 
 	if(pseudo_step_action == 0) {
-		yyerror("no action of type " + *action_name + " exists for pseudo-step definition.");
+		yyerror("No action of type " + *pseudo_step_action_name + " exists for pseudo-step definition.");
 	}
 
 	else {
 		term_parameters.clear();
-		delete action_name;
+		delete pseudo_step_action_name;
 	}
 }
 
@@ -3726,24 +3719,71 @@ static void prepare_pseudostep(const std::string* action_name)
 /* Creates the pseudo-step just parsed. */
 static const Chain<Step>* make_pseudostep()
 {
-    size_t n = term_parameters.size();
+	/* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
+	size_t n = term_parameters.size();
 
-    /* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
-    if (pseudo_step_action->parameters().size() != n) 
+	if(pseudo_step_action->parameters().size() != n) 
+	{
+		yyerror("incorrect number of parameters specified for pseudo-step action "
+			+ pseudo_step_action->name());
+	}
+
+	else 
     {
-        yyerror("incorrect number of parameters specified for pseudo-step action " 
-            + pseudo_step_action->name());
+        /* Create the pseudo-step. */
+        //Step* psuedo_step = new Step()
+
+
+
+        /* 
+         * Here, I have to iterate through the parsed terms, and do different things 
+         * depending on whether the term is an object constant, or a variable.
+         */
+        for (TermList::size_type pi = 0; pi < term_parameters.size(); ++pi)
+        {
+            Term t = term_parameters[pi];
+
+            if (t.object()) 
+            {
+                // In this case, I need to check two things:
+                // (1) That the object t exists in the domain's definition of constants
+                //  -> Actually, this is not needed because if it doesn't exist, it will create the object implicitly and issue a warning.
+
+                // (2) That the object t is type-compatible in the action schema's corresponding index.
+
+                // Find all the objects compatible with the type of the action schema's parameter at the current index.
+                Variable action_parameter = pseudo_step_action->parameters()[pi];
+                Type typeof_parameter = TermTable::type(action_parameter);
+                ObjectList ol = domain->terms().compatible_objects(typeof_parameter); 
+
+                // See if we can find the current term in that list.
+                ObjectList::iterator oitr = std::find(ol.begin(), ol.end(), t);
+                if (oitr == ol.end()) 
+                { // not found!
+                    yywarning("we could not find a compatible type to the parameter");
+                }
+
+                else 
+                { // found!
+                    yywarning("we found a compatible type to the parameter!");
+                }
+               
+
+                // If it satisfies both, then I need to add a binding to the decomposition...
+                // of this pseudo-step's term to the domain defined object.
+
+                
+
+            }
+
+            else // t is a variable
+            { 
+
+            }
+        }
     }
-
-    else 
-    {
-        /* Check that the names of terms matches the names specified in the decomposition's parameters.*/
-        
-        /* Check that the types of terms matches the types specified in the decomposition's parameters. */
-
-    }
-
-
+	
+    return NULL;
 
 }
 
