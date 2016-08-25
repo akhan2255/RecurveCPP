@@ -38,21 +38,13 @@ namespace test
 	TEST_CLASS(DecompositionParseTest)
 	{
 	public:
-		
-		TEST_METHOD(ParseDecompositionsRequirement)
-		{
-            read_file("E:\\Developer\\vhpop\\test\\decompositions_requirement.pddl");
-            const Domain* parsed = Domain::find("decompositions_requirement");
-
-            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
-		}
 
         TEST_METHOD(ParseCompositeAction)
         {
             read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
-            const Domain* parsed = Domain::find("composite_action");            
+            const Domain* parsed = Domain::find("composite_action");
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
-            
+
             const ActionSchema* pick_up = parsed->find_action("pick-up");
             Assert::IsTrue(pick_up->composite(), L"pick-up should have been parsed as a composite action.");
 
@@ -62,11 +54,12 @@ namespace test
             const ActionSchema* stack = parsed->find_action("stack");
             Assert::IsFalse(stack->composite(), L"stack should have been parsed as a non-composite action");
         }
+		
 
         TEST_METHOD(ParseDecompositionSchema)
         {
-            read_file("E:\\Developer\\vhpop\\test\\car_plane_world.pddl");
-            const Domain* parsed = Domain::find("car-plane-world");
+            read_file("E:\\Developer\\vhpop\\test\\travel_domain.pddl");
+            const Domain* parsed = Domain::find("travel");
 
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
             Assert::IsTrue(parsed->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
@@ -74,10 +67,16 @@ namespace test
             const DecompositionSchema* travel_drive = parsed->find_decomposition("travel", "drive");
             Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, parsed thing.");
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been parsed with four parameters.");
-
-
-
         }
+
+        TEST_METHOD(ParseDecompositionsRequirement)
+        {
+            read_file("E:\\Developer\\vhpop\\test\\decompositions_requirement.pddl");
+            const Domain* parsed = Domain::find("decompositions_requirement");
+
+            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
+        }
+
 
 	};
 }
