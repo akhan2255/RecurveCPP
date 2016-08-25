@@ -243,7 +243,7 @@ static void make_decomposition(const std::string* composite_action_name, const s
 static void add_decomposition();
 
 /* Prepares for the parsing of a pseudo-step. */
-static void prepare_pseudostep();
+static void prepare_pseudostep(const std::string* pseudo_step_action_name);
 
 /* Creates the pseudo-step just parsed. */
 static const Chain<Step>* make_pseudostep();
@@ -594,11 +594,8 @@ steps : /* empty */
 step : '(' name pseudo_step ')'
 	 ;
 
-pseudo_step : '(' name { }
-
-						terms ')' {
-
-				}
+pseudo_step : '(' name      { prepare_pseudostep($2); } 
+				  terms ')' { make_pseudostep(); }
 			;
 
 /* ====================================================================== */
@@ -1238,18 +1235,18 @@ static void add_decomposition()
 
 
 /* Prepares for the parsing of a pseudo-step. */
-static void prepare_pseudostep(const std::string* action_name) 
+static void prepare_pseudostep(const std::string* pseudo_step_action_name) 
 { 
 	/* Verify that the action name refers to an existing action. */
-	pseudo_step_action = domain->find_action(*action_name);
+	pseudo_step_action = domain->find_action(*pseudo_step_action_name);
 
 	if(pseudo_step_action == 0) {
-		yyerror("No action of type " + *action_name + " exists for pseudo-step definition.");
+		yyerror("No action of type " + *pseudo_step_action_name + " exists for pseudo-step definition.");
 	}
 
 	else {
 		term_parameters.clear();
-		delete action_name;
+		delete pseudo_step_action_name;
 	}
 }
 
