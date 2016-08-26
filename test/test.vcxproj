@@ -101,6 +101,7 @@
     <None Include="decompositions_requirement.pddl" />
     <None Include="travel_domain.pddl" />
     <None Include="depots.pddl" />
+    <None Include="travel_problem.pddl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

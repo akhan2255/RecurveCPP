@@ -52,5 +52,8 @@
     <None Include="travel_domain.pddl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="travel_problem.pddl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 (define (domain travel)
+    (:requirements :strips)
     (:types  plane car - transport
 	         person transport place - object)
 	(:constants mycar - car)
