@@ -1071,6 +1071,7 @@ float Plan::primary_rank() const {
         params->heuristic.plan_rank(rank_, *this, params->weight, *domain,
             planning_graph);
     }
+
     return rank_[0];
 }
 

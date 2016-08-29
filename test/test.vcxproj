@@ -95,10 +95,13 @@
     </ClCompile>
     <ClCompile Include="terms_test.cc" />
     <ClCompile Include="types_test.cc" />
+    <ClCompile Include="vhpop_plan_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="composite_action.pddl" />
     <None Include="decompositions_requirement.pddl" />
+    <None Include="blocks_domain.pddl" />
+    <None Include="blocks_problem.pddl" />
     <None Include="travel_domain.pddl" />
     <None Include="depots.pddl" />
     <None Include="travel_problem.pddl" />

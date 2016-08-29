@@ -38,6 +38,9 @@
     <ClCompile Include="decomp_parse_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vhpop_plan_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="composite_action.pddl">
@@ -53,6 +56,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="travel_problem.pddl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="blocks_domain.pddl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="blocks_problem.pddl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

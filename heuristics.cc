@@ -1011,6 +1011,7 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
   bool addr_done = false;
   float addr_cost = 0.0f;
   int addr_work = 0;
+
   for (std::vector<HVal>::const_iterator hi = h_.begin();
        hi != h_.end(); hi++) {
     HVal h = *hi;
@@ -1034,8 +1035,7 @@ void Heuristic::plan_rank(std::vector<float>& rank, const Plan& plan,
       rank.push_back(plan.num_steps() + weight*plan.num_open_conds());
       break;
     case UCPOP:
-      rank.push_back(plan.num_steps()
-		     + weight*(plan.num_open_conds() + plan.num_unsafes()));
+      rank.push_back(plan.num_steps() + weight*(plan.num_open_conds() + plan.num_unsafes()));
       break;
     case ADD:
     case ADD_COST:

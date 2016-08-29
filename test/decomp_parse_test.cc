@@ -67,6 +67,11 @@ namespace test
             const DecompositionSchema* travel_drive = parsed->find_decomposition("travel", "drive");
             Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, parsed thing.");
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been parsed with four parameters.");
+
+            
+
+
+
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)

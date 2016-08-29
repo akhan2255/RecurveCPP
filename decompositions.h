@@ -23,6 +23,7 @@
 #include <string>
 #include "actions.h"
 #include "plans.h"
+#include "bindings.h"
 
 /* ====================================================================== */
 /* Decomposition */
@@ -33,11 +34,24 @@
  */
 struct Decomposition {
 
+    /* Id of start step. */
+    static const size_t DUMMY_START_ID;
+
+    /* Id of goal step. */
+    static const size_t DUMMY_GOAL_ID;
+
     /* Returns the composite action this decomposition is appliable to. */
     const ActionSchema& composite_action_schema() const { return *composite_action_schema_; }
 
     /* Returns the name of this decomposition. */
     const std::string& name() const { return name_; }
+
+    /* Returns the pseudo steps of this decomposition. */
+    const Chain<Step>* pseudo_steps() const { return pseudo_steps_; }
+
+    /* Returns the ordering constraints of this decomposition. */
+    const Orderings& orderings() const { return *orderings_; }
+
 
 protected:
 
@@ -64,13 +78,13 @@ private:
     /* Chain of pseudo steps. */
     const Chain<Step>* pseudo_steps_;
 
-    /* Binding constraints of this decomposition schema. */
+    /* Binding constraints of this decomposition. */
     const Bindings* bindings_;
 
-    /* Ordering constraints of this decomposition schema. */
+    /* Ordering constraints of this decomposition. */
     const Orderings* orderings_;
 
-    /* Chain of causal links of this decomposition schema. */
+    /* Chain of causal links of this decomposition. */
     const Chain<Link>* links_;
 
     

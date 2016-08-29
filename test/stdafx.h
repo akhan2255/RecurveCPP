@@ -22,4 +22,5 @@
 #include "../problems.h"
 #include "../pddl.hh"
 #include "../decompositions.h"
+#include "../parameters.h"
 

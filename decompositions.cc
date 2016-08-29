@@ -25,7 +25,7 @@
 /* Auxiliary Function Declarations */
 
 /* Attempt to convert the parameter Formula to an Effect. */
-Effect* convert_formula(const Formula* formula);
+Effect* attempt_to_convert_formula(const Formula* formula);
 
 
 
@@ -50,63 +50,72 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 {
     // From the paper by Young, Pollack, and Moore:
     // Each decomposition schema:
-
     // (1) contains a dummy initial step whose effects are the preconditions of the parent step.
+    // (2) contains a dummy final step whose effects are the preconditions of the parent step.
+    // (3) has ordering constraints ensuring that s_i precedes all other steps, and
+    // (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
+    
+
+    /* ---------------------------------------------------------------- */
+    /* Dummy Initial Step Construction  */
+
+    // Build the dummy step's schema
     ActionSchema* dummy_initial_action_schema = new ActionSchema("<decomposition-init-for-" + name + ">", false, false);
-    const Formula* dummy_initial_eff_formula = &(composite_action_schema->condition());
+    const Formula* composite_preconditions = &(composite_action_schema->condition());
+    Effect* dummy_initial_effect;
 
-    // Convert the dummy_initial_eff_formula to an actual effect.
-    Effect* dummy_initial_eff;
-
-    // Check whether the Formula is a Literal or a Conjunction
-    const Conjunction* conj = dynamic_cast<const Conjunction*>(dummy_initial_eff_formula);
+    // Check whether the composite's precondition is a Conjunction or is a Literal;
+    // Anything else is not supported at this time.
+    // TODO: Extend the kinds of effects of dummy initial steps to be more than just Literals or Conjunctions.
+    const Conjunction* conj = dynamic_cast<const Conjunction*>(composite_preconditions);
     if (conj != NULL)
     {
         // Add each conjunct (which should be a Literal) as an effect.
         const FormulaList& conjuncts = conj->conjuncts();
         for (FormulaList::const_iterator fi = conjuncts.begin(); fi != conjuncts.end(); ++fi) {
-            dummy_initial_eff = convert_formula(*fi);
-            dummy_initial_action_schema->add_effect(*dummy_initial_eff);
+            dummy_initial_effect = attempt_to_convert_formula(*fi);
+            dummy_initial_action_schema->add_effect(*dummy_initial_effect);
         }
     }
 
     else { // If it's not a Conjunction, it should be a literal - otherwise, this will throw an exception.
-        dummy_initial_eff = convert_formula(dummy_initial_eff_formula);
-        dummy_initial_action_schema->add_effect(*dummy_initial_eff);
+        dummy_initial_effect = attempt_to_convert_formula(composite_preconditions);
+        dummy_initial_action_schema->add_effect(*dummy_initial_effect);
     }
 
-    // TODO: Extend the kinds of effects of dummy initial steps to be more than just Literals or Conjunctions.
-
-    // Finally, create the dummy initial step.
-    Step* dummy_initial_step = new Step(Decomposition::DUMMY_START_ID, *dummy_initial_action_schema);
+    // TODO: [#7]  Abstract Action Schemata should support wider range of precondition/effect Formulas #7 
 
 
-    
-    
-    
-    
-    
-    
-    
-    // (2) contains a dummy final step whose effects are the preconditions of the parent step.
+    /* ---------------------------------------------------------------- */
+    /* Dummy Goal Step Construction  */
 
-
-    // (3) has ordering constraints ensuring that s_i precedes all other steps, and
-
-    // (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
-
-
-
-
+    ActionSchema* dummy_goal_action_schema = new ActionSchema("<decomposition-goal-for-" + name + ">", false, false);
+    EffectList composite_effects = composite_action_schema->effects();
+    Conjunction* dummy_goal_preconditions = new Conjunction();
+    for (EffectList::const_iterator ei = composite_effects.begin(); ei != composite_effects.end(); ++ei)
+    {
+        const Effect* eff = *ei;
+        const Formula* eff_formula = &(eff->literal());
+        dummy_goal_preconditions->add_conjunct(*eff_formula);
+    }
+    dummy_goal_action_schema->set_condition(*dummy_goal_preconditions);
 
     
     // build pseudo_steps
+    pseudo_steps_ =
+        new Chain<Step>(Step(Decomposition::DUMMY_START_ID, *dummy_initial_action_schema),
+         new Chain<Step>(Step(Decomposition::DUMMY_GOAL_ID, *dummy_goal_action_schema), NULL));
 
     // build bindings
+    bindings_ = &Bindings::EMPTY;
 
     // build orderings
 
+    // TODO: extend this to the other kind of orderings, TermporalOrderings
+    orderings_ = new BinaryOrderings(); 
+
     // build links
+    links_ = NULL;
 
 
 }
@@ -128,7 +137,7 @@ void DecompositionSchema::add_parameter(Variable var) {
 /* Auxiliary Function Definitions */
 
 /* Attempt to convert the parameter Formula to an Effect. */
-Effect* convert_formula(const Formula* formula)
+Effect* attempt_to_convert_formula(const Formula* formula)
 {
     const Literal* l = dynamic_cast<const Literal*>(formula);
     if (l == NULL) {
