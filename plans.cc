@@ -1871,6 +1871,7 @@ void Plan::add_step(PlanList& plans, const Literal& literal, const OpenCondition
     {
         const Action& action = *(*ai).first;
         
+        // needed to avoid adding a dummy action, which, by convention begins with "<"
         if (action.name().substr(0, 1) != "<") 
         {
             const Effect& effect = *(*ai).second;
