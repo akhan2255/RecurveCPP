@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
     bool no_flaw_order = true;
     bool no_search_limit = true;
     /* Set default verbosity. */
-    verbosity = 0;
+    verbosity = 2;
     /* Set default warning level. */
     warning_level = 1;
 
@@ -386,6 +386,7 @@ int main(int argc, char* argv[])
         params.search_limits.push_back(params.search_limits.back());
     }
 
+    std::cerr << "here without bugs" << std::endl;
     try {
         /*
          * Read pddl files.

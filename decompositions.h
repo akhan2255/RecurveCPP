@@ -34,12 +34,6 @@
  */
 struct Decomposition {
 
-    /* Id of start step. */
-    static const size_t DUMMY_START_ID;
-
-    /* Id of goal step. */
-    static const size_t DUMMY_GOAL_ID;
-
     /* Returns the composite action this decomposition is appliable to. */
     const ActionSchema& composite_action_schema() const { return *composite_action_schema_; }
 
@@ -60,11 +54,14 @@ protected:
 
 private:
 
+    /* List of steps. */
+    struct StepList : public std::vector < Step > { };
+
+    /* List of pseudo-steps currently in use. Pseudo-steps are steps with a negative id. */
+    static StepList defined_pseudo_steps_;
+
     /* Next decomposition id. */
     static size_t next_id;
-
-    /* Next pseudo-step id. */
-    size_t next_pseudo_step_id_;
 
     /* Unique id for decompositions. */
     size_t id_;
@@ -114,15 +111,6 @@ private:
     VariableList parameters_;
 
 };
-
-
-
-/* ====================================================================== */
-/* PseudostepMap */
-
-
-
-
 
 
 /* ====================================================================== */
