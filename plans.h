@@ -143,8 +143,9 @@ inline bool operator==(const DecompositionLink& l1, const DecompositionLink& l2)
  * Plan step.
  */
 struct Step {
+
     /* Constructs a step instantiated from an action. */
-    Step(size_t id, const Action& action)
+    Step(int id, const Action& action)
         : id_(id), action_(&action) {}
 
     /* Constructs a step. */
@@ -152,14 +153,16 @@ struct Step {
         : id_(s.id_), action_(s.action_) {}
 
     /* Returns the step id. */
-    size_t id() const { return id_; }
+    int id() const { return id_; }
 
     /* Returns the action that this step is instantiated from. */
     const Action& action() const { return *action_; }
 
 private:
+
     /* Step id. */
-    size_t id_;
+    int id_;
+
     /* Action that this step is instantiated from. */
     const Action* action_;
 };
@@ -173,7 +176,7 @@ private:
  */
 struct Plan {
     /* Id of goal step. */
-    static const size_t GOAL_ID;
+    static const int GOAL_ID;
 
     /* Returns plan for given problem. */
     static const Plan* plan(const Problem& problem, const Parameters& params,
@@ -189,7 +192,7 @@ struct Plan {
     const Chain<Step>* steps() const { return steps_; }
 
     /* Returns the number of unique steps in this plan. */
-    size_t num_steps() const { return num_steps_; }
+    int num_steps() const { return num_steps_; }
 
     /* Returns the links of this plan. */
     const Chain<Link>* links() const { return links_; }
@@ -279,7 +282,7 @@ private:
     const Chain<Step>* steps_;
 
     /* Number of unique steps in plan. */
-    size_t num_steps_;
+    int num_steps_;
     
     /* Chain of causal links. */
     const Chain<Link>* links_;

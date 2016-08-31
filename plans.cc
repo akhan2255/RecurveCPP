@@ -115,7 +115,7 @@ struct PlanQueue : public std::priority_queue < const Plan* > {
 
 
 /* Id of goal step. */
-const size_t Plan::GOAL_ID = std::numeric_limits<size_t>::max();
+const int Plan::GOAL_ID = std::numeric_limits<int>::max();
 
 
 /* Adds goal to chain of open conditions, and returns true if and only
@@ -2113,7 +2113,7 @@ int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
      */
     const Bindings* bindings = bindings_;
     const Chain<Step>* new_steps = test_only ? NULL : steps();
-    size_t new_num_steps = test_only ? 0 : num_steps();
+    int new_num_steps = test_only ? 0 : num_steps();
     if (step.id() > num_steps()) {
         if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
             step.action().condition(), step.id(), test_only)) {

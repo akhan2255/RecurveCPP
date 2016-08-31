@@ -353,7 +353,7 @@ BinaryOrderings::refine(const Ordering& new_ordering,
   if (new_step.id() != 0 && new_step.id() != Plan::GOAL_ID) {
     BinaryOrderings& orderings = *new BinaryOrderings(*this);
     std::map<size_t, BoolVector*> own_data;
-    if (new_step.id() > before_.size() + 1) {
+    if (new_step.id() > (int) before_.size() + 1) {
       if (new_step.id() > 1) {
 	BoolVector* bv = new BoolVector(2*new_step.id() - 2, false);
 	own_data.insert(std::make_pair(orderings.before_.size(), bv));
@@ -701,15 +701,15 @@ const TemporalOrderings* TemporalOrderings::refine(size_t step_id,
 /* Returns the ordering collection with the given additions. */
 const TemporalOrderings*
 TemporalOrderings::refine(float time, const Step& new_step) const {
-  if (new_step.id() != 0 && new_step.id() != Plan::GOAL_ID
-      && new_step.id() > distance_.size()/2) {
+  if (new_step.id() != 0 && new_step.id() != (int) Plan::GOAL_ID
+      && new_step.id() > (int) distance_.size()/2) {
     int itime = int(time/threshold + 0.5);
     TemporalOrderings& orderings = *new TemporalOrderings(*this);
     IntVector* fv = new IntVector(4*new_step.id() - 2, INT_MAX);
     /* Time for start of new step. */
     (*fv)[0] = itime;
     (*fv)[4*new_step.id() - 3] = -itime;
-    for (size_t id = 1; id < new_step.id(); id++) {
+    for (int id = 1; id < new_step.id(); id++) {
       int t = itime - (*distance_[2*id - 1])[0];
       (*fv)[2*id - 1] = (*fv)[2*id] = t;
       (*fv)[4*new_step.id() - 2*id - 2] = -t;
@@ -721,7 +721,7 @@ TemporalOrderings::refine(float time, const Step& new_step) const {
     /* Time for end of new step. */
     (*fv)[0] = itime;
     (*fv)[4*new_step.id() - 1] = -itime;
-    for (size_t id = 1; id < new_step.id(); id++) {
+    for (int id = 1; id < new_step.id(); id++) {
       int t = itime - (*distance_[2*id - 1])[0];
       (*fv)[2*id - 1] = (*fv)[2*id] = t;
       (*fv)[4*new_step.id() - 2*id] = -t;
@@ -776,7 +776,7 @@ TemporalOrderings::refine(const Ordering& new_ordering,
   if (new_step.id() != 0 && new_step.id() != Plan::GOAL_ID) {
     TemporalOrderings& orderings = *new TemporalOrderings(*this);
     std::map<size_t, IntVector*> own_data;
-    if (new_step.id() > distance_.size()/2) {
+    if (new_step.id() > (int) distance_.size()/2) {
       const Value* min_v =
 	dynamic_cast<const Value*>(&new_step.action().min_duration());
       if (min_v == NULL) {
