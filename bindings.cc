@@ -921,8 +921,8 @@ bool Bindings::unify(BindingList& mgu, const Literal& l1, int id1, const Literal
 /* Checks if the given equality is consistent with the current
    bindings. */
 bool Bindings::consistent_with(const Equality& eq, int step_id) const {
-  size_t var_id = eq.step_id1(step_id);
-  size_t term_id = eq.step_id2(step_id);
+  int var_id = eq.step_id1(step_id);
+  int term_id = eq.step_id2(step_id);
   const Varset* vs =
     (term_id <= high_step_) ? find_varset(varsets_, eq.term(), term_id) : 0;
   if (vs == 0 || vs->includes(eq.variable(), var_id)) {
@@ -943,8 +943,8 @@ bool Bindings::consistent_with(const Equality& eq, int step_id) const {
 /* Checks if the given inequality is consistent with the current
    bindings. */
 bool Bindings::consistent_with(const Inequality& neq, int step_id) const {
-  size_t var_id = neq.step_id1(step_id);
-  size_t term_id = neq.step_id2(step_id);
+  int var_id = neq.step_id1(step_id);
+  int term_id = neq.step_id2(step_id);
   const Varset* vs =
     (term_id <= high_step_) ? find_varset(varsets_, neq.term(), term_id) : 0;
   return (vs == 0
@@ -982,7 +982,7 @@ const Bindings* Bindings::add(const BindingList& new_bindings,
   /* Varsets for new binding collection */
   const Chain<Varset>* varsets = varsets_;
   /* Highest step id of variable in varsets. */
-  size_t high_step = high_step_;
+  int high_step = high_step_;
   /* Variables above previous high step. */
   VariableSet high_step_vars;
   /* Step domains for new binding collection */
@@ -1366,7 +1366,7 @@ const Bindings* Bindings::add(int step_id, const Action& step_action,
     new Chain<StepDomain>(StepDomain(step_id, action->parameters(), *domain),
 			  step_domains_);
   const Chain<Varset>* varsets = varsets_;
-  size_t high_step = high_step_;
+  int high_step = high_step_;
   const StepDomain& step_domain = step_domains->head;
   for (size_t c = 0; c < step_domain.parameters().size(); c++) {
     if (step_domain.projection_size(c) == 1) {

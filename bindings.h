@@ -43,7 +43,7 @@ struct PlanningGraph;
 struct Binding {
 
     /* Constructs a variable binding. */
-    Binding(const Variable& var, size_t var_id, const Term& term, size_t term_id, bool equality)
+    Binding(const Variable& var, int var_id, const Term& term, int term_id, bool equality)
         : var_(var), 
           var_id_(var_id), 
           term_(term), 
@@ -184,14 +184,17 @@ struct ActionDomain {
     void print(std::ostream& os) const;
 
 private:
+    
     /* A projection map. */
     struct ProjectionMap : public std::map < size_t, const NameSet* > {
     };
 
     /* Possible parameter tuples. */
     TupleList tuples_;
+
     /* Projections. */
     mutable ProjectionMap projections_;
+    
     /* Reference counter. */
     mutable size_t ref_count_;
 };

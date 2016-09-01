@@ -431,14 +431,14 @@ struct BindingLiteral : public Formula {
 
   /* Returns the step id of the variable, or the given id if no step
      id has been assigned. */
-  size_t step_id1(size_t def_id) const { return (id1_ != 0) ? id1_ : def_id; }
+  int step_id1(size_t def_id) const { return (id1_ != 0) ? id1_ : def_id; }
 
   /* Returns the term of this binding literal. */
   const Term& term() const { return term_; }
 
   /* Returns the step id of the term, or the given id if no step id
      has been assigned. */
-  size_t step_id2(size_t def_id) const { return (id2_ != 0) ? id2_ : def_id; }
+  int step_id2(size_t def_id) const { return (id2_ != 0) ? id2_ : def_id; }
 
   /* Returns a formula that separates the given effect from anything
      definitely asserted by this formula. */
