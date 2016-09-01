@@ -28,6 +28,7 @@ struct Fluent;
 struct Term;
 struct Type;
 struct TypeSet;
+struct Step;
 
 #include <cctype>
 #include <string>

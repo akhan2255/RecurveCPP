@@ -22,6 +22,7 @@
 %defines /* instructs to generate an include file 'pddl.hh' */
 
 %{
+#include "plans.h"
 #include "requirements.h"
 #include "problems.h"
 #include "domains.h"
@@ -99,7 +100,6 @@ private:
   std::vector<VariableMap> frames_;
 };
 
-
 /* The lexer. */
 extern int yylex();
 
@@ -147,6 +147,9 @@ static const ActionSchema* pseudo_step_action;
 
 /* Decomposition schema being parsed, or 0 if no decomposition is being parsed. */
 static DecompositionSchema* decomposition;
+
+/* A map that tracks pseudo-steps for the decomposition schema currently being parsed. */
+static std::map<std::string, Step*> decomposition_pseudo_steps;
 
 /* Time of current condition. */ 
 static FormulaTime formula_time; 
@@ -243,7 +246,7 @@ static void add_decomposition();
 static void prepare_pseudostep(const std::string* pseudo_step_action_name);
 
 /* Creates the pseudo-step just parsed. */
-static const Chain<Step>* make_pseudostep();
+static const Step* make_pseudostep();
 
 /* Adds a pseudo-step to the current decomposition. */
 static void add_pseudostep();
@@ -329,6 +332,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token DECOMPOSITION STEPS LINKS ORDERINGS DECOMPOSITION_NAME
 
 %union {
+  const Step* step;
   const Formula* formula;
   const Literal* literal;
   const Atom* atom;
@@ -342,6 +346,7 @@ static void add_init_literal(float time, const Literal& literal);
   float num;
 }
 
+%type <step> pseudo_step
 %type <formula> da_gd timed_gd timed_gds formula conjuncts disjuncts
 %type <literal> name_literal
 %type <atom> atomic_name_formula atomic_term_formula
@@ -583,7 +588,7 @@ step : '(' name pseudo_step ')'
 	 ;
 
 pseudo_step : '(' name      { prepare_pseudostep($2); } 
-				  terms ')' { make_pseudostep(); }
+				  terms ')' { $$ = make_pseudostep(); }
 			;
 
 /* ====================================================================== */
@@ -1245,7 +1250,7 @@ static void prepare_pseudostep(const std::string* pseudo_step_action_name)
 
 
 /* Creates the pseudo-step just parsed. */
-static const Chain<Step>* make_pseudostep()
+static const Step* make_pseudostep()
 {
 	/* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
 	size_t n = term_parameters.size();

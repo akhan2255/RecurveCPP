@@ -120,8 +120,9 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 331 "pddl.yy" /* yacc.c:1909  */
+#line 334 "pddl.yy" /* yacc.c:1909  */
 
+  const Step* step;
   const Formula* formula;
   const Literal* literal;
   const Atom* atom;
@@ -134,7 +135,7 @@ union YYSTYPE
   std::vector<const std::string*>* strs;
   float num;
 
-#line 138 "pddl.hh" /* yacc.c:1909  */
+#line 139 "pddl.hh" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
