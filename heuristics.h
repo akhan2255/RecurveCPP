@@ -148,11 +148,11 @@ struct PlanningGraph {
   const Problem& problem() const { return *problem_; }
   
   /* Returns the heurisitc value of an atom. */
-  HeuristicValue heuristic_value(const Atom& atom, size_t step_id,
+  HeuristicValue heuristic_value(const Atom& atom, int step_id,
 				 const Bindings* bindings = NULL) const;
 
   /* Returns the heuristic value of a negated atom. */
-  HeuristicValue heuristic_value(const Negation& negation, size_t step_id,
+  HeuristicValue heuristic_value(const Negation& negation, int step_id,
 				 const Bindings* bindings = NULL) const;
 
   /* Returns a set of achievers for the given literal. */

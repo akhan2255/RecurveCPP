@@ -100,12 +100,12 @@ struct Formula {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b = NULL) const = 0;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const = 0;
+		     int step_id, const Bindings& bindings) const = 0;
 
 protected:
   /* Constructs a formula. */
@@ -166,12 +166,12 @@ struct Constant : public Formula {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns a negation of this formula. */
@@ -290,12 +290,12 @@ struct Atom : public Literal {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -376,12 +376,12 @@ struct Negation : public Literal {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -447,19 +447,19 @@ struct BindingLiteral : public Formula {
 
 protected:
   /* Constructs a binding literal. */
-  BindingLiteral(const Variable& variable, size_t id1,
-		 const Term& term, size_t id2)
-    : variable_(variable), id1_(id1), term_(term), id2_(id2) {}
+  BindingLiteral(const Variable& variable, int id_1,
+		 const Term& term, int id_2)
+    : variable_(variable), id1_(id_1), term_(term), id2_(id_2) {}
 
 private:
   /* Variable of binding literal. */
   Variable variable_;
   /* Step id of variable, or zero if unassigned. */
-  size_t id1_;
+  int id1_;
   /* Term of binding literal. */
   Term term_;
   /* Step id of term, or zero if unassigned. */
-  size_t id2_;
+  int id2_;
 };
 
 
@@ -474,8 +474,8 @@ struct Equality : public BindingLiteral {
   static const Formula& make(const Term& term1, const Term& term2);
 
   /* Returns an equality of the two terms. */
-  static const Formula& make(const Term& term1, size_t id1,
-			     const Term& term2, size_t id2);
+  static const Formula& make(const Term& term1, int id_1,
+			     const Term& term2, int id_2);
 
   /* Returns this formula subject to the given substitutions. */
   virtual const Formula& substitution(const SubstitutionMap& subst) const;
@@ -490,12 +490,12 @@ struct Equality : public BindingLiteral {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -503,8 +503,8 @@ protected:
 
 private:
   /* Constructs an equality with assigned step ids. */
-  Equality(const Variable& variable, size_t id1, const Term& term, size_t id2)
-    : BindingLiteral(variable, id1, term, id2) {}
+  Equality(const Variable& variable, int id_1, const Term& term, int id_2)
+    : BindingLiteral(variable, id_1, term, id_2) {}
 };
 
 
@@ -519,8 +519,8 @@ struct Inequality : public BindingLiteral {
   static const Formula& make(const Term& term1, const Term& term2);
 
   /* Returns an inequality of the two terms. */
-  static const Formula& make(const Term& term1, size_t id1,
-			     const Term& term2, size_t id2);
+  static const Formula& make(const Term& term1, int id_1,
+			     const Term& term2, int id_2);
 
   /* Returns this formula subject to the given substitutions. */
   virtual const Formula& substitution(const SubstitutionMap& subst) const;
@@ -535,12 +535,12 @@ struct Inequality : public BindingLiteral {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -548,9 +548,9 @@ protected:
 
 private:
   /* Constructs an inequality with assigned step ids. */
-  Inequality(const Variable& variable, size_t id1,
-	     const Term& term, size_t id2)
-    : BindingLiteral(variable, id1, term, id2) {}
+  Inequality(const Variable& variable, int id_1,
+	     const Term& term, int id_2)
+    : BindingLiteral(variable, id_1, term, id_2) {}
 };
 
 
@@ -591,12 +591,12 @@ struct Conjunction : public Formula {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -645,12 +645,12 @@ struct Disjunction : public Formula {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -724,12 +724,12 @@ struct Exists : public Quantification {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -760,12 +760,12 @@ struct Forall : public Quantification {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -823,12 +823,12 @@ struct TimedLiteral : public Formula {
 
   /* Returns the heuristic value of this formula. */
   virtual void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const;
 
   /* Prints this formula on the given stream with the given bindings. */
   virtual void print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const;
+		     int step_id, const Bindings& bindings) const;
 
 protected:
   /* Returns the negation of this formula. */
@@ -910,12 +910,12 @@ struct Condition {
 
   /* Returns the heuristic value of this condition. */
   void heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-		       const PlanningGraph& pg, size_t step_id,
+		       const PlanningGraph& pg, int step_id,
 		       const Bindings* b = NULL) const;
 
   /* Prints this condition on the given stream with the given bindings. */
   void print(std::ostream& os,
-	     size_t step_id, const Bindings& bindings) const;
+	     int step_id, const Bindings& bindings) const;
 
 private:
   /* Start condition. */

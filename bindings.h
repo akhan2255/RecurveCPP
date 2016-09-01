@@ -44,23 +44,31 @@ struct Binding {
 
     /* Constructs a variable binding. */
     Binding(const Variable& var, size_t var_id, const Term& term, size_t term_id, bool equality)
-        : var_(var), var_id_(var_id), term_(term), term_id_(term_id), equality_(equality) {}
+        : var_(var), 
+          var_id_(var_id), 
+          term_(term), 
+          term_id_(term_id), 
+          equality_(equality) {}
 
     /* Constructs a variable binding. */
     Binding(const Binding& b)
-        : var_(b.var_), var_id_(b.var_id_), term_(b.term_), term_id_(b.term_id_), equality_(b.equality_) {}
+        : var_(b.var_), 
+          var_id_(b.var_id_), 
+          term_(b.term_), 
+          term_id_(b.term_id_), 
+          equality_(b.equality_) {}
 
     /* Returns the variable of this binding. */
     const Variable& var() const { return var_; }
 
     /* Returns the step id for the variable. */
-    size_t var_id() const { return var_id_; }
+    int var_id() const { return var_id_; }
 
     /* Returns the term of this binding. */
     const Term& term() const { return term_; }
 
     /* Return the step id for the term. */
-    size_t term_id() const { return term_id_; }
+    int term_id() const { return term_id_; }
 
     /* Checks if this is an equality binding. */
     bool equality() const { return equality_; }
@@ -71,13 +79,13 @@ private:
     Variable var_;
     
     /* Step id for the variable. */
-    size_t var_id_;
+    int var_id_;
     
     /* A term either bound to, or separated from the variable. */
     Term term_;
     
     /* Step id for the term. */
-    size_t term_id_;
+    int term_id_;
     
     /* Whether or not this is an equality binding. */
     bool equality_;
@@ -221,71 +229,63 @@ struct Bindings {
     }
 
     /* Checks if the given formulas can be unified. */
-    static bool unifiable(const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2);
+    static bool unifiable(const Literal& l1, int id1, const Literal& l2, int id2);
 
     /* Checks if the given formulas can be unified; the most general
        unifier is added to the provided substitution list. */
-    static bool unifiable(BindingList& mgu,
-        const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2);
+    static bool unifiable(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2);
 
     /* Deletes this binding collection. */
     ~Bindings();
 
     /* Returns the binding for the given term, or the term itself if it
        is not bound to a single object. */
-    Term binding(const Term& term, size_t step_id) const;
+    Term binding(const Term& term, int step_id) const;
 
     /* Returns the domain for the given step variable. */
-    const NameSet& domain(const Variable& var, size_t step_id,
-        const Problem& problem) const;
+    const NameSet& domain(const Variable& var, int step_id, const Problem& problem) const;
 
     /* Checks if one of the given formulas is the negation of the other,
        and the atomic formulas can be unified. */
-    bool affects(const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2) const;
+    bool affects(const Literal& l1, int id1, const Literal& l2, int id2) const;
 
     /* Checks if one of the given formulas is the negation of the other,
        and the atomic formulas can be unified; the most general unifier
        is added to the provided substitution list. */
-    bool affects(BindingList& mgu, const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2) const;
+    bool affects(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2) const;
 
     /* Checks if the given formulas can be unified. */
-    bool unify(const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2) const;
+    bool unify(const Literal& l1, int id1, const Literal& l2, int id2) const;
 
     /* Checks if the given formulas can be unified; the most general
        unifier is added to the provided substitution list. */
-    bool unify(BindingList& mgu, const Literal& l1, size_t id1,
-        const Literal& l2, size_t id2) const;
+    bool unify(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2) const;
 
     /* Checks if the given equality is consistent with the current
        bindings. */
-    bool consistent_with(const Equality& eq, size_t step_id) const;
+    bool consistent_with(const Equality& eq, int step_id) const;
 
     /* Checks if the given inequality is consistent with the current
        bindings. */
-    bool consistent_with(const Inequality& neq, size_t step_id) const;
+    bool consistent_with(const Inequality& neq, int step_id) const;
 
     /* Returns the binding collection obtained by adding the given
        bindings to this binding collection, or 0 if the new bindings
        are inconsistent with the current. */
-    const Bindings* add(const BindingList& new_bindings,
+    const Bindings* add(const BindingList& new_bindings, 
         bool test_only = false) const;
 
     /* Returns the binding collection obtained by adding the constraints
        associated with the given step to this binding collection, or
        0 if the new binding collection would be inconsistent. */
-    const Bindings* add(size_t step_id, const Action& step_action,
-        const PlanningGraph& pg, bool test_only = false) const;
+    const Bindings* add(int step_id, const Action& step_action, const PlanningGraph& pg, 
+        bool test_only = false) const;
 
     /* Prints this object on the given stream. */
     void print(std::ostream& os) const;
 
     /* Prints the given term on the given stream. */
-    void print_term(std::ostream& os, const Term& term, size_t step_id) const;
+    void print_term(std::ostream& os, const Term& term, int step_id) const;
 
 private:
     
@@ -293,7 +293,7 @@ private:
     const Chain<Varset>* varsets_;
     
     /* Highest step id of variable in varsets. */
-    size_t high_step_;
+    int high_step_;
     
     /* Step domains. */
     const Chain<StepDomain>* step_domains_;
@@ -305,7 +305,7 @@ private:
     Bindings();
 
     /* Constructs a binding collection. */
-    Bindings(const Chain<Varset>* varsets, size_t high_step, const Chain<StepDomain>* step_domains);
+    Bindings(const Chain<Varset>* varsets, int high_step, const Chain<StepDomain>* step_domains);
 };
 
 

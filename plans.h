@@ -152,6 +152,9 @@ struct Step {
     Step(const Step& s)
         : id_(s.id_), action_(s.action_) {}
 
+    /* Tests if this object is a pseudo-step. */
+    bool pseudo_step() { return id_ < 0; }
+
     /* Returns the step id. */
     int id() const { return id_; }
 

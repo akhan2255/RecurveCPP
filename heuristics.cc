@@ -54,7 +54,7 @@ static int sum(int n, int m) {
 
 /* Computes the heuristic value of the given formula. */
 static void formula_value(HeuristicValue& h, HeuristicValue& hs,
-			  const Formula& formula, size_t step_id,
+			  const Formula& formula, int step_id,
 			  const Plan& plan, const PlanningGraph& pg,
 			  bool reuse = false) {
   const Bindings* bindings = plan.bindings();
@@ -288,7 +288,7 @@ std::ostream& operator<<(std::ostream& os, const HeuristicValue& v) {
 
 /* Returns the heuristic value of this formula. */
 void Constant::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const {
   h = hs = HeuristicValue::ZERO;
 }
@@ -296,7 +296,7 @@ void Constant::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Atom::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			   const PlanningGraph& pg, size_t step_id,
+			   const PlanningGraph& pg, int step_id,
 			   const Bindings* b) const {
   h = hs = pg.heuristic_value(*this, step_id, b);
 }
@@ -304,7 +304,7 @@ void Atom::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Negation::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const {
   h = hs = pg.heuristic_value(*this, step_id, b);
 }
@@ -312,7 +312,7 @@ void Negation::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic vaue of this formula. */
 void Equality::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			       const PlanningGraph& pg, size_t step_id,
+			       const PlanningGraph& pg, int step_id,
 			       const Bindings* b) const {
   if (b == NULL) {
     h = hs = HeuristicValue::ZERO;
@@ -326,7 +326,7 @@ void Equality::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Inequality::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-				 const PlanningGraph& pg, size_t step_id,
+				 const PlanningGraph& pg, int step_id,
 				 const Bindings* b) const {
   if (b == NULL) {
     h = hs = HeuristicValue::ZERO;
@@ -340,7 +340,7 @@ void Inequality::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Conjunction::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-				  const PlanningGraph& pg, size_t step_id,
+				  const PlanningGraph& pg, int step_id,
 				  const Bindings* b) const {
   h = hs = HeuristicValue::ZERO;
   for (FormulaList::const_iterator fi = conjuncts().begin();
@@ -355,7 +355,7 @@ void Conjunction::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Disjunction::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-				  const PlanningGraph& pg, size_t step_id,
+				  const PlanningGraph& pg, int step_id,
 				  const Bindings* b) const {
   h = hs = HeuristicValue::INFINITE;
   for (FormulaList::const_iterator fi = disjuncts().begin();
@@ -370,7 +370,7 @@ void Disjunction::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Exists::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			     const PlanningGraph& pg, size_t step_id,
+			     const PlanningGraph& pg, int step_id,
 			     const Bindings* b) const {
   body().heuristic_value(h, hs, pg, step_id, b);
 }
@@ -378,7 +378,7 @@ void Exists::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void Forall::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-			     const PlanningGraph& pg, size_t step_id,
+			     const PlanningGraph& pg, int step_id,
 			     const Bindings* b) const {
   const Formula& f = universal_base(SubstitutionMap(), pg.problem());
   f.heuristic_value(h, hs, pg, step_id, b);
@@ -387,7 +387,7 @@ void Forall::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
 
 /* Returns the heuristic value of this formula. */
 void TimedLiteral::heuristic_value(HeuristicValue& h, HeuristicValue& hs,
-				   const PlanningGraph& pg, size_t step_id,
+				   const PlanningGraph& pg, int step_id,
 				   const Bindings* b) const {
   literal().heuristic_value(h, hs, pg, step_id, b);
   if (when() == AT_END) {
@@ -812,7 +812,7 @@ PlanningGraph::~PlanningGraph() {
 
 
 /* Returns the heuristic value of a ground atom. */
-HeuristicValue PlanningGraph::heuristic_value(const Atom& atom, size_t step_id,
+HeuristicValue PlanningGraph::heuristic_value(const Atom& atom, int step_id,
 					      const Bindings* bindings) const {
   if (bindings == NULL) {
     /* Assume ground atom. */
@@ -843,7 +843,7 @@ HeuristicValue PlanningGraph::heuristic_value(const Atom& atom, size_t step_id,
 
 /* Returns the heuristic value of a negated atom. */
 HeuristicValue PlanningGraph::heuristic_value(const Negation& negation,
-					      size_t step_id,
+					      int step_id,
 					      const Bindings* bindings) const {
   if (bindings == NULL) {
     /* Assume ground negated atom. */

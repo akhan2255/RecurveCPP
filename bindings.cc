@@ -30,7 +30,7 @@
 /* ====================================================================== */
 /* StepVariable */
 
-typedef std::pair<Variable, size_t> StepVariable;
+typedef std::pair<Variable, int> StepVariable;
 
 
 /* ====================================================================== */
@@ -91,7 +91,7 @@ struct Varset {
   }
 
   /* Checks if this varset includes the given variable. */
-  bool includes(const Variable& var, size_t step_id) const {
+  bool includes(const Variable& var, int step_id) const {
     for (const Chain<StepVariable>* vc = cd_set(); vc != 0; vc = vc->tail) {
       if (vc->head.first == var && vc->head.second == step_id) {
 	return true;
@@ -101,7 +101,7 @@ struct Varset {
   }
 
   /* Checks if this varset excludes the given variable. */
-  bool excludes(const Variable& var, size_t step_id) const {
+  bool excludes(const Variable& var, int step_id) const {
     for (const Chain<StepVariable>* vc = ncd_set(); vc != 0; vc = vc->tail) {
       if (vc->head.first == var && vc->head.second == step_id) {
 	return true;
@@ -129,7 +129,7 @@ struct Varset {
   /* Returns the varset obtained by adding the given variable to this
      varset, or 0 if the variable is excluded from this varset. */
   const Varset* add(const Chain<Varset>*& vsc, const Variable& var,
-		    size_t step_id) const {
+		    int step_id) const {
     if (excludes(var, step_id)) {
       return 0;
     } else {
@@ -155,7 +155,7 @@ struct Varset {
   /* Returns the varset obtained by adding the given term to this
      varset, or 0 if the term is excluded from this varset. */
   const Varset* add(const Chain<Varset>*& vsc, const Term& term,
-		    size_t step_id) const {
+		    int step_id) const {
     if (term.object()) {
       return add(vsc, term.as_object());
     } else {
@@ -167,7 +167,7 @@ struct Varset {
      non-codesignation list of this varset; N.B. assumes that the
      variable is not included in the varset already. */
   const Varset* restrict(const Chain<Varset>*& vsc,
-			 const Variable& var, size_t step_id) const {
+			 const Variable& var, int step_id) const {
     const Chain<StepVariable>* new_ncd =
       new Chain<StepVariable>(std::make_pair(var, step_id), ncd_set());
     vsc = new Chain<Varset>(Varset(constant(), cd_set(), new_ncd, type_), vsc);
@@ -319,7 +319,7 @@ static const Varset* find_varset(const Chain<Varset>* varsets,
 
 /* Returns the varset containing the given variable, or 0 if none do. */
 static const Varset* find_varset(const Chain<Varset>* varsets,
-				 const Variable& var, size_t step_id) {
+				 const Variable& var, int step_id) {
   for (const Chain<Varset>* vsc = varsets; vsc != 0; vsc = vsc->tail) {
     const Varset& vs = vsc->head;
     if (vs.includes(var, step_id)) {
@@ -332,7 +332,7 @@ static const Varset* find_varset(const Chain<Varset>* varsets,
 
 /* Returns the varset containing the given term, or 0 if none do. */
 static const Varset* find_varset(const Chain<Varset>* varsets,
-				 const Term& term, size_t step_id) {
+				 const Term& term, int step_id) {
   if (term.object()) {
     return find_varset(varsets, term.as_object());
   } else {
@@ -349,7 +349,7 @@ static const Varset* find_varset(const Chain<Varset>* varsets,
  */
 struct StepDomain {
   /* Constructs a step domain. */
-  StepDomain(size_t id, const VariableList& parameters,
+  StepDomain(int id, const VariableList& parameters,
 	     const ActionDomain& domain)
     : id_(id), parameters_(&parameters), domain_(&domain) {
     ActionDomain::register_use(domain_);
@@ -367,7 +367,7 @@ struct StepDomain {
   }
 
   /* Returns the step id. */
-  size_t id() const { return id_; }
+  int id() const { return id_; }
 
   /* Returns the step parameters. */
   const VariableList& parameters() const { return *parameters_; }
@@ -455,10 +455,13 @@ struct StepDomain {
   void print(std::ostream& os) const;
 
 private:
-  /* The id of the step. */
-  size_t id_;
+  
+    /* The id of the step. */
+  int id_;
+  
   /* Parameters of the step. */
   const VariableList* parameters_;
+  
   /* Domain of the parameters. */
   const ActionDomain* domain_;
 };
@@ -484,7 +487,7 @@ void StepDomain::print(std::ostream& os) const {
    variable. */
 static std::pair<const StepDomain*, size_t>
 find_step_domain(const Chain<StepDomain>* step_domains,
-		 const Variable& var, size_t step_id) {
+		 const Variable& var, int step_id) {
   if (step_id > 0) {
     for (const Chain<StepDomain>* sd = step_domains; sd != 0; sd = sd->tail) {
       const StepDomain& step_domain = sd->head;
@@ -666,8 +669,7 @@ void ActionDomain::print(std::ostream& os) const {
 const Bindings Bindings::EMPTY = Bindings();
 
 /* Checks if the given formulas can be unified. */
-bool Bindings::unifiable(const Literal& l1, size_t id1,
-			 const Literal& l2, size_t id2) {
+bool Bindings::unifiable(const Literal& l1, int id1, const Literal& l2, int id2) {
   BindingList dummy;
   return unifiable(dummy, l1, id1, l2, id2);
 }
@@ -675,9 +677,7 @@ bool Bindings::unifiable(const Literal& l1, size_t id1,
 
 /* Checks if the given formulas can be unified; the most general
    unifier is added to the provided substitution list. */
-bool Bindings::unifiable(BindingList& mgu,
-			 const Literal& l1, size_t id1,
-			 const Literal& l2, size_t id2) {
+bool Bindings::unifiable(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2) {
   return EMPTY.unify(mgu, l1, id1, l2, id2);
 }
 
@@ -689,10 +689,12 @@ Bindings::Bindings()
 
 
 /* Constructs a binding collection. */
-Bindings::Bindings(const Chain<Varset>* varsets, size_t high_step,
-		   const Chain<StepDomain>* step_domains)
-  : varsets_(varsets), high_step_(high_step), step_domains_(step_domains),
-    ref_count_(0) {
+Bindings::Bindings(const Chain<Varset>* varsets, int high_step, const Chain<StepDomain>* step_domains)
+  : varsets_(varsets), 
+    high_step_(high_step), 
+    step_domains_(step_domains),
+    ref_count_(0) 
+{
 #ifdef DEBUG_MEMORY
   created_bindings++;
 #endif
@@ -702,7 +704,8 @@ Bindings::Bindings(const Chain<Varset>* varsets, size_t high_step,
 
 
 /* Deletes this binding collection. */
-Bindings::~Bindings() {
+Bindings::~Bindings() 
+{
 #ifdef DEBUG_MEMORY
   deleted_bindings++;
 #endif
@@ -713,7 +716,8 @@ Bindings::~Bindings() {
 
 /* Returns the binding for the given term, or the term itself if it is
      not bound to a single object. */
-Term Bindings::binding(const Term& term, size_t step_id) const {
+Term Bindings::binding(const Term& term, int step_id) const 
+{
   if (term.variable()) {
     const Varset* vs =
       ((step_id <= high_step_)
@@ -727,8 +731,8 @@ Term Bindings::binding(const Term& term, size_t step_id) const {
 
 
 /* Returns the domain for the given step variable. */
-const NameSet& Bindings::domain(const Variable& var, size_t step_id,
-				const Problem& problem) const {
+const NameSet& Bindings::domain(const Variable& var, int step_id, const Problem& problem) const 
+{
   std::pair<const StepDomain*, size_t> sd =
     find_step_domain(step_domains_, var, step_id);
   if (sd.first != 0) {
@@ -758,8 +762,8 @@ const NameSet& Bindings::domain(const Variable& var, size_t step_id,
 
 /* Checks if one of the given formulas is the negation of the other,
    and the atomic formulas can be unified. */
-bool Bindings::affects(const Literal& l1, size_t id1,
-		       const Literal& l2, size_t id2) const {
+bool Bindings::affects(const Literal& l1, int id1, const Literal& l2, int id2) const 
+{
   BindingList dummy;
   return affects(dummy, l1, id1, l2, id2);
 }
@@ -768,8 +772,8 @@ bool Bindings::affects(const Literal& l1, size_t id1,
 /* Checks if one of the given formulas is the negation of the other,
    and the atomic formulas can be unified; the most general unifier
    is added to the provided substitution list. */
-bool Bindings::affects(BindingList& mgu, const Literal& l1, size_t id1,
-		       const Literal& l2, size_t id2) const {
+bool Bindings::affects(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2) const 
+{
   const Negation* negation = dynamic_cast<const Negation*>(&l1);
   if (negation != 0) {
     return unify(mgu, l2, id2, negation->atom(), id1);
@@ -785,8 +789,8 @@ bool Bindings::affects(BindingList& mgu, const Literal& l1, size_t id1,
 
 
 /* Checks if the given formulas can be unified. */
-bool Bindings::unify(const Literal& l1, size_t id1,
-		     const Literal& l2, size_t id2) const {
+bool Bindings::unify(const Literal& l1, int id1, const Literal& l2, int id2) const 
+{
   BindingList dummy;
   return unify(dummy, l1, id1, l2, id2);
 }
@@ -794,8 +798,8 @@ bool Bindings::unify(const Literal& l1, size_t id1,
 
 /* Checks if the given formulas can be unified; the most general
    unifier is added to the provided substitution list. */
-bool Bindings::unify(BindingList& mgu, const Literal& l1, size_t id1,
-		     const Literal& l2, size_t id2) const {
+bool Bindings::unify(BindingList& mgu, const Literal& l1, int id1, const Literal& l2, int id2) const 
+{
   if (l1.id() > 0 && l2.id() > 0) {
     /* Both literals are fully instantiated. */
     return &l1 == &l2;
@@ -916,7 +920,7 @@ bool Bindings::unify(BindingList& mgu, const Literal& l1, size_t id1,
 
 /* Checks if the given equality is consistent with the current
    bindings. */
-bool Bindings::consistent_with(const Equality& eq, size_t step_id) const {
+bool Bindings::consistent_with(const Equality& eq, int step_id) const {
   size_t var_id = eq.step_id1(step_id);
   size_t term_id = eq.step_id2(step_id);
   const Varset* vs =
@@ -938,7 +942,7 @@ bool Bindings::consistent_with(const Equality& eq, size_t step_id) const {
 
 /* Checks if the given inequality is consistent with the current
    bindings. */
-bool Bindings::consistent_with(const Inequality& neq, size_t step_id) const {
+bool Bindings::consistent_with(const Inequality& neq, int step_id) const {
   size_t var_id = neq.step_id1(step_id);
   size_t term_id = neq.step_id2(step_id);
   const Varset* vs =
@@ -1348,7 +1352,7 @@ const Bindings* Bindings::add(const BindingList& new_bindings,
 /* Returns the binding collection obtained by adding the constraints
    associated with the given step to this binding collection, or
    0 if the new binding collection would be inconsistent. */
-const Bindings* Bindings::add(size_t step_id, const Action& step_action,
+const Bindings* Bindings::add(int step_id, const Action& step_action,
 			      const PlanningGraph& pg, bool test_only) const {
   const ActionSchema* action = dynamic_cast<const ActionSchema*>(&step_action);
   if (action == 0 || action->parameters().empty()) {
@@ -1450,7 +1454,7 @@ void Bindings::print(std::ostream& os) const {
 
 /* Prints the given term on the given stream. */
 void Bindings::print_term(std::ostream& os,
-			  const Term& term, size_t step_id) const {
+			  const Term& term, int step_id) const {
   Term t = binding(term, step_id);
   os << t;
   if (t.variable()) {

@@ -198,7 +198,7 @@ const Formula& Constant::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Constant::print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const {
+		     int step_id, const Bindings& bindings) const {
   os << (value_ ? "(and)" : "(or)");
 }
 
@@ -437,7 +437,7 @@ const Formula& Atom::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Atom::print(std::ostream& os,
-		 size_t step_id, const Bindings& bindings) const {
+		 int step_id, const Bindings& bindings) const {
   os << '(' << predicate();
   for (TermList::const_iterator ti = terms_.begin();
        ti != terms_.end(); ti++) {
@@ -542,7 +542,7 @@ const Formula& Negation::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Negation::print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const {
+		     int step_id, const Bindings& bindings) const {
   os << "(not ";
   atom().print(os, step_id, bindings);
   os << ")";
@@ -576,8 +576,8 @@ const Formula& Equality::make(const Term& term1, const Term& term2) {
 
 
 /* Returns an equality of the two terms. */
-const Formula& Equality::make(const Term& term1, size_t id1,
-			      const Term &term2, size_t id2) {
+const Formula& Equality::make(const Term& term1, int id1,
+			      const Term &term2, int id2) {
   if (term1 == term2 && id1 == id2) {
     return TRUE;
   } else if (term1.variable()) {
@@ -634,7 +634,7 @@ const Formula& Equality::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Equality::print(std::ostream& os,
-		     size_t step_id, const Bindings& bindings) const {
+		     int step_id, const Bindings& bindings) const {
   os << "(= ";
   bindings.print_term(os, variable(), step_id);
   os << ' ';
@@ -659,8 +659,8 @@ const Formula& Inequality::make(const Term& term1, const Term& term2) {
 
 
 /* Returns an equality of the two terms. */
-const Formula& Inequality::make(const Term& term1, size_t id1,
-				const Term& term2, size_t id2) {
+const Formula& Inequality::make(const Term& term1, int id1,
+				const Term& term2, int id2) {
   if (term1 == term2 && id1 == id2) {
     return FALSE;
   } else if (term1.variable()) {
@@ -717,7 +717,7 @@ const Formula& Inequality::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Inequality::print(std::ostream& os,
-		       size_t step_id, const Bindings& bindings) const {
+		       int step_id, const Bindings& bindings) const {
   os << "(not (= ";
   bindings.print_term(os, variable(), step_id);
   os << ' ';
@@ -944,7 +944,7 @@ const Formula& Conjunction::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Conjunction::print(std::ostream& os,
-			size_t step_id, const Bindings& bindings) const {
+			int step_id, const Bindings& bindings) const {
   os << "(and";
   for (FormulaList::const_iterator fi = conjuncts().begin();
        fi != conjuncts().end(); fi++) {
@@ -1204,7 +1204,7 @@ const Formula& Disjunction::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Disjunction::print(std::ostream& os,
-			size_t step_id, const Bindings& bindings) const {
+			int step_id, const Bindings& bindings) const {
   os << "(or";
   for (FormulaList::const_iterator fi = disjuncts().begin();
        fi != disjuncts().end(); fi++) {
@@ -1406,7 +1406,7 @@ const Formula& Exists::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Exists::print(std::ostream& os, 
-		   size_t step_id, const Bindings& bindings) const {
+		   int step_id, const Bindings& bindings) const {
   os << "(exists (";
   for (VariableList::const_iterator vi = parameters().begin();
        vi != parameters().end(); vi++) {
@@ -1595,7 +1595,7 @@ const Formula& Forall::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void Forall::print(std::ostream& os, 
-		   size_t step_id, const Bindings& bindings) const {
+		   int step_id, const Bindings& bindings) const {
   os << "(forall (";
   for (VariableList::const_iterator vi = parameters().begin();
        vi != parameters().end(); vi++) {
@@ -1699,7 +1699,7 @@ const Formula& TimedLiteral::universal_base(const SubstitutionMap& subst,
 
 /* Prints this formula on the given stream with the given bindings. */
 void TimedLiteral::print(std::ostream& os,
-			 size_t step_id, const Bindings& bindings) const {
+			 int step_id, const Bindings& bindings) const {
   os << '(';
   switch (when()) {
   case AT_START:
@@ -1849,7 +1849,7 @@ const Condition& Condition::instantiation(const SubstitutionMap& subst,
 
 /* Prints this condition on the given stream with the given bindings. */
 void Condition::print(std::ostream& os,
-		      size_t step_id, const Bindings& bindings) const {
+		      int step_id, const Bindings& bindings) const {
   if (tautology()) {
     os << "(and)";
   } else if (contradiction()) {
