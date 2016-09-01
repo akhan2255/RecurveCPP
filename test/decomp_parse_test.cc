@@ -41,7 +41,7 @@ namespace test
 
         TEST_METHOD(ParseCompositeAction)
         {
-            read_file("E:\\Developer\\vhpop\\test\\composite_action.pddl");
+            read_file("..\\test\\composite_action.pddl");
             const Domain* parsed = Domain::find("composite_action");
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
 
@@ -58,7 +58,7 @@ namespace test
 
         TEST_METHOD(ParseDecompositionSchema)
         {
-            read_file("E:\\Developer\\vhpop\\test\\travel_domain.pddl");
+            read_file("..\\test\\travel_domain.pddl");
             const Domain* parsed = Domain::find("travel");
 
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
