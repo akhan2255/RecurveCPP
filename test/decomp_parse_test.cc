@@ -68,17 +68,23 @@ namespace test
             Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, parsed thing.");
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been parsed with four parameters.");
 
-            
+            // Check the dummy initial and final
+            Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->head;
+            Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
+            Assert::IsTrue(decomp_dummy_initial_step.action().condition().tautology(), L"Decomposition dummy initial step should have no preconditions.");
 
+            Step decomp_dummy_final_step = travel_drive->pseudo_steps()->tail->head;
+            Assert::AreEqual((size_t) 0, decomp_dummy_final_step.action().effects().size(), L"Decomposition dummy final step should have no effects.");
+            Assert::IsTrue(typeid(decomp_dummy_final_step.action().condition()) == typeid(Conjunction), L"Decomposition dummy final step precondition Formula should be a Conjunction.");
 
-
+            const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
+            Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)
         {
-            read_file("E:\\Developer\\vhpop\\test\\decompositions_requirement.pddl");
+            read_file("..\\test\\decompositions_requirement.pddl");
             const Domain* parsed = Domain::find("decompositions_requirement");
-
             Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were specified as part of the domain definition requirements.");
         }
 

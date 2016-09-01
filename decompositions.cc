@@ -62,10 +62,17 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     
     // Currently, I'm only supporting Literals and Conjunctions of Literals.
     // TODO: [#7]  Abstract Action Schemata should support wider range of precondition/effect Formulas #7 
-    if (typeid(composite_precondition) == typeid(Literal)) 
+    if (typeid(composite_precondition) == typeid(Atom)) 
     {
-        const Literal& lit = dynamic_cast<const Literal&>(composite_precondition);
-        Effect* dummy_initial_effect = new Effect(lit, Effect::AT_END);
+        const Atom& atom = dynamic_cast<const Atom&>(composite_precondition);
+        Effect* dummy_initial_effect = new Effect(atom, Effect::AT_END);
+        dummy_initial->add_effect(*dummy_initial_effect);
+    }
+
+    else if (typeid(composite_precondition) == typeid(Negation))
+    {
+        const Negation& negation = dynamic_cast<const Negation&>(composite_precondition);
+        Effect* dummy_initial_effect = new Effect(negation, Effect::AT_END);
         dummy_initial->add_effect(*dummy_initial_effect);
     }
 
@@ -77,18 +84,25 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
              ++fi)
         {   
             // Iterate over each conjunct and attempt to convert it to an effect.
-            if (typeid(*fi) != typeid(Literal)) 
+            if (typeid(*fi) == typeid(Atom))
             {
-                // Error - currently only supporting Literals
-                throw std::logic_error("unable to convert formula within" + composite_action_schema_->name()
-                    + " to effect; only literals and conjunctions of literals may be used");
+                const Atom& atom = dynamic_cast<const Atom&>(composite_precondition);
+                Effect* dummy_initial_effect = new Effect(atom, Effect::AT_END);
+                dummy_initial->add_effect(*dummy_initial_effect);
+            }
+
+            else if (typeid(*fi) == typeid(Negation))
+            {
+                const Negation& negation = dynamic_cast<const Negation&>(composite_precondition);
+                Effect* dummy_initial_effect = new Effect(negation, Effect::AT_END);
+                dummy_initial->add_effect(*dummy_initial_effect);
             }
 
             else
             {
-                const Literal* lit = dynamic_cast<const Literal*>(*fi);
-                Effect* dummy_initial_effect = new Effect(*lit, Effect::AT_END);
-                dummy_initial->add_effect(*dummy_initial_effect);
+                // Error - currently only supporting Literals
+                throw std::logic_error("unable to convert formula within" + composite_action_schema_->name()
+                    + " to effect; only literals and conjunctions of literals may be used");
             }
         }
     }

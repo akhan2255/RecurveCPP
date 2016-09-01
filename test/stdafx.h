@@ -12,9 +12,10 @@
 
 // TODO: reference additional headers your program requires here
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <stdlib.h>
+#include <sstream>
+#include <string>
+#include <typeinfo>
 #include <vector>
 #include "../formulas.h"
 #include "../expressions.h"
