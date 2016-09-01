@@ -49,10 +49,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     // (3) has ordering constraints ensuring that s_i precedes all other steps, and
     // (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
 
-    // Build the bindings context.
-    
-//    bindings_ = new Bindings();
-    BindingList new_bindings;
 
 
     /* ---------------------------------------------------------------- */
@@ -60,13 +56,8 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
     // Build the dummy step's schema
     ActionSchema* dummy_initial = new ActionSchema("<decomposition-init-for-" + name + ">", false, false);
-
-    // Pseudo-steps are defined with negative index
-    // This next step will occupy (size+1)
-    Step* dummy_initial_step = new Step(-(++next_pseudo_step_id), *dummy_initial);
+    Step* dummy_initial_step = new Step(-(++next_pseudo_step_id), *dummy_initial); // Pseudo-steps are defined with negative index
     
-
-
     const Formula& composite_precondition = composite_action_schema_->condition();
     
     // Currently, I'm only supporting Literals and Conjunctions of Literals.
@@ -76,9 +67,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
         const Literal& lit = dynamic_cast<const Literal&>(composite_precondition);
         Effect* dummy_initial_effect = new Effect(lit, Effect::AT_END);
         dummy_initial->add_effect(*dummy_initial_effect);
-
-
-
     }
 
     else if (typeid(composite_precondition) == typeid(Conjunction)) 
@@ -117,12 +105,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     /* Dummy Goal Step Construction  */
 
     ActionSchema* dummy_goal_action_schema = new ActionSchema("<decomposition-goal-for-" + name + ">", false, false); 
-  
-    
-    /*Step* dummy_initial_step = new Step(-(defined_pseudo_steps_.size() + 1), *dummy_initial);
-    defined_pseudo_steps_.push_back(*dummy_initial_step);
-*/
-
     Step* dummy_goal_step = new Step(-(++next_pseudo_step_id), *dummy_goal_action_schema);
 
     Conjunction* dummy_goal_preconditions = new Conjunction();
@@ -141,18 +123,14 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
         new Chain<Step>(*dummy_initial_step,
          new Chain<Step>(*dummy_goal_step, NULL));
 
-
+	// build bindings
+	bindings_ = &Bindings::EMPTY;
 
     // build orderings
-
-
-    // TODO: extend this to the other kind of orderings, TermporalOrderings
-    orderings_ = new BinaryOrderings(); 
-
+    orderings_ = new BinaryOrderings(); // TODO: extend this to the other kind of orderings, TermporalOrderings 
+	
     // build links
     links_ = NULL;
-
-
 }
 
 /* ====================================================================== */

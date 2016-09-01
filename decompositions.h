@@ -81,7 +81,6 @@ private:
     /* Chain of causal links of this decomposition. */
     const Chain<Link>* links_;
 
-    
 };
 
 
