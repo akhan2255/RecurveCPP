@@ -345,7 +345,7 @@ const Atom& Atom::make(const Predicate& predicate, const TermList& terms) {
 /* Deletes this atomic formula. */
 Atom::~Atom() {
   AtomTable::const_iterator ai = atoms.find(this);
-  if (*ai == this) {
+  if (ai != atoms.end() && *ai == this) {
     atoms.erase(ai);
   }
 }
