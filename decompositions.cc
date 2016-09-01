@@ -51,7 +51,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
     // Build the bindings context.
     
-    bindings_ = new Bindings();
+//    bindings_ = new Bindings();
     BindingList new_bindings;
 
 

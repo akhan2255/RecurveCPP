@@ -42,8 +42,8 @@ namespace test
 		
 		TEST_METHOD(SolveSimpleBlocksWorldProblem)
 		{
-            read_file("E:\\Developer\\vhpop\\test\\blocks_domain.pddl");
-            read_file("E:\\Developer\\vhpop\\test\\blocks_problem.pddl");
+            read_file("..\\test\\blocks_domain.pddl");
+            read_file("..\\test\\blocks_problem.pddl");
 
             const Domain* blocks_domain = Domain::find("blocks");
             const Problem* blocks_problem = Problem::find("blocks-3");
