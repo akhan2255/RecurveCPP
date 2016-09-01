@@ -54,11 +54,8 @@ protected:
 
 private:
 
-    /* List of steps. */
-    struct StepList : public std::vector < Step > { };
-
-    /* List of pseudo-steps currently in use. Pseudo-steps are steps with a negative id. */
-    static StepList defined_pseudo_steps_;
+    /* Next pseudo-step id. */
+    static size_t next_pseudo_step_id;
 
     /* Next decomposition id. */
     static size_t next_id;

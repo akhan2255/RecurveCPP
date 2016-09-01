@@ -30,6 +30,9 @@
 /* Decomposition */
 
 
+/* Next pseudo-step id. */
+size_t Decomposition::next_pseudo_step_id = 0;
+
 /* Next decomposition id. */
 size_t Decomposition::next_id = 0;
 
@@ -47,7 +50,8 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     // (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
 
     // Build the bindings context.
-    bindings_ = &Bindings::EMPTY;
+    
+    bindings_ = new Bindings();
     BindingList new_bindings;
 
 
@@ -59,8 +63,8 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
     // Pseudo-steps are defined with negative index
     // This next step will occupy (size+1)
-    Step* dummy_initial_step = new Step(-(defined_pseudo_steps_.size() + 1), *dummy_initial);
-    defined_pseudo_steps_.push_back(*dummy_initial_step);
+    Step* dummy_initial_step = new Step(-(++next_pseudo_step_id), *dummy_initial);
+    
 
 
     const Formula& composite_precondition = composite_action_schema_->condition();
@@ -73,10 +77,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
         Effect* dummy_initial_effect = new Effect(lit, Effect::AT_END);
         dummy_initial->add_effect(*dummy_initial_effect);
 
-        // register binding
-        /*new_bindings.push_back(
-            Binding()
-            )*/
+
 
     }
 
@@ -122,8 +123,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     defined_pseudo_steps_.push_back(*dummy_initial_step);
 */
 
-    Step* dummy_goal_step = new Step(-(defined_pseudo_steps_.size() + 1), *dummy_goal_action_schema);
-    defined_pseudo_steps_.push_back(*dummy_initial_step);
+    Step* dummy_goal_step = new Step(-(++next_pseudo_step_id), *dummy_goal_action_schema);
 
     Conjunction* dummy_goal_preconditions = new Conjunction();
     for (EffectList::const_iterator ei = composite_action_schema->effects().begin();
