@@ -1345,6 +1345,8 @@ static const Step* make_pseudostep()
                     const Variable term_variable = t.as_variable();
                     const Variable parameter_variable = t.as_variable();
 
+					// also gotta check compatibility of the Action Schema?  Or maybe *just* the action schema?
+
                     // Once I've done that check, add a binding as before.  And then we're done here!
                     
                 }
