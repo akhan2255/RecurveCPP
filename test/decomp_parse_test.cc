@@ -59,14 +59,17 @@ namespace test
         TEST_METHOD(ParseDecompositionSchema)
         {
             read_file("..\\test\\travel_domain.pddl");
-            const Domain* parsed = Domain::find("travel");
+            read_file("..\\test\\travel_problem.pddl");
+            const Domain* domain = Domain::find("travel");
+            const Problem* problem = Problem::find("travel-to-la");
+            
 
-            Assert::IsTrue(parsed->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
-            Assert::IsTrue(parsed->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
+            Assert::IsTrue(domain->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
+            Assert::IsTrue(domain->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
 
-            const DecompositionSchema* travel_drive = parsed->find_decomposition("travel", "drive");
-            Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, parsed thing.");
-            Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been parsed with four parameters.");
+            const DecompositionSchema* travel_drive = domain->find_decomposition("travel", "drive");
+            Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, domain thing.");
+            Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been domain with four parameters.");
 
             // Check the dummy initial and final
             Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->tail->tail->head;
@@ -80,7 +83,11 @@ namespace test
             const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
             Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
 
-
+            // Check a dummy step
+            Step pseudo_get_in_car = travel_drive->pseudo_steps()->head;
+            Assert::IsTrue(pseudo_get_in_car.pseudo_step(), L"get-in-car is a pseudo-step");
+            Assert::AreEqual(std::string("get-in-car"), pseudo_get_in_car.action().name());
+            const ActionSchema* pseudo_action_schema = dynamic_cast<const ActionSchema*> (&pseudo_get_in_car.action());
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)

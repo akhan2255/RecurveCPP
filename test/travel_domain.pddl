@@ -2,7 +2,9 @@
     (:requirements :strips)
     (:types  plane car - transport
 	         person transport place - object)
-	(:constants mycar - car)
+	(:constants rental - car
+				rdu lax - place
+	)
     (:predicates
         (person		?person - person)
         (place		?place - place)
@@ -59,7 +61,7 @@
         :name drive
         :parameters		(?person - person ?from - place ?to - place ?car - car)
         :steps			(
-						 (step1 (get-in-car ?person mycar ?to))
+						 (step1 (get-in-car ?person rental rdu))
 					;;	 (step2 (drive ?person ?car ?from ?to))
 					;;	 (step3 (get-out-of-car ?person ?car ?from))
 						)

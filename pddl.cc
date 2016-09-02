@@ -3733,7 +3733,7 @@ static void prepare_pseudostep(const std::string* pseudo_step_action_name)
 /* Creates the pseudo-step just parsed. */
 static const Step* make_pseudostep()
 {
-	/* Check that the arity of the parsed terms matches the arity of the pseudo-step's action. */
+	// Check that the arity of the parsed terms matches the arity of the pseudo-step's action.
 	size_t n = term_parameters.size();
 
 	if(pseudo_step_action->parameters().size() != n) 
@@ -3744,24 +3744,24 @@ static const Step* make_pseudostep()
 
 	else 
     {
-        /* Store a reference to the id of this pseudo-step. */
+        // Store a reference to the id of this pseudo-step. */
         int pseudo_step_id = -(++Decomposition::next_pseudo_step_id);
-
-        /* 
-         * Here, I have to iterate through the parsed terms, and do different things 
-         * depending on whether the term is an object constant, or a variable.
-         */
+        
+        // Here, I have to iterate through the parsed terms, and do different things 
+        // depending on whether the term is an object constant, or a variable.
         for (TermList::size_type pi = 0; pi < term_parameters.size(); ++pi)
         {
+            // Get the parsed Term at this index.
             Term t = term_parameters[pi];
 
+            // Get the variable and type of the action schema at this index. 
+            const Variable action_parameter = pseudo_step_action->parameters()[pi];
+            const Type typeof_action_parameter = TermTable::type(action_parameter);
 
             if (t.object()) 
             {
                 // Find all the objects compatible with the type of the action schema's parameter at the current index.
-                Variable action_parameter = pseudo_step_action->parameters()[pi];
-                Type typeof_parameter = TermTable::type(action_parameter);
-                ObjectList ol = domain->terms().compatible_objects(typeof_parameter); 
+                ObjectList ol = domain->terms().compatible_objects(typeof_action_parameter);
 
                 // See if we can find the current term in that list.
                 ObjectList::iterator oitr = std::find(ol.begin(), ol.end(), t);
@@ -3775,8 +3775,7 @@ static const Step* make_pseudostep()
                     // Add a binding to the decomposition, where:
                     // (the action schema's variable and this decomposition's index) are bound to
                     // (this term and the pseudo-step's index)
-                    //Binding* new_binding = new Binding(action_parameter, decomposition->id(), t, pseudo_step_id);
-                    Binding* new_binding = new Binding(action_parameter, (int) decomposition->id(), t, pseudo_step_id, true);
+                    const Binding* new_binding = new Binding(action_parameter, (int) decomposition->id(), t, pseudo_step_id, true);
                     decomposition->add_binding(*new_binding);
                 }
             }
@@ -3797,20 +3796,26 @@ static const Step* make_pseudostep()
                     }
                 }
 
-                if (parameter_variable_match == 0) 
-                {
-                    yyerror("variable " + name_of_term_variable 
-                         + " does not exist in parameter list for decomposition " + decomposition->name());
+                if (parameter_variable_match == 0) {
+                    yyerror("variable " + name_of_term_variable + " does not exist in parameter list for decomposition");
                 }
 
                 else
                 {
-                    // Check that the parameter variable is the same type or is a subtype of the term variable. 
-                    const Variable term_variable = t.as_variable();
-                    const Variable parameter_variable = t.as_variable();
+                    // Since we have a match, we ignore the term variable altogether, 
+                    // because the binding is relative to the parameter of the decomposition.
+
+                    // The parameter variable must be a subtype of the action schema variable.
+                    const Variable decomposition_parameter = *parameter_variable_match;
+                    const Type typeof_decomposition_parameter = TermTable::type(decomposition_parameter);
+
+                    if (! domain->types().subtype(typeof_decomposition_parameter, typeof_action_parameter)) {
+                        yyerror("variable " + name_of_term_variable + " is type-incompatible with pseudo-step action parameater");
+                    }
 
                     // Once I've done that check, add a binding as before.  And then we're done here!
-                    
+                    const Binding* new_binding = new Binding(decomposition_parameter, (int)decomposition->id(), action_parameter, pseudo_step_id, true);
+                    decomposition->add_binding(*new_binding);
                 }
             }
         }
@@ -3822,7 +3827,6 @@ static const Step* make_pseudostep()
     }
 	
     return NULL;
-
 }
 
 
