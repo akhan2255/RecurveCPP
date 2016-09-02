@@ -137,9 +137,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
         new Chain<Step>(*dummy_goal_step,
          new Chain<Step>(*dummy_initial_step, NULL));
 
-	// build bindings
-	bindings_ = &Bindings::EMPTY;
-
     // build orderings
     orderings_ = new BinaryOrderings(); // TODO: extend this to the other kind of orderings, TermporalOrderings 
 	
@@ -155,12 +152,8 @@ void Decomposition::add_pseudo_step(const Step& pseudo_step) {
 
 /* Adds a binding to this decomposition. */
 void Decomposition::add_binding(const Binding& binding) {
-    BindingList bl;
-    bl.push_back(binding);
-    bindings_ = bindings_->add(bl);
+    binding_list_.push_back(binding);
 }
-
-
 
 
 /* ====================================================================== */

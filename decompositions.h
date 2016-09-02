@@ -55,9 +55,14 @@ struct Decomposition {
     /* Returns the pseudo steps of this decomposition. */
     const Chain<Step>* pseudo_steps() const { return pseudo_steps_; }
 
+    /* Returns the list of bindings for this decomposition. */
+    const BindingList binding_list() const { return binding_list_; }
+
     /* Returns the ordering constraints of this decomposition. */
     const Orderings& orderings() const { return *orderings_; }
 
+    /* Chain of causal links of this decomposition. */
+    const Chain<Link>* links() const { return links_; }
 
 protected:
 
@@ -81,8 +86,8 @@ private:
     /* Chain of pseudo steps. */
     const Chain<Step>* pseudo_steps_;
 
-    /* Binding constraints of this decomposition. */
-    const Bindings* bindings_;
+    /* List of bindings for this decomposition. */
+    BindingList binding_list_;
 
     /* Ordering constraints of this decomposition. */
     const Orderings* orderings_;
