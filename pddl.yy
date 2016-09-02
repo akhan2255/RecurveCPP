@@ -1280,6 +1280,9 @@ static const Step* make_pseudostep()
 
 	else 
     {
+        /* Store a reference to the id of this pseudo-step. */
+        int pseudo_step_id = -(++Decomposition::next_pseudo_step_id);
+
         /* 
          * Here, I have to iterate through the parsed terms, and do different things 
          * depending on whether the term is an object constant, or a variable.
@@ -1287,6 +1290,7 @@ static const Step* make_pseudostep()
         for (TermList::size_type pi = 0; pi < term_parameters.size(); ++pi)
         {
             Term t = term_parameters[pi];
+
 
             if (t.object()) 
             {
@@ -1302,23 +1306,55 @@ static const Step* make_pseudostep()
                 }
 
                 else 
-                { // found!
-                    yywarning("we found a compatible type to the parameter!");
+                { 
+                    // The type of the action schema's parameter at the current index is compatible to the parsed term.
+                    // Add a binding to the decomposition, where:
+                    // (the action schema's variable and this decomposition's index) are bound to
+                    // (this term and the pseudo-step's index)
+                    //Binding* new_binding = new Binding(action_parameter, decomposition->id(), t, pseudo_step_id);
+                    Binding* new_binding = new Binding(action_parameter, (int) decomposition->id(), t, pseudo_step_id, true);
+                    decomposition->add_binding(*new_binding);
                 }
-               
-
-                // If it satisfies both, then I need to add a binding to the decomposition...
-                // of this pseudo-step's term to the domain defined object.
-
-                
-
             }
 
             else // t is a variable
             { 
+                // Check that the name of this term matches one name on the parameter list of the decomposition schema.
+                std::string name_of_term_variable = *context.find(t.as_variable());
+                const Variable* parameter_variable_match = 0;
 
+                for (VariableList::const_iterator vi = decomposition->parameters().begin();
+                    vi != decomposition->parameters().end();
+                    ++vi)
+                {
+                    std::string name_of_parameter_variable = *context.find(*vi);
+                    if (name_of_term_variable == name_of_parameter_variable) {
+                        parameter_variable_match = &(*vi);
+                    }
+                }
+
+                if (parameter_variable_match == 0) 
+                {
+                    yyerror("variable " + name_of_term_variable 
+                         + " does not exist in parameter list for decomposition " + decomposition->name());
+                }
+
+                else
+                {
+                    // Check that the parameter variable is the same type or is a subtype of the term variable. 
+                    const Variable term_variable = t.as_variable();
+                    const Variable parameter_variable = t.as_variable();
+
+                    // Once I've done that check, add a binding as before.  And then we're done here!
+                    
+                }
             }
         }
+
+        /* At this point we have successfully created all the bindings necessary for the pseudo-step in question. */
+        Step* new_pseudo_step = new Step(pseudo_step_id, *pseudo_step_action);
+		decomposition->add_pseudo_step(*new_pseudo_step);
+        return new_pseudo_step;
     }
 	
     return NULL;
