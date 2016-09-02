@@ -82,6 +82,7 @@ struct Context {
     }
   }
 
+  /* Find the Variable given by the name in the context. */
   const Variable* find(const std::string& name) const {
     for (std::vector<VariableMap>::const_reverse_iterator fi =
 	   frames_.rbegin(); fi != frames_.rend(); fi++) {
@@ -91,6 +92,22 @@ struct Context {
       }
     }
     return 0;
+  }
+
+  /* Find the name of the Variable in the context. */
+  const std::string* find(const Variable& variable) const 
+  {
+      for (std::vector<VariableMap>::const_reverse_iterator fi = frames_.rbegin(); fi != frames_.rend(); ++fi)
+      {
+          for (VariableMap::const_iterator vi = (*fi).begin(); vi != (*fi).end(); ++vi)
+          {
+              Variable declared = vi->second;
+              if (declared == variable) {
+                  return &(vi->first);
+              }
+          }
+      }
+      return 0;
   }
 
 private:
