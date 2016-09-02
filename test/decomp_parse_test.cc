@@ -70,21 +70,26 @@ namespace test
             const DecompositionSchema* travel_drive = domain->find_decomposition("travel", "drive");
             Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, domain thing.");
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been domain with four parameters.");
+            Assert::AreEqual(5, travel_drive->pseudo_steps()->size(), L"This decomposition schema specifies 5 pseudo-steps.");
+
 
             // Check the dummy initial and final
-            Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->tail->tail->head;
+            Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->tail->tail->tail->tail->head;
             Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
             Assert::IsTrue(decomp_dummy_initial_step.action().condition().tautology(), L"Decomposition dummy initial step should have no preconditions.");
 
-            Step decomp_dummy_final_step = travel_drive->pseudo_steps()->tail->head;
+            Step decomp_dummy_final_step = travel_drive->pseudo_steps()->tail->tail->tail->head;
             Assert::AreEqual((size_t) 0, decomp_dummy_final_step.action().effects().size(), L"Decomposition dummy final step should have no effects.");
             Assert::IsTrue(typeid(decomp_dummy_final_step.action().condition()) == typeid(Conjunction), L"Decomposition dummy final step precondition Formula should be a Conjunction.");
 
             const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
             Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
 
+
+
+
             // Check a dummy step
-            Step pseudo_get_in_car = travel_drive->pseudo_steps()->head;
+            Step pseudo_get_in_car = travel_drive->pseudo_steps()->tail->tail->head;
             Assert::IsTrue(pseudo_get_in_car.pseudo_step(), L"get-in-car is a pseudo-step");
             Assert::AreEqual(std::string("get-in-car"), pseudo_get_in_car.action().name());
             const ActionSchema* pseudo_action_schema = dynamic_cast<const ActionSchema*> (&pseudo_get_in_car.action());
