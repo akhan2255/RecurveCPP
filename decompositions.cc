@@ -134,8 +134,8 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     
     // build pseudo_steps
     pseudo_steps_ =
-        new Chain<Step>(*dummy_initial_step,
-         new Chain<Step>(*dummy_goal_step, NULL));
+        new Chain<Step>(*dummy_goal_step,
+         new Chain<Step>(*dummy_initial_step, NULL));
 
 	// build bindings
 	bindings_ = &Bindings::EMPTY;
@@ -146,6 +146,22 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     // build links
     links_ = NULL;
 }
+
+
+/* Adds a pseudo-step to this decomposition. */
+void Decomposition::add_pseudo_step(const Step& pseudo_step) {
+    pseudo_steps_ = new Chain<Step>(pseudo_step, pseudo_steps_);
+}
+
+/* Adds a binding to this decomposition. */
+void Decomposition::add_binding(const Binding& binding) {
+    BindingList bl;
+    bl.push_back(binding);
+    bindings_ = bindings_->add(bl);
+}
+
+
+
 
 /* ====================================================================== */
 /* DecompositionSchema */

@@ -34,6 +34,18 @@
  */
 struct Decomposition {
 
+    /* Next pseudo-step id. */
+    static size_t next_pseudo_step_id;
+
+    /* Adds a pseudo-step to this decomposition. */
+    void add_pseudo_step(const Step& pseudo_step);
+
+    /* Adds a binding to this decomposition. */
+    void add_binding(const Binding& binding);
+
+    /* Returns the unique id for this decomposition. */
+    size_t id() const { return id_; }
+
     /* Returns the composite action this decomposition is appliable to. */
     const ActionSchema& composite_action_schema() const { return *composite_action_schema_; }
 
@@ -53,9 +65,6 @@ protected:
     Decomposition(const ActionSchema* composite_action_schema, const std::string& name);
 
 private:
-
-    /* Next pseudo-step id. */
-    static size_t next_pseudo_step_id;
 
     /* Next decomposition id. */
     static size_t next_id;

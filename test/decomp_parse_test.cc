@@ -69,7 +69,7 @@ namespace test
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been parsed with four parameters.");
 
             // Check the dummy initial and final
-            Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->head;
+            Step decomp_dummy_initial_step = travel_drive->pseudo_steps()->tail->tail->head;
             Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
             Assert::IsTrue(decomp_dummy_initial_step.action().condition().tautology(), L"Decomposition dummy initial step should have no preconditions.");
 
@@ -79,6 +79,8 @@ namespace test
 
             const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
             Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
+
+
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)
