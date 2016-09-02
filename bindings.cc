@@ -364,16 +364,22 @@ static const Varset* find_varset(const Chain<Varset>* varsets,
  * A step domain.
  */
 struct StepDomain {
+    
     /* Constructs a step domain. */
-    StepDomain(int id, const VariableList& parameters,
-        const ActionDomain& domain)
-        : id_(id), parameters_(&parameters), domain_(&domain) {
+    StepDomain(int id, const VariableList& parameters, const ActionDomain& domain)
+        : id_(id), 
+          parameters_(&parameters), 
+          domain_(&domain) 
+    {
         ActionDomain::register_use(domain_);
     }
 
     /* Constructs a step domain. */
     StepDomain(const StepDomain& sd)
-        : id_(sd.id_), parameters_(sd.parameters_), domain_(sd.domain_) {
+        : id_(sd.id_), 
+          parameters_(sd.parameters_), 
+          domain_(sd.domain_) 
+    {
         ActionDomain::register_use(domain_);
     }
 
@@ -391,19 +397,20 @@ struct StepDomain {
     /* Returns the parameter domains. */
     const ActionDomain& domain() const { return *domain_; }
 
-    /* Returns the index of the variable in this step domain, or -1 if
-       the variable is not included. */
-    int index_of(const Variable& var) const {
-        VariableList::const_iterator vi = find(parameters().begin(),
-            parameters().end(), var);
+    /* Returns the index of the variable in this step domain, or -1 if the variable is not included. */
+    int index_of(const Variable& var) const 
+    {
+        VariableList::const_iterator vi = find(parameters().begin(), parameters().end(), var);
         return (vi != parameters().end()) ? vi - parameters().begin() : -1;
     }
 
-    /* Checks if this step domain includes the given object in the given
-       column. */
-    bool includes(const Object& obj, size_t column) const {
+    /* Checks if this step domain includes the given object in the given column. */
+    bool includes(const Object& obj, size_t column) const 
+    {
         for (TupleList::const_iterator ti = domain().tuples().begin();
-            ti != domain().tuples().end(); ti++) {
+            ti != domain().tuples().end(); 
+            ti++) 
+        {
             if ((**ti)[column] == obj) {
                 return true;
             }
@@ -421,8 +428,10 @@ struct StepDomain {
         return domain().projection_size(column);
     }
 
-    /* Returns a domain where the given column has been restricted to
-       the given object, or 0 if this would leave an empty domain. */
+    /* 
+     * Returns a domain where the given column has been restricted to the given object, 
+     * or 0 if this would leave an empty domain. 
+     */
     const StepDomain* restrict(const Chain<StepDomain>*& sdc,
         const Object& obj, size_t column) const{
         const ActionDomain* ad = domain().restrict(obj, column);
@@ -504,12 +513,13 @@ void StepDomain::print(std::ostream& os) const {
 }
 
 
-/* Returns the step domain containing the given variable and the
-   column of the variable, or 0 no step domain contains the
-   variable. */
+/* 
+ * Returns the step domain containing the given variable and the column of the variable, 
+ * or 0 no step domain contains the variable. 
+ */
 static std::pair<const StepDomain*, size_t>
-find_step_domain(const Chain<StepDomain>* step_domains,
-const Variable& var, int step_id) {
+find_step_domain(const Chain<StepDomain>* step_domains, const Variable& var, int step_id) 
+{
     if (step_id > 0) {
         for (const Chain<StepDomain>* sd = step_domains; sd != 0; sd = sd->tail) {
             const StepDomain& step_domain = sd->head;
@@ -750,8 +760,7 @@ Term Bindings::binding(const Term& term, int step_id) const
 {
     if (term.variable()) {
         const Varset* vs =
-            ((step_id <= high_step_)
-            ? find_varset(varsets_, term.as_variable(), step_id) : 0);
+            ((step_id <= high_step_) ? find_varset(varsets_, term.as_variable(), step_id) : 0);
         if (vs != 0 && vs->constant() != 0) {
             return *vs->constant();
         }
@@ -763,24 +772,25 @@ Term Bindings::binding(const Term& term, int step_id) const
 /* Returns the domain for the given step variable. */
 const NameSet& Bindings::domain(const Variable& var, int step_id, const Problem& problem) const
 {
-    std::pair<const StepDomain*, size_t> sd =
-        find_step_domain(step_domains_, var, step_id);
+    std::pair<const StepDomain*, size_t> sd = find_step_domain(step_domains_, var, step_id);
+
     if (sd.first != 0) {
         return sd.first->projection(sd.second);
     }
-    else {
-        const ObjectList& objects =
-            problem.terms().compatible_objects(TermTable::type(var));
+
+    else 
+    {
+        const ObjectList& objects = problem.terms().compatible_objects(TermTable::type(var));
         NameSet* names = new NameSet();
         names->insert(objects.begin(), objects.end());
-        const Varset* vs =
-            (step_id <= high_step_) ? find_varset(varsets_, var, step_id) : 0;
-        if (vs != 0) {
-            for (const Chain<StepVariable>* vc = vs->ncd_set();
-                vc != 0; vc = vc->tail) {
+        
+        const Varset* vs = (step_id <= high_step_) ? find_varset(varsets_, var, step_id) : 0;
+        if (vs != 0) 
+        {
+            for (const Chain<StepVariable>* vc = vs->ncd_set(); vc != 0; vc = vc->tail) 
+            {
                 const StepVariable& sv = vc->head;
-                const Varset* vs2 = ((sv.second <= high_step_)
-                    ? find_varset(varsets_, sv.first, sv.second) : 0);
+                const Varset* vs2 = ((sv.second <= high_step_) ? find_varset(varsets_, sv.first, sv.second) : 0);
                 if (vs2 != 0 && vs2->constant() != 0) {
                     names->erase(*vs2->constant());
                 }
