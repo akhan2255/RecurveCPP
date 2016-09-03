@@ -23,6 +23,7 @@
 
 %{
 #include "plans.h"
+#include "orderings.h"
 #include "requirements.h"
 #include "problems.h"
 #include "domains.h"
@@ -265,7 +266,10 @@ static void prepare_pseudostep(const std::string* pseudo_step_action_name);
 static const Step* make_pseudostep();
 
 /* Adds a pseudo-step to the current decomposition. */
-static void add_pseudostep();
+static void add_pseudo_step(const Step& pseudo_step);
+
+/* Creates the ordering just parsed. */
+static const Ordering* make_ordering();
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
@@ -349,6 +353,7 @@ static void add_init_literal(float time, const Literal& literal);
 
 %union {
   const Step* step;
+  const Ordering* ordering;
   const Formula* formula;
   const Literal* literal;
   const Atom* atom;
@@ -362,6 +367,7 @@ static void add_init_literal(float time, const Literal& literal);
   float num;
 }
 
+%type <ordering> ordering
 %type <step> pseudo_step
 %type <formula> da_gd timed_gd timed_gds formula conjuncts disjuncts
 %type <literal> name_literal
@@ -602,14 +608,14 @@ decomposition_body2 : LINKS links decomposition_body3
 
 
 decomposition_body3 : /* */
-					| ORDERINGS orderings
+					| ORDERINGS '(' orderings ')'
 					;
 
 steps : /* empty */
 	  | steps step
 	  ;
 
-step  : '(' name pseudo_step ')'	{ decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); decomposition->add_pseudo_step(*$3); }
+step  : '(' name pseudo_step ')'	{ decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
 	  ;
 
 pseudo_step : '(' name				{ prepare_pseudostep($2); } 
@@ -627,7 +633,7 @@ orderings : /* empty*/
 		  | orderings ordering
 		  ;
 
-ordering : '(' ')' 
+ordering : '(' name name ')'		{ }
 		 ;
 
 /* ====================================================================== */
@@ -1378,10 +1384,14 @@ static const Step* make_pseudostep()
 
 
 /* Adds a pseudo-step to the current decomposition. */
-static void add_pseudostep() 
+static void add_pseudo_step(const Step& pseudo_step) 
 {
-	// NOTE: *decomposition is referenceable in this function.
+	decomposition->add_pseudo_step(pseudo_step);
 	pseudo_step_action = 0;
+}
+
+static const Ordering* make_ordering()
+{
 }
 
 

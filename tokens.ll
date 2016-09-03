@@ -29,6 +29,7 @@ struct Term;
 struct Type;
 struct TypeSet;
 struct Step;
+struct Ordering;
 
 #include <cctype>
 #include <string>
