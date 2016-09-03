@@ -166,7 +166,7 @@ static const ActionSchema* pseudo_step_action;
 static DecompositionSchema* decomposition;
 
 /* A map that tracks pseudo-steps for the decomposition schema currently being parsed. */
-static std::map<std::string, Step*> decomposition_pseudo_steps;
+static std::map<const std::string, const Step*> decomposition_pseudo_steps;
 
 /* Time of current condition. */ 
 static FormulaTime formula_time; 
@@ -214,8 +214,7 @@ static void yywarning(const std::string& s);
 static void make_domain(const std::string* name);
 
 /* Creates an empty problem with the given name. */
-static void make_problem(const std::string* name,
-			 const std::string* domain_name);
+static void make_problem(const std::string* name, const std::string* domain_name);
 
 /* Adds :typing to the requirements. */
 static void require_typing();
@@ -591,43 +590,56 @@ da_body2 : /* empty */
 
 decomposition_def : '(' DECOMPOSITION name 									
 						DECOMPOSITION_NAME name { make_decomposition($3, $5); }
-						parameters decomposition_body ')' { add_decomposition(); }
+						parameters decomposition_body ')' { add_decomposition(); decomposition_pseudo_steps.clear(); }
 				  ;
 
-decomposition_body : STEPS '(' steps ')'
-				   ;
+decomposition_body  : STEPS '(' steps ')' decomposition_body2
+				    ;
+
+decomposition_body2 : LINKS links decomposition_body3
+					| decomposition_body3
+					;
+
+
+decomposition_body3 : /* */
+					| ORDERINGS orderings
+					;
 
 steps : /* empty */
 	  | steps step
 	  ;
 
-step : '(' name pseudo_step ')'
-	 ;
+step  : '(' name pseudo_step ')'	{ decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); decomposition->add_pseudo_step(*$3); }
+	  ;
 
-pseudo_step : '(' name      { prepare_pseudostep($2); } 
-				  terms ')' { $$ = make_pseudostep(); }
+pseudo_step : '(' name				{ prepare_pseudostep($2); } 
+				  terms ')'			{ $$ = make_pseudostep(); }
 			;
+
+links : /* empty */
+	  | links link
+	  ;
+
+link  : '(' ')'
+      ;
+
+orderings : /* empty*/
+		  | orderings ordering
+		  ;
+
+ordering : '(' ')' 
+		 ;
 
 /* ====================================================================== */
 /* Duration constraints. */
 
 duration_constraint : simple_duration_constraint
-                    | '(' and simple_duration_constraints ')'
-                        { require_duration_inequalities(); }
+                    | '(' and simple_duration_constraints ')' { require_duration_inequalities(); }
                     ;
 
-simple_duration_constraint : '(' LE duration_var f_exp ')'
-                               {
-				 require_duration_inequalities();
-				 action->set_max_duration(*$4);
-			       }
-                           | '(' GE duration_var f_exp ')'
-                               {
-				 require_duration_inequalities();
-				 action->set_min_duration(*$4);
-			       }
-                           | '(' '=' duration_var f_exp ')'
-                               { action->set_duration(*$4); }
+simple_duration_constraint : '(' LE duration_var f_exp ')'  { require_duration_inequalities(); action->set_max_duration(*$4); }
+                           | '(' GE duration_var f_exp ')'  { require_duration_inequalities(); action->set_min_duration(*$4); }
+                           | '(' '=' duration_var f_exp ')' { action->set_duration(*$4); }
                            ;
 
 simple_duration_constraints : /* empty */
@@ -1358,7 +1370,6 @@ static const Step* make_pseudostep()
 
         /* At this point we have successfully created all the bindings necessary for the pseudo-step in question. */
         Step* new_pseudo_step = new Step(pseudo_step_id, *pseudo_step_action);
-		decomposition->add_pseudo_step(*new_pseudo_step);
         return new_pseudo_step;
     }
 	
