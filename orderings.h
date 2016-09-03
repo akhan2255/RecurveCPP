@@ -86,10 +86,11 @@ StepTime start_time(FormulaTime ft);
  */
 struct Ordering {
   /* Constructs an ordering constraint. */
-  Ordering(size_t before_id, StepTime before_time,
-	   size_t after_id, StepTime after_time)
-    : before_id_(before_id), before_time_(before_time),
-      after_id_(after_id), after_time_(after_time) {}
+  Ordering(size_t before_id, StepTime before_time, size_t after_id, StepTime after_time)
+    : before_id_(before_id), 
+      before_time_(before_time),
+      after_id_(after_id), 
+      after_time_(after_time) {}
 
   /* Returns the preceeding step id. */
   size_t before_id() const { return before_id_; }
@@ -112,6 +113,15 @@ private:
   size_t after_id_;
   /* Time point of suceeding step. */
   StepTime after_time_;
+};
+
+/* ====================================================================== */
+/* OrderingList */
+
+/*
+* List of Orderings.
+*/
+struct OrderingList : std::vector < Ordering > {
 };
 
 

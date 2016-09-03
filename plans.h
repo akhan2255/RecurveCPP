@@ -90,6 +90,17 @@ inline bool operator==(const Link& l1, const Link& l2) {
 
 
 /* ====================================================================== */
+/* LinkList */
+
+/*
+* List of Links.
+*/
+struct LinkList : std::vector < Link > {
+};
+
+
+
+/* ====================================================================== */
 /* Decomposition Link */
 
 /*
@@ -168,6 +179,16 @@ private:
 
     /* Action that this step is instantiated from. */
     const Action* action_;
+};
+
+
+/* ====================================================================== */
+/* StepList */
+
+/*
+* List of Steps.
+*/
+struct StepList : std::vector < Step > {
 };
 
 

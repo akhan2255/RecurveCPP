@@ -72,7 +72,7 @@
 		;;				 (step2 (at ?car ?to) step3)
 						)
 
-		:orderings		(
+		:orderings		( (step1 step2)
 						)
 	)
 

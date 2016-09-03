@@ -133,26 +133,24 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
     
     // build pseudo_steps
-    pseudo_steps_ =
-        new Chain<Step>(*dummy_goal_step,
-         new Chain<Step>(*dummy_initial_step, NULL));
-
-    // build orderings
-    orderings_ = new BinaryOrderings(); // TODO: extend this to the other kind of orderings, TermporalOrderings 
-	
-    // build links
-    links_ = NULL;
+    pseudo_steps_.push_back(*dummy_initial_step);
+    pseudo_steps_.push_back(*dummy_goal_step);
 }
 
 
 /* Adds a pseudo-step to this decomposition. */
 void Decomposition::add_pseudo_step(const Step& pseudo_step) {
-    pseudo_steps_ = new Chain<Step>(pseudo_step, pseudo_steps_);
+    pseudo_steps_.push_back(pseudo_step);
 }
 
 /* Adds a binding to this decomposition. */
 void Decomposition::add_binding(const Binding& binding) {
     binding_list_.push_back(binding);
+}
+
+/* Adds an ordering to this decomposition. */
+void Decomposition::add_ordering(const Ordering& ordering) {
+    ordering_list_.push_back(ordering);
 }
 
 

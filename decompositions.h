@@ -43,6 +43,9 @@ struct Decomposition {
     /* Adds a binding to this decomposition. */
     void add_binding(const Binding& binding);
 
+    /* Adds an ordering to this decomposition. */
+    void add_ordering(const Ordering& ordering);
+
     /* Returns the unique id for this decomposition. */
     size_t id() const { return id_; }
 
@@ -53,16 +56,16 @@ struct Decomposition {
     const std::string& name() const { return name_; }
 
     /* Returns the pseudo steps of this decomposition. */
-    const Chain<Step>* pseudo_steps() const { return pseudo_steps_; }
+    const StepList pseudo_steps() const { return pseudo_steps_; }
 
     /* Returns the list of bindings for this decomposition. */
     const BindingList binding_list() const { return binding_list_; }
 
-    /* Returns the ordering constraints of this decomposition. */
-    const Orderings& orderings() const { return *orderings_; }
+    /* Returns the list of orderings for this decomposition. */
+    const OrderingList ordering_list() const { return ordering_list_; }
 
-    /* Chain of causal links of this decomposition. */
-    const Chain<Link>* links() const { return links_; }
+    /* Returns the list of causal links of this decomposition. */
+    const LinkList links() const { return links_; }
 
 protected:
 
@@ -83,17 +86,17 @@ private:
     /* Name of this decomposition. */
     std::string name_;
 
-    /* Chain of pseudo steps. */
-    const Chain<Step>* pseudo_steps_;
+    /* List of pseudo steps. */
+    StepList pseudo_steps_;
 
     /* List of bindings for this decomposition. */
     BindingList binding_list_;
 
-    /* Ordering constraints of this decomposition. */
-    const Orderings* orderings_;
+    /* List of ordering constraints of this decomposition. */
+    OrderingList ordering_list_;
 
-    /* Chain of causal links of this decomposition. */
-    const Chain<Link>* links_;
+    /* List of causal links of this decomposition. */
+    LinkList links_;
 
 };
 
