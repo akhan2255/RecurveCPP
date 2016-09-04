@@ -61,8 +61,8 @@ struct Decomposition {
     /* Returns the list of bindings for this decomposition. */
     const BindingList binding_list() const { return binding_list_; }
 
-    /* Returns the list of orderings for this decomposition. */
-    const OrderingList ordering_list() const { return ordering_list_; }
+    /* Returns ordering constraints of this decomposition. */
+    const Orderings* orderings() const { return orderings_; }
 
     /* Returns the list of causal links of this decomposition. */
     const LinkList links() const { return links_; }
@@ -92,8 +92,8 @@ private:
     /* List of bindings for this decomposition. */
     BindingList binding_list_;
 
-    /* List of ordering constraints of this decomposition. */
-    OrderingList ordering_list_;
+    /* Ordering constraints of this decomposition. */
+    BinaryOrderings* orderings_;
 
     /* List of causal links of this decomposition. */
     LinkList links_;

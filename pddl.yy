@@ -268,8 +268,8 @@ static const Step* make_pseudostep();
 /* Adds a pseudo-step to the current decomposition. */
 static void add_pseudo_step(const Step& pseudo_step);
 
-/* Creates the ordering just parsed. */
-static const Ordering* make_ordering();
+/* Creates an ordering from pseudo-steps with the parameter names. */
+static const Ordering* make_ordering(const std::string* psuedo_step_name1, const std::string* pseudo_step_name2);
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
@@ -633,7 +633,7 @@ orderings : /* empty*/
 		  | orderings ordering
 		  ;
 
-ordering : '(' name name ')'		{ }
+ordering : '(' name name ')'		{ $$ = make_ordering($2, $3); }
 		 ;
 
 /* ====================================================================== */
@@ -1390,8 +1390,10 @@ static void add_pseudo_step(const Step& pseudo_step)
 	pseudo_step_action = 0;
 }
 
-static const Ordering* make_ordering()
+/* Creates an ordering from pseudo-steps with the parameter names. */
+static const Ordering* make_ordering(const std::string* psuedo_step_name1, const std::string* pseudo_step_name2)
 {
+	return NULL;
 }
 
 

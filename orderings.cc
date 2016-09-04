@@ -321,17 +321,19 @@ bool BinaryOrderings::possibly_concurrent(int id1, int id2,
 /* Returns the the ordering collection with the given additions. */
 const BinaryOrderings*
 BinaryOrderings::refine(const Ordering& new_ordering) const {
-  if (new_ordering.before_id() != 0
-      && new_ordering.after_id() != Plan::GOAL_ID
+  if (new_ordering.before_id() != 0 && new_ordering.after_id() != Plan::GOAL_ID
       && possibly_not_before(new_ordering.before_id(),
-			     new_ordering.before_time(),
-			     new_ordering.after_id(),
-			     new_ordering.after_time())) {
+			                 new_ordering.before_time(),
+			                 new_ordering.after_id(),
+			                 new_ordering.after_time())) 
+  {
     BinaryOrderings& orderings = *new BinaryOrderings(*this);
     std::map<size_t, BoolVector*> own_data;
     orderings.fill_transitive(own_data, new_ordering);
     return &orderings;
-  } else {
+  } 
+  
+  else {
     return this;
   }
 }

@@ -89,14 +89,14 @@ namespace test
             const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
             Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
 
-
-
-
             // Check a dummy step
             Step pseudo_get_in_car = travel_drive->pseudo_steps()[2];
             Assert::IsTrue(pseudo_get_in_car.pseudo_step(), L"get-in-car is a pseudo-step");
             Assert::AreEqual(std::string("get-in-car"), pseudo_get_in_car.action().name());
             const ActionSchema* pseudo_action_schema = dynamic_cast<const ActionSchema*> (&pseudo_get_in_car.action());
+
+
+
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)
