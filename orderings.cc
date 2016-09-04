@@ -57,8 +57,7 @@ bool operator>(const StepTime& st1, const StepTime& st2) {
 }
 
 
-/* Returns the step time corresponding to the end time of the given
-   effect. */
+/* Returns the step time corresponding to the end time of the given effect. */
 StepTime end_time(const Effect& e) {
   if (e.when() == Effect::AT_START) {
     return StepTime::AT_START;
@@ -68,8 +67,7 @@ StepTime end_time(const Effect& e) {
 }
 
 
-/* Returns the step time corresponding to the end time of the given
-   formula time. */
+/* Returns the step time corresponding to the end time of the given formula time. */
 StepTime end_time(FormulaTime ft) {
   if (ft == AT_START) {
     return StepTime::AT_START;
@@ -81,8 +79,7 @@ StepTime end_time(FormulaTime ft) {
 }
 
 
-/* Returns the step time corresponding to the start time of the given
-   literal. */
+/* Returns the step time corresponding to the start time of the given literal. */
 StepTime start_time(FormulaTime ft) {
   if (ft == AT_START) {
     return StepTime::AT_START;
@@ -268,8 +265,8 @@ BinaryOrderings::~BinaryOrderings() {
 
 
 /* Checks if the first step could be ordered before the second step. */
-bool BinaryOrderings::possibly_before(size_t id1, StepTime t1,
-				      size_t id2, StepTime t2) const {
+bool BinaryOrderings::possibly_before(int id1, StepTime t1, int id2, StepTime t2) const 
+{
   if (id1 == id2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -282,17 +279,15 @@ bool BinaryOrderings::possibly_before(size_t id1, StepTime t1,
 }
 
 
-/* Checks if the first step could be ordered after or at the same
-   time as the second step. */
-bool BinaryOrderings::possibly_not_before(size_t id1, StepTime t1,
-					  size_t id2, StepTime t2) const {
+/* Checks if the first step could be ordered after or at the same time as the second step. */
+bool BinaryOrderings::possibly_not_before(int id1, StepTime t1,
+					  int id2, StepTime t2) const {
   return possibly_after(id1, t1, id2, t2);
 }
 
 
 /* Checks if the first step could be ordered after the second step. */
-bool BinaryOrderings::possibly_after(size_t id1, StepTime t1,
-				     size_t id2, StepTime t2) const {
+bool BinaryOrderings::possibly_after(int id1, StepTime t1, int id2, StepTime t2) const {
   if (id1 == id2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -305,20 +300,17 @@ bool BinaryOrderings::possibly_after(size_t id1, StepTime t1,
 }
 
 
-/* Checks if the first step could be ordered before or at the same
-   time as the second step. */
-bool BinaryOrderings::possibly_not_after(size_t id1, StepTime t1,
-					 size_t id2, StepTime t2) const {
+/* Checks if the first step could be ordered before or at the same time as the second step. */
+bool BinaryOrderings::possibly_not_after(int id1, StepTime t1, int id2, StepTime t2) const {
   return possibly_before(id1, t1, id2, t2);
 }
 
 
 /* Checks if the two steps are possibly concurrent. */
-bool BinaryOrderings::possibly_concurrent(size_t id1, size_t id2,
+bool BinaryOrderings::possibly_concurrent(int id1, int id2,
 					  bool& ss, bool& se,
 					  bool& es, bool& ee) const {
-  if (id1 == id2 || id1 == 0 || id1 == Plan::GOAL_ID
-      || id2 == 0 || id2 == Plan::GOAL_ID) {
+  if (id1 == id2 || id1 == 0 || id1 == Plan::GOAL_ID || id2 == 0 || id2 == Plan::GOAL_ID) {
     return false;
   } else {
     return ss = se = es = ee = !before(id1, id2) && !before(id2, id1);
@@ -415,7 +407,7 @@ BinaryOrderings::makespan(const std::map<std::pair<size_t,
 /* Schedules the given instruction with the given constraints. */
 float BinaryOrderings::schedule(std::map<size_t, float>& start_times,
 				std::map<size_t, float>& end_times,
-				size_t step_id) const {
+				int step_id) const {
   std::map<size_t, float>::const_iterator d = start_times.find(step_id);
   if (d != start_times.end()) {
     return (*d).second;
@@ -440,7 +432,7 @@ float BinaryOrderings::schedule(std::map<size_t, float>& start_times,
 /* Schedules the given instruction with the given constraints. */
 float
 BinaryOrderings::schedule(std::map<size_t, float>& start_times,
-			  std::map<size_t, float>& end_times, size_t step_id,
+			  std::map<size_t, float>& end_times, int step_id,
 			  const std::map<std::pair<size_t,
 			  StepTime::StepPoint>, float>& min_times) const {
   std::map<size_t, float>::const_iterator d = start_times.find(step_id);
@@ -475,7 +467,7 @@ BinaryOrderings::schedule(std::map<size_t, float>& start_times,
 
 
 /* Returns true iff the first step is ordered before the second step. */
-bool BinaryOrderings::before(size_t id1, size_t id2) const {
+bool BinaryOrderings::before(int id1, int id2) const {
   if (id1 == id2) {
     return false;
   } else if (id1 < id2) {
@@ -489,7 +481,7 @@ bool BinaryOrderings::before(size_t id1, size_t id2) const {
 /* Orders the first step before the second step. */
 void
 BinaryOrderings::set_before(std::map<size_t, BoolVector*>& own_data,
-			    size_t id1, size_t id2) {
+			    int id1, int id2) {
   if (id1 != id2) {
     size_t i = std::max(id1, id2) - 2;
     BoolVector* bv;
@@ -582,8 +574,8 @@ TemporalOrderings::~TemporalOrderings() {
 
 
 /* Checks if the first step could be ordered before the second step. */
-bool TemporalOrderings::possibly_before(size_t id1, StepTime t1,
-					size_t id2, StepTime t2) const {
+bool TemporalOrderings::possibly_before(int id1, StepTime t1,
+					int id2, StepTime t2) const {
   if (id1 == id2 && t1 >= t2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -599,8 +591,8 @@ bool TemporalOrderings::possibly_before(size_t id1, StepTime t1,
 
 /* Checks if the first step could be ordered after or at the same
    time as the second step. */
-bool TemporalOrderings::possibly_not_before(size_t id1, StepTime t1,
-					    size_t id2, StepTime t2) const {
+bool TemporalOrderings::possibly_not_before(int id1, StepTime t1,
+					    int id2, StepTime t2) const {
   if (id1 == id2 && t1 < t2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -615,8 +607,8 @@ bool TemporalOrderings::possibly_not_before(size_t id1, StepTime t1,
 
 
 /* Checks if the first step could be ordered after the second step. */
-bool TemporalOrderings::possibly_after(size_t id1, StepTime t1,
-				       size_t id2, StepTime t2) const {
+bool TemporalOrderings::possibly_after(int id1, StepTime t1,
+				       int id2, StepTime t2) const {
   if (id1 == id2 && t1 <= t2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -632,8 +624,8 @@ bool TemporalOrderings::possibly_after(size_t id1, StepTime t1,
 
 /* Checks if the first step could be ordered before or at the same
    time as the second step. */
-bool TemporalOrderings::possibly_not_after(size_t id1, StepTime t1,
-					   size_t id2, StepTime t2) const {
+bool TemporalOrderings::possibly_not_after(int id1, StepTime t1,
+					   int id2, StepTime t2) const {
   if (id1 == id2 && t1 > t2) {
     return false;
   } else if (id1 == 0 || id2 == Plan::GOAL_ID) {
@@ -648,7 +640,7 @@ bool TemporalOrderings::possibly_not_after(size_t id1, StepTime t1,
 
 
 /* Checks if the two steps are possibly concurrent. */
-bool TemporalOrderings::possibly_concurrent(size_t id1, size_t id2,
+bool TemporalOrderings::possibly_concurrent(int id1, int id2,
 					    bool& ss, bool& se,
 					    bool& es, bool& ee) const {
   if (id1 == id2 || id1 == 0 || id1 == Plan::GOAL_ID
@@ -669,7 +661,7 @@ bool TemporalOrderings::possibly_concurrent(size_t id1, size_t id2,
 
 
 /* Returns the ordering collection with the given additions. */
-const TemporalOrderings* TemporalOrderings::refine(size_t step_id,
+const TemporalOrderings* TemporalOrderings::refine(int step_id,
 						   float min_start,
 						   float min_end) const {
   if (step_id != 0 && step_id != Plan::GOAL_ID) {
@@ -839,9 +831,7 @@ TemporalOrderings::refine(const Ordering& new_ordering,
 	  return NULL;
 	}
       } else {
-	orderings.goal_achievers_ =
-	  new Chain<size_t>(new_ordering.before_id(),
-			    orderings.goal_achievers_);
+	orderings.goal_achievers_ = new Chain<int>(new_ordering.before_id(), orderings.goal_achievers_);
 	RCObject::ref(orderings.goal_achievers_);
       }
     }
