@@ -1,6 +1,6 @@
 # Decompositional VHPOP
 
-Decompositional VHPOP is a variant of the [versatile heuristic partial order planner](http://www.tempastic.org/vhpop/) developed by [Håkan L. S. Younes](http://www.cs.cmu.edu/~lorens/).
+Decompositional VHPOP is a variant of the [versatile heuristic partial order planner](http://www.tempastic.org/vhpop/) developed by [HÃ¥kan L. S. Younes](http://www.cs.cmu.edu/~lorens/).
 
 ------------
 ### Decompositional Details
@@ -12,6 +12,7 @@ Currently, the only "installation" this project supports is installing as a Visu
 
 ##### Instructions
 In the instructions that follow, I'm going to assume that you have no blank characters in any of the paths that I reference. Blank characters can wreak havoc on Cygwin (which is needed), so use them at your own risk.
+
 1. Install [Cygwin](https://www.cygwin.com/) (I use the 64-bit version, but in theory it should work with the 32-bit version as well). When prompted for packages, install the following ones (both Developer and Libs when available):
    1. mercurial
    2. git
