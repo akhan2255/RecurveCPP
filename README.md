@@ -7,6 +7,44 @@ Decompositional VHPOP is a variant of the [versatile heuristic partial order pla
 The decompositional nature of VHPOP comes through its ability to handle action decomposition, a feature typically found in hierarchical task networks.  For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
 More details for this section are forthcoming.
 
+#### Installing as a Visual Studio Project
+Currently, the only "installation" this project supports is installing as a Visual Studio 2013 (VS2013) project on Windows (7+).  The following instructions assume you have access to a VS2013 development environment.
+
+##### Instructions
+In the instructions that follow, I'm going to assume that you have no blank characters in any of the paths that I reference. Blank characters can wreak havoc on Cygwin (which is needed), so use them at your own risk.
+1. Install [Cygwin](https://www.cygwin.com/) (I use the 64-bit version, but in theory it should work with the 32-bit version as well). When prompted for packages, install the following ones (both Developer and Libs when available):
+   1. mercurial
+   2. git
+   3. make
+   4. python
+   5. gcc
+   6. g++
+   7. flex
+   8. bison
+   9. gawk
+2. Place the cygwin bin folder (`$PATH_TO_CYGWIN\bin\`) on the Environment Path
+   1. Right-click on **My Computer** (in Windows 8.1, this is called **This PC**), and select **Properties**. Click on **Advanced systems settings** and then click on **Environment Variables** (it should be in the Advanced Tab).
+   2. Find the *Path* variable within the **System variables** table, click-on it, and then click on **Edit**. 
+   3. Append `$PATH_TO_CYGWIN\bin\` to the Variable value.
+3. Startup Cygwin (which creates a folder `$PATH_TO_CYGWIN\home\$USER`, and places you there), and enter:
+```bash
+mkdir -p Developer/include
+cd Developer/include
+touch unistd.h
+```
+4. Open the file `unistd.h` in a text editor of your choice and copy the following into it:
+```c
+#ifdef __MINGW32__
+#include_next <unistd.h>
+#else
+#include <io.h>
+#include <process.h>
+#endif
+```
+5. Add the following new System variable in the Environment Variables:
+ * Variable Name: `BISONFLEX_INC`
+ * Variable Value: `$PATH_TO_CYGWIN\home\$USER\Developer\include\`
+
 ------------
 ### VHPOP Details
 VHPOP is a versatile heuristic partial order planner loosely based on
