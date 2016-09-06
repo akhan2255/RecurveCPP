@@ -3970,6 +3970,14 @@ static const Link* make_link(const std::string* pseudo_step_name1,
 			+ " to itself in decomposition " + decomposition->name() + ")");
 	}
 
+	// Need to check:
+	
+	// the Literal exists as an effect of the first pseudo-step
+	
+	// the Literal exists as a precondition of the second pseudo-step
+
+	// if the Literal contains some ground Term, a corresponding Binding must be added to the decomposition
+
 	return NULL;
 }
 
