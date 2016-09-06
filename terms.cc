@@ -82,8 +82,7 @@ TermTable::~TermTable() {
 }
 
 
-/* Adds a variable with the given name and type to this term table
-   and returns the variable. */
+/* Adds a variable with the given name and type to this term table and returns the variable. */
 Variable TermTable::add_variable(const Type& type) {
   variable_types_.push_back(type);
   return Variable(-variable_types_.size());
@@ -110,8 +109,7 @@ const Type& TermTable::type(const Term& term) {
 }
 
 
-/* Adds an object with the given name and type to this term table
-   and returns the object. */
+/* Adds an object with the given name and type to this term table and returns the object. */
 const Object& TermTable::add_object(const std::string& name,
 				    const Type& type) {
   std::pair<std::map<std::string, Object>::const_iterator, bool> oi =
@@ -122,8 +120,7 @@ const Object& TermTable::add_object(const std::string& name,
 }
 
 
-/* Returns the object with the given name, or 0 if no object with
-   the given name exists. */
+/* Returns the object with the given name, or 0 if no object with the given name exists. */
 const Object* TermTable::find_object(const std::string& name) const {
   std::map<std::string, Object>::const_iterator oi = objects_.find(name);
   if (oi != objects_.end()) {
@@ -136,8 +133,7 @@ const Object* TermTable::find_object(const std::string& name) const {
 }
 
 
-/* Returns a list with objects that are compatible with the given
-   type. */
+/* Returns a list with objects that are compatible with the given type. */
 const ObjectList& TermTable::compatible_objects(const Type& type) const {
   std::map<Type, const ObjectList*>::const_iterator oi =
     compatible_.find(type);

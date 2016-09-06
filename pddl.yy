@@ -269,7 +269,7 @@ static const Step* make_pseudostep();
 static void add_pseudo_step(const Step& pseudo_step);
 
 /* Creates an ordering from pseudo-steps with the parameter names. */
-static const Ordering* make_ordering(const std::string* psuedo_step_name1, const std::string* pseudo_step_name2);
+static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2);
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
@@ -630,7 +630,7 @@ link  : '(' ')'
       ;
 
 orderings : /* empty*/
-		  | orderings ordering
+		  | orderings ordering		{ }
 		  ;
 
 ordering : '(' name name ')'		{ $$ = make_ordering($2, $3); }
@@ -1391,9 +1391,42 @@ static void add_pseudo_step(const Step& pseudo_step)
 }
 
 /* Creates an ordering from pseudo-steps with the parameter names. */
-static const Ordering* make_ordering(const std::string* psuedo_step_name1, const std::string* pseudo_step_name2)
+static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
 {
-	return NULL;
+	// Check that each decomposition pseudo-step exists, and store references to them if they do
+	const Step* pseudo_step1;
+	const Step* pseudo_step2;
+	std::map<const std::string, const Step*>::const_iterator si;
+
+	si = decomposition_pseudo_steps.find(*pseudo_step_name1);
+	if (si == decomposition_pseudo_steps.end()) {
+		yyerror("psuedo-step" + *pseudo_step_name1 + " referenced in ordering for decomposition " 
+			+ decomposition->name() + " does not exist");
+	}
+	else {
+		pseudo_step1 = (*si).second;
+	}
+
+	si = decomposition_pseudo_steps.find(*pseudo_step_name2);
+	if (si == decomposition_pseudo_steps.end()) {
+		yyerror("psuedo-step" + *pseudo_step_name2 + " referenced in ordering for decomposition "
+			+ decomposition->name() + " does not exist");
+	}
+	else {
+		pseudo_step2 = (*si).second;
+	}
+
+	// Check that the names of the pseudo-steps are not the same. This check is done after 
+	// verifying they exist, because it doesn't make sense to check before.
+	if (*pseudo_step_name1 == *pseudo_step_name2) {
+		yyerror("illegal ordering constraint (cannot order step " + *pseudo_step_name1 
+			+ " relative to itself in decomposition " + decomposition->name() + ")");
+	}
+
+	// Create ordering and return it. I assume that the ordering is constructed in between the end-points.
+	return new Ordering(pseudo_step1->id(), StepTime::AT_END, 
+		pseudo_step2->id(), StepTime::AT_START);
+
 }
 
 
