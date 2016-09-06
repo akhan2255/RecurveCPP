@@ -95,6 +95,17 @@ namespace test
             Assert::AreEqual(std::string("get-in-car"), pseudo_get_in_car.action().name());
             const ActionSchema* pseudo_action_schema = dynamic_cast<const ActionSchema*> (&pseudo_get_in_car.action());
 
+			// Get another dummy step
+			Step pseudo_drive = travel_drive->pseudo_steps()[3];
+			Assert::IsTrue(pseudo_drive.pseudo_step(), L"drive is a pseudo-step");
+			Assert::AreEqual(std::string("drive"), pseudo_drive.action().name());
+			
+			// Check an ordering
+			OrderingList travel_drive_orderings = travel_drive->ordering_list();
+			Assert::IsFalse(travel_drive_orderings.empty(), L"Orderings were specified as part of the decomposition.");
+			Ordering step1_step2 = travel_drive_orderings[0];
+			Assert::AreEqual(pseudo_get_in_car.id(), step1_step2.before_id(), L"The preceeding pseudo step is `get-in-car'");
+			Assert::AreEqual(pseudo_drive.id(), step1_step2.after_id(), L"The succeeding pseudo step is `drive'");
 
 
         }
