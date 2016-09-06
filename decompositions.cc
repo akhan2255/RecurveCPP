@@ -154,6 +154,11 @@ void Decomposition::add_ordering(const Ordering& ordering) {
 	ordering_list_.push_back(ordering);
 }
 
+/* Adds a link to this decomposition. */
+void Decomposition::add_link(const Link& link) {
+	link_list_.push_back(link);
+}
+
 
 /* ====================================================================== */
 /* DecompositionSchema */

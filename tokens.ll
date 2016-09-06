@@ -30,6 +30,7 @@ struct Type;
 struct TypeSet;
 struct Step;
 struct Ordering;
+struct Link;
 
 #include <cctype>
 #include <string>

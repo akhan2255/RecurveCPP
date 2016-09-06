@@ -269,10 +269,19 @@ static const Step* make_pseudostep();
 static void add_pseudo_step(const Step& pseudo_step);
 
 /* Creates an ordering from pseudo-steps with the parameter names. */
-static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2);
+static const Ordering* make_ordering(const std::string* pseudo_step_name1, 
+	const std::string* pseudo_step_name2);
 
 /* Adds an ordering to the current decomposition. */
 static void add_ordering(const Ordering& ordering);
+
+/* Creates a causal link between the pseudo-steps with the parameter names, 
+   over the given literal. */
+static const Link* make_link(const std::string* pseudo_step_name1,
+	const Literal& literal, const std::string* pseudo_step_name2);
+
+/* Adds a link to the current decomposition. */
+static void add_link(const Link& link);
 
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect();
@@ -355,6 +364,7 @@ static void add_init_literal(float time, const Literal& literal);
 %token DECOMPOSITION STEPS LINKS ORDERINGS DECOMPOSITION_NAME
 
 %union {
+  const Link* link;
   const Step* step;
   const Ordering* ordering;
   const Formula* formula;
@@ -370,6 +380,7 @@ static void add_init_literal(float time, const Literal& literal);
   float num;
 }
 
+%type <link> link
 %type <ordering> ordering
 %type <step> pseudo_step
 %type <formula> da_gd timed_gd timed_gds formula conjuncts disjuncts
@@ -626,10 +637,10 @@ pseudo_step : '(' name				{ prepare_pseudostep($2); }
 			;
 
 links : /* empty */
-	  | links link
+	  | links link					{ add_link(*$2); }
 	  ;
 
-link  : '(' ')'
+link  : '(' name '(' name_literal ')' name ')' { $$ = make_link($2, *$4, $6); }
       ;
 
 orderings : /* empty*/
@@ -1438,6 +1449,21 @@ static void add_ordering(const Ordering& ordering)
 	decomposition->add_ordering(ordering);
 }
 
+/* Creates a causal link between the pseudo-steps with the parameter names, 
+   over the given literal. */
+static const Link* make_link(const std::string* pseudo_step_name1, 
+	 const Literal& literal, const std::string* pseudo_step_name2)
+{
+	return NULL;
+}
+
+/* Adds a link to the current decomposition. */
+static void add_link(const Link& link)
+{
+	decomposition->add_link(link);
+}
+
+
 /* Prepares for the parsing of a universally quantified effect. */ 
 static void prepare_forall_effect() {
   if (!requirements->conditional_effects) {
@@ -1797,19 +1823,23 @@ static const Formula* make_forall(const Formula& body) {
 
 
 /* Adds the current effect to the currect action. */
-static void add_effect(const Literal& literal) {
-  PredicateTable::make_dynamic(literal.predicate());
-  Effect* effect = new Effect(literal, effect_time);
-  for (TermList::const_iterator vi = quantified.begin();
-       vi != quantified.end(); vi++) {
-    if ((*vi).variable()) {
-      effect->add_parameter((*vi).as_variable());
-    }
-  }
-  if (effect_condition != 0) {
-    effect->set_condition(*effect_condition);
-  }
-  action->add_effect(*effect);
+static void add_effect(const Literal& literal) 
+{
+	PredicateTable::make_dynamic(literal.predicate());
+	Effect* effect = new Effect(literal, effect_time);
+	
+	for (TermList::const_iterator vi = quantified.begin(); vi != quantified.end(); vi++) 
+	{
+		if ((*vi).variable()) {
+			effect->add_parameter((*vi).as_variable());
+		}
+	}
+
+	if (effect_condition != 0) {
+		effect->set_condition(*effect_condition);
+	}
+
+	action->add_effect(*effect);
 }
 
 

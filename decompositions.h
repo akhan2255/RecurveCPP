@@ -46,6 +46,9 @@ struct Decomposition {
     /* Adds an ordering to this decomposition. */
     void add_ordering(const Ordering& ordering);
 
+	/* Adds a link to this decomposition. */
+	void add_link(const Link& link);
+
     /* Returns the unique id for this decomposition. */
     size_t id() const { return id_; }
 
@@ -65,7 +68,7 @@ struct Decomposition {
     const OrderingList ordering_list() const { return ordering_list_; }
 
     /* Returns the list of causal links of this decomposition. */
-    const LinkList links() const { return links_; }
+    const LinkList link_list() const { return link_list_; }
 
 protected:
 
@@ -96,7 +99,7 @@ private:
     OrderingList ordering_list_;
 
     /* List of causal links of this decomposition. */
-    LinkList links_;
+    LinkList link_list_;
 
 };
 
