@@ -268,6 +268,11 @@ static const Step* make_pseudostep();
 /* Adds a pseudo-step to the current decomposition. */
 static void add_pseudo_step(const Step& pseudo_step);
 
+/* Checks that each named pseudo-step exists, and returns a pair of respective references to 
+   them if they do */
+static std::pair<const Step*, const Step*> 
+make_pseudo_step_pair(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2);
+
 /* Creates an ordering from pseudo-steps with the parameter names. */
 static const Ordering* make_ordering(const std::string* pseudo_step_name1, 
 	const std::string* pseudo_step_name2);
@@ -1404,17 +1409,18 @@ static void add_pseudo_step(const Step& pseudo_step)
 	pseudo_step_action = 0;
 }
 
-/* Creates an ordering from pseudo-steps with the parameter names. */
-static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
+/* Checks that each named pseudo-step exists, and returns a pair of respective references to 
+   them if they do */
+static std::pair<const Step*, const Step*> 
+make_pseudo_step_pair(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
 {
-	// Check that each decomposition pseudo-step exists, and store references to them if they do
 	const Step* pseudo_step1;
 	const Step* pseudo_step2;
 	std::map<const std::string, const Step*>::const_iterator si;
 
 	si = decomposition_pseudo_steps.find(*pseudo_step_name1);
 	if (si == decomposition_pseudo_steps.end()) {
-		yyerror("psuedo-step" + *pseudo_step_name1 + " referenced in ordering for decomposition " 
+		yyerror("psuedo-step" + *pseudo_step_name1 + " referenced in decomposition "
 			+ decomposition->name() + " does not exist");
 	}
 	else {
@@ -1423,12 +1429,22 @@ static const Ordering* make_ordering(const std::string* pseudo_step_name1, const
 
 	si = decomposition_pseudo_steps.find(*pseudo_step_name2);
 	if (si == decomposition_pseudo_steps.end()) {
-		yyerror("psuedo-step" + *pseudo_step_name2 + " referenced in ordering for decomposition "
+		yyerror("psuedo-step" + *pseudo_step_name2 + " referenced in decomposition "
 			+ decomposition->name() + " does not exist");
 	}
 	else {
 		pseudo_step2 = (*si).second;
 	}
+
+	return std::make_pair(pseudo_step1, pseudo_step2);
+}
+
+/* Creates an ordering from pseudo-steps with the parameter names. */
+static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
+{
+	// Check that each decomposition pseudo-step exists, and store references to them if they do
+	std::pair<const Step*, const Step*> pseudo_steps = 
+		make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
 
 	// Check that the names of the pseudo-steps are not the same. This check is done after 
 	// verifying they exist, because it doesn't make sense to check before.
@@ -1438,9 +1454,8 @@ static const Ordering* make_ordering(const std::string* pseudo_step_name1, const
 	}
 
 	// Create ordering and return it. I assume that the ordering is constructed in between the end-points.
-	return new Ordering(pseudo_step1->id(), StepTime::AT_END, 
-		pseudo_step2->id(), StepTime::AT_START);
-
+	return new Ordering(pseudo_steps.first->id(), StepTime::AT_END,
+		pseudo_steps.second->id(), StepTime::AT_START);
 }
 
 /* Adds an ordering to the current decomposition. */
@@ -1454,6 +1469,17 @@ static void add_ordering(const Ordering& ordering)
 static const Link* make_link(const std::string* pseudo_step_name1, 
 	 const Literal& literal, const std::string* pseudo_step_name2)
 {
+	// Check that each decomposition pseudo-step exists, and store references to them if they do
+	std::pair<const Step*, const Step*> pseudo_steps = 
+		make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
+
+	// Check that the names of the pseudo-steps are not the same. This check is done after 
+	// verifying they exist, because it doesn't make sense to check before.
+	if (*pseudo_step_name1 == *pseudo_step_name2) {
+		yyerror("illegal causal link (cannot link step " + *pseudo_step_name1 
+			+ " to itself in decomposition " + decomposition->name() + ")");
+	}
+
 	return NULL;
 }
 
