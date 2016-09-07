@@ -34,12 +34,27 @@ namespace Microsoft{
 
 
 			template<>
-			static std::wstring ToString<Predicate>(const Predicate& a) {
+			static std::wstring ToString<Predicate>(const Predicate& p) {
 				std::stringstream ss;
 				
-				ss << "(" << PredicateTable::name(a);
+				ss << "(" << PredicateTable::name(p);
 				ss << ") at memory location ";
-				ss << &a;
+				ss << &p;
+
+				std::string str = ss.str();
+				std::wstring wstr;
+				wstr.assign(str.begin(), str.end());
+				return wstr;
+			}
+
+
+			template<>
+			static std::wstring ToString<Term>(const Term& t) {
+				std::stringstream ss;
+
+				ss << "(" << t;
+				ss << ") at memory location ";
+				ss << &t;
 
 				std::string str = ss.str();
 				std::wstring wstr;
@@ -118,19 +133,20 @@ namespace test
             const Domain* domain = Domain::find("travel");
             const Problem* problem = Problem::find("travel-to-la");
             
-
+			// Check decompositions implicit requirement
             Assert::IsTrue(domain->requirements.decompositions, L"Decompositions were implicitly specified due to an action being marked with a composite property.");
             Assert::IsTrue(domain->requirements.typing, L"Typing was implicitly specified due to parsing a 'types' list.");
 
+			// Get the decomposition schema
             const DecompositionSchema* travel_drive = domain->find_decomposition("travel", "drive");
+			std::vector<Step>::size_type num_pseudo_steps = travel_drive->pseudo_steps().size();
+
             Assert::IsNotNull(travel_drive, L"The travel-drive decomposition should exist as a not-null, domain thing.");
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been domain with four parameters.");
-            Assert::AreEqual((size_t) 5, travel_drive->pseudo_steps().size(), L"This decomposition schema specifies 5 pseudo-steps.");
+			Assert::AreEqual((size_t) 5, num_pseudo_steps, L"This decomposition schema specifies 5 pseudo-steps.");
 
 
             // Check the dummy initial and final
-            std::vector<Step>::size_type num_pseudo_steps = travel_drive->pseudo_steps().size();
-
             Step decomp_dummy_initial_step = travel_drive->pseudo_steps()[0];
             Assert::AreEqual(std::string("<decomposition-init-for-drive>"), decomp_dummy_initial_step.action().name());
             Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
@@ -168,6 +184,7 @@ namespace test
 			Assert::IsTrue(pseudo_drive.pseudo_step(), L"drive is a pseudo-step");
 			Assert::AreEqual(std::string("drive"), pseudo_drive.action().name());
 			
+
 			// Check an ordering
 			OrderingList travel_drive_orderings = travel_drive->ordering_list();
 			Assert::IsFalse(travel_drive_orderings.empty(), L"Orderings were specified as part of the decomposition.");
@@ -175,13 +192,15 @@ namespace test
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_step2.before_id(), L"The preceeding pseudo step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_step2.after_id(), L"The succeeding pseudo step is `drive'");
 
+
 			// Check causal link - step references
 			LinkList travel_drive_links = travel_drive->link_list();
 			Assert::IsFalse(travel_drive_links.empty(), L"Causal links were specified as part of the decomposition.");
 			Link step1_in_person_car_step2 = travel_drive_links[0];
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_in_person_car_step2.from_id(), L"The source step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_in_person_car_step2.to_id(), L"The sink step is `drive'");
-			
+
+
 			// Check causal link - established condition
 			const Literal* in_person_car_literal = &in_person_car->literal();
 			const Literal* link_condition = &step1_in_person_car_step2.condition();
@@ -189,7 +208,34 @@ namespace test
 			Assert::AreEqual(in_person_car_literal->predicate(), link_condition->predicate(), L"The literal predicate of the step effect should be the same one referenced in the link condition.");
 			Assert::AreEqual(in_person_car_literal->arity(), link_condition->arity(), L"The arity of the literal of the step effect should be the same as the one referenced in the link condition.");
 
+			// Check bindings
+			BindingList travel_drive_bindings = travel_drive->binding_list();
+			Assert::AreEqual((size_t) 16, travel_drive_bindings.size(), L"There should be 16 bindings.");
 
+			// Check causal link - term bindings
+			for (size_t i = 0; i < link_condition->arity(); ++i)
+			{
+				// Each pair of terms should be bound
+				Term in_person_car_term = in_person_car_literal->term(i); // effect
+				Term link_condition_term = link_condition->term(i);		  // precondition
+				const Binding* relevant_binding = 0;
+
+				// find the relevant binding - it should exist!
+				for (BindingList::const_iterator bi = travel_drive_bindings.begin();
+					 bi != travel_drive_bindings.end();
+					 ++bi)
+				{
+					const Binding b = *bi;
+					if (b.contains(in_person_car_term, pseudo_get_in_car.id()) && 
+						b.contains(link_condition_term, pseudo_drive.id())) {
+						relevant_binding = &b;
+					}
+				}
+
+				if (relevant_binding == 0) {
+					Assert::Fail(L"There should be a binding that matches terms in a causal link");
+				}
+			}
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)

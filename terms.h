@@ -79,6 +79,7 @@ private:
  * A term.
  */
 struct Term {
+
   /* Constructs a term. */
   explicit Term(int index) : index_(index) {}
 

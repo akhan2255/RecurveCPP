@@ -73,6 +73,15 @@ struct Binding {
     /* Checks if this is an equality binding. */
     bool equality() const { return equality_; }
 
+	/* Checks if the given term is the variable of this binding. */
+	bool is_var(Term& term, int term_id) const { return (var_ == term && var_id_ == term_id); }
+
+	/* Checks if the given term is the term of this binding. */
+	bool is_term(Term& term, int term_id) const { return (term_ == term && term_id_ == term_id); }
+
+	/* Checks if this binding contains the given term as either its term or variable. */
+	bool contains(Term& term, int term_id) const { return (is_var(term, term_id) || is_term(term, term_id)); }
+
 private:
 
     /* A variable. */
