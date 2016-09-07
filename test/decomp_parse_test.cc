@@ -3,6 +3,61 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+// Auxiliary ToString methods
+namespace Microsoft{
+	namespace VisualStudio {
+		namespace CppUnitTestFramework {
+
+			template<>
+			static std::wstring ToString<Atom>(const Atom& a) {
+				std::stringstream ss;
+				ss << "(" << a.id() << " ";
+				for (size_t i = 0; i < a.arity(); ++i)
+				{
+					ss << a.term(i);
+
+					if ((i + 1) != a.arity()) {
+						ss << " ";
+					}
+				}
+				ss << ") at memory location ";
+				ss << &a;
+
+
+				std::string str = ss.str();
+				std::wstring wstr;
+				wstr.assign(str.begin(), str.end());
+				return wstr;
+			}
+
+
+
+
+			template<>
+			static std::wstring ToString<Predicate>(const Predicate& a) {
+				std::stringstream ss;
+				
+				ss << "(" << PredicateTable::name(a);
+				ss << ") at memory location ";
+				ss << &a;
+
+				std::string str = ss.str();
+				std::wstring wstr;
+				wstr.assign(str.begin(), str.end());
+				return wstr;
+			}
+
+		}
+	}
+}
+
+
+
+
+
+
+
+
 /* The parse function. */
 extern int yyparse();
 
@@ -94,6 +149,19 @@ namespace test
             Assert::IsTrue(pseudo_get_in_car.pseudo_step(), L"get-in-car is a pseudo-step");
             Assert::AreEqual(std::string("get-in-car"), pseudo_get_in_car.action().name());
             const ActionSchema* pseudo_action_schema = dynamic_cast<const ActionSchema*> (&pseudo_get_in_car.action());
+			
+			// Get one of the effects of this step.
+			const Effect* in_person_car;
+			for (EffectList::const_iterator ei = pseudo_action_schema->effects().begin();
+				ei != pseudo_action_schema->effects().end();
+				++ei)
+			{
+				const Literal* el = &(*ei)->literal();
+				const Predicate predicate = el->predicate();
+				if (PredicateTable::name(predicate) == std::string("in")) {
+					in_person_car = *ei;
+				}
+			}
 
 			// Get another dummy step
 			Step pseudo_drive = travel_drive->pseudo_steps()[3];
@@ -106,6 +174,20 @@ namespace test
 			Ordering step1_step2 = travel_drive_orderings[0];
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_step2.before_id(), L"The preceeding pseudo step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_step2.after_id(), L"The succeeding pseudo step is `drive'");
+
+			// Check causal link - step references
+			LinkList travel_drive_links = travel_drive->link_list();
+			Assert::IsFalse(travel_drive_links.empty(), L"Causal links were specified as part of the decomposition.");
+			Link step1_in_person_car_step2 = travel_drive_links[0];
+			Assert::AreEqual(pseudo_get_in_car.id(), step1_in_person_car_step2.from_id(), L"The source step is `get-in-car'");
+			Assert::AreEqual(pseudo_drive.id(), step1_in_person_car_step2.to_id(), L"The sink step is `drive'");
+			
+			// Check causal link - established condition
+			const Literal* in_person_car_literal = &in_person_car->literal();
+			const Literal* link_condition = &step1_in_person_car_step2.condition();
+			
+			Assert::AreEqual(in_person_car_literal->predicate(), link_condition->predicate(), L"The literal predicate of the step effect should be the same one referenced in the link condition.");
+			Assert::AreEqual(in_person_car_literal->arity(), link_condition->arity(), L"The arity of the literal of the step effect should be the same as the one referenced in the link condition.");
 
 
         }

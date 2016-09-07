@@ -67,7 +67,7 @@ static bool static_pred_flaw;
 /* Link */
 
 /* Constructs a causal link. */
-Link::Link(size_t from_id, StepTime effect_time,
+Link::Link(int from_id, StepTime effect_time,
     const OpenCondition& open_cond)
     : from_id_(from_id), effect_time_(effect_time), to_id_(open_cond.step_id()),
     condition_(open_cond.literal()), condition_time_(open_cond.when()) {
