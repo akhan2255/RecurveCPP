@@ -268,6 +268,10 @@ static const Step* make_pseudostep();
 /* Adds a pseudo-step to the current decomposition. */
 static void add_pseudo_step(const Step& pseudo_step);
 
+/* Registers the relevant dummy initial and final steps to the pseudo-steps of the current 
+   decomposition. */
+static void register_dummy_pseudo_steps();
+
 /* Checks that each named pseudo-step exists, and returns a pair of respective references to 
    them if they do */
 static std::pair<const Step*, const Step*> 
@@ -622,7 +626,8 @@ decomposition_def : '(' DECOMPOSITION name
                         parameters decomposition_body ')' { add_decomposition(); decomposition_pseudo_steps.clear(); }
                   ;
 
-decomposition_body  : STEPS '(' steps ')' decomposition_body2
+decomposition_body  : STEPS '(' steps ')'                 { register_dummy_pseudo_steps(); }
+                      decomposition_body2
                     ;
 
 decomposition_body2 : LINKS '(' links ')' decomposition_body3
@@ -641,19 +646,19 @@ steps : /* empty */
 step  : '(' name pseudo_step ')'       { decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
       ;
 
-pseudo_step : '(' name                   { prepare_pseudostep($2); } 
-                  terms ')'               { $$ = make_pseudostep(); }
+pseudo_step : '(' name                 { prepare_pseudostep($2); } 
+                  terms ')'            { $$ = make_pseudostep(); }
             ;
 
 links : /* empty */
-      | links link                       { add_link(*$2); }
+      | links link                     { add_link(*$2); }
       ;
 
 link  : '(' name term_formula name ')' { $$ = make_link($2, *$3, $4); }
       ;
 
 orderings : /* empty*/
-          | orderings ordering           { add_ordering(*$2); }
+          | orderings ordering         { add_ordering(*$2); }
           ;
 
 ordering : '(' name name ')'           { $$ = make_ordering($2, $3); }
@@ -1411,6 +1416,18 @@ static void add_pseudo_step(const Step& pseudo_step)
     decomposition->add_pseudo_step(pseudo_step);
     pseudo_step_action = 0;
 }
+
+/* Registers the relevant dummy initial and final steps to the pseudo-steps of the current 
+   decomposition. */
+static void register_dummy_pseudo_steps()
+{
+	const Step* dummy_initial = &decomposition->pseudo_steps()[0];
+	const Step* dummy_final = &decomposition->pseudo_steps()[1];
+
+	decomposition_pseudo_steps.insert( std::make_pair(std::string("init"), dummy_initial) );
+	decomposition_pseudo_steps.insert( std::make_pair(std::string("goal"), dummy_final) );
+}
+
 
 /* Checks that each named pseudo-step exists, and returns a pair of respective references to 
    them if they do */

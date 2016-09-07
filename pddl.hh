@@ -120,7 +120,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 375 "pddl.yy" /* yacc.c:1909  */
+#line 379 "pddl.yy" /* yacc.c:1909  */
 
   const Link* link;
   const Step* step;

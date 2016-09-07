@@ -145,7 +145,6 @@ namespace test
             Assert::AreEqual((size_t) 4, travel_drive->parameters().size(), L"The travel-drive decomposition should have been domain with four parameters.");
 			Assert::AreEqual((size_t) 5, num_pseudo_steps, L"This decomposition schema specifies 5 pseudo-steps.");
 
-
             // Check the dummy initial and final
             Step decomp_dummy_initial_step = travel_drive->pseudo_steps()[0];
             Assert::AreEqual(std::string("<decomposition-init-for-drive>"), decomp_dummy_initial_step.action().name());
