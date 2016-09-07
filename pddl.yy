@@ -86,10 +86,10 @@ struct Context {
   /* Find the Variable given by the name in the context. */
   const Variable* find(const std::string& name) const {
     for (std::vector<VariableMap>::const_reverse_iterator fi =
-	   frames_.rbegin(); fi != frames_.rend(); fi++) {
+       frames_.rbegin(); fi != frames_.rend(); fi++) {
       VariableMap::const_iterator vi = (*fi).find(name);
       if (vi != (*fi).end()) {
-	return &(*vi).second;
+    return &(*vi).second;
       }
     }
     return 0;
@@ -275,7 +275,7 @@ make_pseudo_step_pair(const std::string* pseudo_step_name1, const std::string* p
 
 /* Creates an ordering from pseudo-steps with the parameter names. */
 static const Ordering* make_ordering(const std::string* pseudo_step_name1, 
-	const std::string* pseudo_step_name2);
+    const std::string* pseudo_step_name2);
 
 /* Adds an ordering to the current decomposition. */
 static void add_ordering(const Ordering& ordering);
@@ -287,7 +287,7 @@ static Binding* bind_terms(const Term& first, int first_id, const Term& second, 
 /* Creates a causal link between the pseudo-steps with the parameter names, 
    over the given literal. */
 static const Link* make_link(const std::string* pseudo_step_name1,
-	const Literal& literal, const std::string* pseudo_step_name2);
+    const Literal& literal, const std::string* pseudo_step_name2);
 
 /* Adds a link to the current decomposition. */
 static void add_link(const Link& link);
@@ -300,11 +300,11 @@ static void prepare_conditional_effect(const Formula& condition);
 
 /* Adds types, constants, or objects to the current domain or problem. */
 static void add_names(const std::vector<const std::string*>* names,
-		      const Type& type);
+              const Type& type);
 
 /* Adds variables to the current variable list. */
 static void add_variables(const std::vector<const std::string*>* names,
-			  const Type& type);
+              const Type& type);
 
 /* Prepares for the parsing of an atomic formula. */ 
 static void prepare_atom(const std::string* name);
@@ -323,7 +323,7 @@ static const Fluent* make_fluent();
 
 /* Creates a subtraction. */
 static const Expression* make_subtraction(const Expression& term,
-					  const Expression* opt_term);
+                      const Expression* opt_term);
 
 /* Creates an equality formula. */
 static const Formula* make_equality(const Term* term1, const Term* term2);
@@ -490,7 +490,7 @@ structure_defs : structure_def
                ;
 
 structure_def : action_def
-			  | decomposition_def
+              | decomposition_def
               ;
 
 require_def : '(' REQUIREMENTS require_keys ')'
@@ -523,10 +523,10 @@ require_key : STRIPS { requirements->strips = true; }
                 { yyerror("`:continuous-effects' not supported"); }
             | TIMED_INITIAL_LITERALS
                 {
-					requirements->durative_actions = true;
-					requirements->timed_initial_literals = true;
-				}
-			| DECOMPOSITIONS { requirements->decompositions = true; }
+                    requirements->durative_actions = true;
+                    requirements->timed_initial_literals = true;
+                }
+            | DECOMPOSITIONS { requirements->decompositions = true; }
             ;
 
 types_def : '(' TYPES { require_typing(); name_kind = TYPE_KIND; }
@@ -588,12 +588,12 @@ action_body : precondition action_body2
             ;
 
 action_body2 : effect action_body3
-			 | action_body3
+             | action_body3
              ;
 
 action_body3 : /* empty */
              | composite
-			 ;
+             ;
 
 precondition : PRECONDITION { formula_time = AT_START; } formula { action->set_condition(*$3); }
              ;
@@ -603,7 +603,7 @@ effect : EFFECT { effect_time = Effect::AT_END; } eff_formula
 
 composite : COMPOSITE 't' { require_decompositions(); action->set_composite(true); }
           | COMPOSITE 'f' { require_decompositions(); action->set_composite(false); }
-		  ;
+          ;
 
 da_body : CONDITION da_gd da_body2 { action->set_condition(*$2); }
         | da_body2
@@ -617,47 +617,47 @@ da_body2 : /* empty */
 /* ====================================================================== */
 /* Decompositions. */
 
-decomposition_def : '(' DECOMPOSITION name 									
-						DECOMPOSITION_NAME name           { make_decomposition($3, $5); }
-						parameters decomposition_body ')' { add_decomposition(); decomposition_pseudo_steps.clear(); }
-				  ;
+decomposition_def : '(' DECOMPOSITION name                                     
+                        DECOMPOSITION_NAME name           { make_decomposition($3, $5); }
+                        parameters decomposition_body ')' { add_decomposition(); decomposition_pseudo_steps.clear(); }
+                  ;
 
 decomposition_body  : STEPS '(' steps ')' decomposition_body2
-				    ;
+                    ;
 
 decomposition_body2 : LINKS '(' links ')' decomposition_body3
-					| decomposition_body3
-					;
+                    | decomposition_body3
+                    ;
 
 
 decomposition_body3 : /* */
-					| ORDERINGS '(' orderings ')'
-					;
+                    | ORDERINGS '(' orderings ')'
+                    ;
 
 steps : /* empty */
-	  | steps step
-	  ;
+      | steps step
+      ;
 
-step  : '(' name pseudo_step ')'	   { decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
-	  ;
+step  : '(' name pseudo_step ')'       { decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
+      ;
 
-pseudo_step : '(' name				   { prepare_pseudostep($2); } 
-				  terms ')'			   { $$ = make_pseudostep(); }
-			;
+pseudo_step : '(' name                   { prepare_pseudostep($2); } 
+                  terms ')'               { $$ = make_pseudostep(); }
+            ;
 
 links : /* empty */
-	  | links link					   { add_link(*$2); }
-	  ;
+      | links link                       { add_link(*$2); }
+      ;
 
 link  : '(' name term_formula name ')' { $$ = make_link($2, *$3, $4); }
       ;
 
 orderings : /* empty*/
-		  | orderings ordering		   { add_ordering(*$2); }
-		  ;
+          | orderings ordering           { add_ordering(*$2); }
+          ;
 
-ordering : '(' name name ')'		   { $$ = make_ordering($2, $3); }
-		 ;
+ordering : '(' name name ')'           { $$ = make_ordering($2, $3); }
+         ;
 
 /* ====================================================================== */
 /* Duration constraints. */
@@ -1044,7 +1044,7 @@ variable : VARIABLE
 /* Outputs an error message. */
 static void yyerror(const std::string& s) {
   std::cerr << PACKAGE ":" << current_file << ':' << line_number << ": " << s
-	    << std::endl;
+        << std::endl;
   success = false;
 }
 
@@ -1053,7 +1053,7 @@ static void yyerror(const std::string& s) {
 static void yywarning(const std::string& s) {
   if (warning_level > 0) {
     std::cerr << PACKAGE ":" << current_file << ':' << line_number << ": " << s
-	      << std::endl;
+          << std::endl;
     if (warning_level > 1) {
       success = false;
     }
@@ -1073,7 +1073,7 @@ static void make_domain(const std::string* name) {
 
 /* Creates an empty problem with the given name. */
 static void make_problem(const std::string* name,
-			 const std::string* domain_name) {
+             const std::string* domain_name) {
   std::map<std::string, Domain*>::const_iterator di =
     domains.find(*domain_name);
   if (di != domains.end()) {
@@ -1129,7 +1129,7 @@ static void require_duration_inequalities() {
 static void require_decompositions() {
   if (!requirements->decompositions) {
     yywarning("assuming `:decompositions' requirement");
-	requirements->decompositions = true;
+    requirements->decompositions = true;
   }
 }
 
@@ -1174,11 +1174,11 @@ static Term make_term(const std::string* name) {
     if (o == 0) {
       size_t n = term_parameters.size();
       if (atom_predicate != 0
-	  && PredicateTable::parameters(*atom_predicate).size() > n) {
-	const Type& t = PredicateTable::parameters(*atom_predicate)[n];
-	o = &terms.add_object(*name, t);
+      && PredicateTable::parameters(*atom_predicate).size() > n) {
+    const Type& t = PredicateTable::parameters(*atom_predicate)[n];
+    o = &terms.add_object(*name, t);
       } else {
-	o = &terms.add_object(*name, TypeTable::OBJECT);
+    o = &terms.add_object(*name, TypeTable::OBJECT);
       }
       yywarning("implicit declaration of object `" + *name + "'");
     }
@@ -1242,7 +1242,7 @@ static void add_action() {
     domain->add_action(*action);
   } else {
     yywarning("ignoring repeated declaration of action `"
-	      + action->name() + "'");
+          + action->name() + "'");
     delete action;
   }
   action = 0;
@@ -1251,74 +1251,74 @@ static void add_action() {
 /* Creates a decomposition for the given composite action name with the given name. */
 static void make_decomposition(const std::string* composite_action_name, const std::string* name) 
 {
-	context.push_frame();
+    context.push_frame();
 
-	const ActionSchema* composite_action = domain->find_action(*composite_action_name);
-	if(composite_action == 0) {
-		yyerror("no action labeled " + *composite_action_name + " exists");
-	}
+    const ActionSchema* composite_action = domain->find_action(*composite_action_name);
+    if(composite_action == 0) {
+        yyerror("no action labeled " + *composite_action_name + " exists");
+    }
 
-	else if(!(composite_action->composite())) {
-		yyerror("action " + *composite_action_name + " is not composite");
-	}
+    else if(!(composite_action->composite())) {
+        yyerror("action " + *composite_action_name + " is not composite");
+    }
 
-	else {
-		decomposition = new DecompositionSchema(composite_action, *name);
-		delete name;
-	}
+    else {
+        decomposition = new DecompositionSchema(composite_action, *name);
+        delete name;
+    }
 }
 
 /* Adds the current decomposition to the current domain. */
 static void add_decomposition()
 {
-	context.pop_frame();
+    context.pop_frame();
 
-	/* If we have not declared this decomposition in the past, */
-	if(domain->find_decomposition(decomposition->composite_action_schema().name(), decomposition->name()) == 0) {
-		domain->add_decomposition(*decomposition);
-	}
+    /* If we have not declared this decomposition in the past, */
+    if(domain->find_decomposition(decomposition->composite_action_schema().name(), decomposition->name()) == 0) {
+        domain->add_decomposition(*decomposition);
+    }
 
-	else {
-		yywarning("ignoring repeated declaration of decomposition `" 
-			+ decomposition->name() + "' for composite action `" 
-			+ decomposition->composite_action_schema().name() + "'");
-		delete decomposition;
-	}
+    else {
+        yywarning("ignoring repeated declaration of decomposition `" 
+            + decomposition->name() + "' for composite action `" 
+            + decomposition->composite_action_schema().name() + "'");
+        delete decomposition;
+    }
 
-	decomposition = 0;
+    decomposition = 0;
 }
 
 
 /* Prepares for the parsing of a pseudo-step. */
 static void prepare_pseudostep(const std::string* pseudo_step_action_name) 
 { 
-	/* Verify that the action name refers to an existing action. */
-	pseudo_step_action = domain->find_action(*pseudo_step_action_name);
+    /* Verify that the action name refers to an existing action. */
+    pseudo_step_action = domain->find_action(*pseudo_step_action_name);
 
-	if(pseudo_step_action == 0) {
-		yyerror("No action of type " + *pseudo_step_action_name + " exists for pseudo-step definition.");
-	}
+    if(pseudo_step_action == 0) {
+        yyerror("No action of type " + *pseudo_step_action_name + " exists for pseudo-step definition.");
+    }
 
-	else {
-		term_parameters.clear();
-		delete pseudo_step_action_name;
-	}
+    else {
+        term_parameters.clear();
+        delete pseudo_step_action_name;
+    }
 }
 
 
 /* Creates the pseudo-step just parsed. */
 static const Step* make_pseudostep()
 {
-	// Check that the arity of the parsed terms matches the arity of the pseudo-step's action.
-	size_t n = term_parameters.size();
+    // Check that the arity of the parsed terms matches the arity of the pseudo-step's action.
+    size_t n = term_parameters.size();
 
-	if(pseudo_step_action->parameters().size() != n) 
-	{
-		yyerror("incorrect number of parameters specified for pseudo-step action "
-			+ pseudo_step_action->name());
-	}
+    if(pseudo_step_action->parameters().size() != n) 
+    {
+        yyerror("incorrect number of parameters specified for pseudo-step action "
+            + pseudo_step_action->name());
+    }
 
-	else 
+    else 
     {
         // Store a reference to the id of this pseudo-step. */
         int pseudo_step_id = -(++Decomposition::next_pseudo_step_id);
@@ -1400,7 +1400,7 @@ static const Step* make_pseudostep()
         Step* new_pseudo_step = new Step(pseudo_step_id, *pseudo_step_action);
         return new_pseudo_step;
     }
-	
+    
     return NULL;
 }
 
@@ -1408,8 +1408,8 @@ static const Step* make_pseudostep()
 /* Adds a pseudo-step to the current decomposition. */
 static void add_pseudo_step(const Step& pseudo_step) 
 {
-	decomposition->add_pseudo_step(pseudo_step);
-	pseudo_step_action = 0;
+    decomposition->add_pseudo_step(pseudo_step);
+    pseudo_step_action = 0;
 }
 
 /* Checks that each named pseudo-step exists, and returns a pair of respective references to 
@@ -1417,248 +1417,248 @@ static void add_pseudo_step(const Step& pseudo_step)
 static std::pair<const Step*, const Step*> 
 make_pseudo_step_pair(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
 {
-	const Step* pseudo_step1;
-	const Step* pseudo_step2;
-	std::map<const std::string, const Step*>::const_iterator si;
+    const Step* pseudo_step1;
+    const Step* pseudo_step2;
+    std::map<const std::string, const Step*>::const_iterator si;
 
-	si = decomposition_pseudo_steps.find(*pseudo_step_name1);
-	if (si == decomposition_pseudo_steps.end()) {
-		yyerror("psuedo-step" + *pseudo_step_name1 + " referenced in decomposition "
-			+ decomposition->name() + " does not exist");
-	}
-	else {
-		pseudo_step1 = (*si).second;
-	}
+    si = decomposition_pseudo_steps.find(*pseudo_step_name1);
+    if (si == decomposition_pseudo_steps.end()) {
+        yyerror("psuedo-step" + *pseudo_step_name1 + " referenced in decomposition "
+            + decomposition->name() + " does not exist");
+    }
+    else {
+        pseudo_step1 = (*si).second;
+    }
 
-	si = decomposition_pseudo_steps.find(*pseudo_step_name2);
-	if (si == decomposition_pseudo_steps.end()) {
-		yyerror("psuedo-step" + *pseudo_step_name2 + " referenced in decomposition "
-			+ decomposition->name() + " does not exist");
-	}
-	else {
-		pseudo_step2 = (*si).second;
-	}
+    si = decomposition_pseudo_steps.find(*pseudo_step_name2);
+    if (si == decomposition_pseudo_steps.end()) {
+        yyerror("psuedo-step" + *pseudo_step_name2 + " referenced in decomposition "
+            + decomposition->name() + " does not exist");
+    }
+    else {
+        pseudo_step2 = (*si).second;
+    }
 
-	return std::make_pair(pseudo_step1, pseudo_step2);
+    return std::make_pair(pseudo_step1, pseudo_step2);
 }
 
 /* Creates an ordering from pseudo-steps with the parameter names. */
 static const Ordering* make_ordering(const std::string* pseudo_step_name1, const std::string* pseudo_step_name2)
 {
-	// Check that each decomposition pseudo-step exists, and store references to them if they do
-	std::pair<const Step*, const Step*> pseudo_steps = 
-		make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
+    // Check that each decomposition pseudo-step exists, and store references to them if they do
+    std::pair<const Step*, const Step*> pseudo_steps = 
+        make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
 
-	// Check that the names of the pseudo-steps are not the same. This check is done after 
-	// verifying they exist, because it doesn't make sense to check before.
-	if (*pseudo_step_name1 == *pseudo_step_name2) {
-		yyerror("illegal ordering constraint (cannot order step " + *pseudo_step_name1 
-			+ " relative to itself in decomposition " + decomposition->name() + ")");
-	}
+    // Check that the names of the pseudo-steps are not the same. This check is done after 
+    // verifying they exist, because it doesn't make sense to check before.
+    if (*pseudo_step_name1 == *pseudo_step_name2) {
+        yyerror("illegal ordering constraint (cannot order step " + *pseudo_step_name1 
+            + " relative to itself in decomposition " + decomposition->name() + ")");
+    }
 
-	// Create ordering and return it. I assume that the ordering is constructed in between the end-points.
-	return new Ordering(pseudo_steps.first->id(), StepTime::AT_END,
-		pseudo_steps.second->id(), StepTime::AT_START);
+    // Create ordering and return it. I assume that the ordering is constructed in between the end-points.
+    return new Ordering(pseudo_steps.first->id(), StepTime::AT_END,
+        pseudo_steps.second->id(), StepTime::AT_START);
 }
 
 /* Adds an ordering to the current decomposition. */
 static void add_ordering(const Ordering& ordering)
 {
-	decomposition->add_ordering(ordering);
+    decomposition->add_ordering(ordering);
 }
 
 /* Returns a binding between the terms, or 0 if they cannot be bound. Two terms cannot be bound 
    if they are incompatible types or if they're both objects (neither one is a variable). */
 static Binding* bind_terms(const Term& first, int first_id, const Term& second, int second_id)
 {
-	// Return zero if both terms are objects.
-	if (first.object() && second.object()) {
-		return 0;
-	}
+    // Return zero if both terms are objects.
+    if (first.object() && second.object()) {
+        return 0;
+    }
 
-	else if (first.variable() && second.variable()) 
-	{
-		// Check for type compatibility.
-		Type first_t = TermTable::type(first);
-		Type second_t = TermTable::type(second);
+    else if (first.variable() && second.variable()) 
+    {
+        // Check for type compatibility.
+        Type first_t = TermTable::type(first);
+        Type second_t = TermTable::type(second);
 
-		const Type* most_specific = TypeTable::most_specific(first_t, second_t);
-		if (most_specific == 0) {
-			return 0; // incompatible types
-		}
+        const Type* most_specific = TypeTable::most_specific(first_t, second_t);
+        if (most_specific == 0) {
+            return 0; // incompatible types
+        }
 
-		else
-		{
-			// The most specific Term will serve as Term for the binding.
-			// The other will serve as a Variable.
-			if (*most_specific == first_t) {
-				return new Binding(first.as_variable(), first_id, second, second_id, true);
-			}
+        else
+        {
+            // The most specific Term will serve as Term for the binding.
+            // The other will serve as a Variable.
+            if (*most_specific == first_t) {
+                return new Binding(first.as_variable(), first_id, second, second_id, true);
+            }
 
-			else {
-				return new Binding(second.as_variable(), second_id, first, first_id, true);
-			}
-		}
-	}
+            else {
+                return new Binding(second.as_variable(), second_id, first, first_id, true);
+            }
+        }
+    }
 
-	else  
-	{
-		// Only one of them will be a variable (the other will be a term)
-		Variable variable = first.variable() ? first.as_variable() : second.as_variable();
-		Term term = first.variable() ? second : first;
+    else  
+    {
+        // Only one of them will be a variable (the other will be a term)
+        Variable variable = first.variable() ? first.as_variable() : second.as_variable();
+        Term term = first.variable() ? second : first;
  
-		// Check for type compatibility; the term should be the most specific type, so
-		// its type should be the subtype of the variable.
-		Type variable_t = TermTable::type(variable);
-		Type term_t = TermTable::type(term);
+        // Check for type compatibility; the term should be the most specific type, so
+        // its type should be the subtype of the variable.
+        Type variable_t = TermTable::type(variable);
+        Type term_t = TermTable::type(term);
 
-		if (! TypeTable::subtype(term_t, variable_t)) {
-			return 0; // incompatible types
-		}
+        if (! TypeTable::subtype(term_t, variable_t)) {
+            return 0; // incompatible types
+        }
 
-		else 
-		{
-			// return the binding!
-			return new Binding(variable, first.variable() ? first_id : second_id,
-							   term, first.variable() ? second_id : first_id, true);
-		}
-	}
+        else 
+        {
+            // return the binding!
+            return new Binding(variable, first.variable() ? first_id : second_id,
+                               term, first.variable() ? second_id : first_id, true);
+        }
+    }
 }
 
 
 /* Creates a causal link between the pseudo-steps with the parameter names, 
    over the given literal. */
 static const Link* make_link(const std::string* pseudo_step_name1, 
-	 const Literal& literal, const std::string* pseudo_step_name2)
+     const Literal& literal, const std::string* pseudo_step_name2)
 {
-	// Check that each decomposition pseudo-step exists, and store references to them if they do
-	std::pair<const Step*, const Step*> pseudo_steps = 
-		make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
+    // Check that each decomposition pseudo-step exists, and store references to them if they do
+    std::pair<const Step*, const Step*> pseudo_steps = 
+        make_pseudo_step_pair(pseudo_step_name1, pseudo_step_name2);
 
-	// Check that the names of the pseudo-steps are not the same. This check is done after 
-	// verifying they exist, because it doesn't make sense to check before.
-	if (*pseudo_step_name1 == *pseudo_step_name2) {
-		yyerror("illegal causal link (cannot link step " + *pseudo_step_name1 
-			+ " to itself in decomposition " + decomposition->name() + ")");
-	}
+    // Check that the names of the pseudo-steps are not the same. This check is done after 
+    // verifying they exist, because it doesn't make sense to check before.
+    if (*pseudo_step_name1 == *pseudo_step_name2) {
+        yyerror("illegal causal link (cannot link step " + *pseudo_step_name1 
+            + " to itself in decomposition " + decomposition->name() + ")");
+    }
 
-	// Check that the Literal exists as an effect of the first pseudo-step
-	// If so, store the effect for the causal link
-	const Effect* effect_match = 0;
+    // Check that the Literal exists as an effect of the first pseudo-step
+    // If so, store the effect for the causal link
+    const Effect* effect_match = 0;
 
-	for (EffectList::const_iterator ei = pseudo_steps.first->action().effects().begin();
-		ei != pseudo_steps.first->action().effects().end();
-		++ei)
-	{
-		const Literal* el = &(*ei)->literal();
+    for (EffectList::const_iterator ei = pseudo_steps.first->action().effects().begin();
+        ei != pseudo_steps.first->action().effects().end();
+        ++ei)
+    {
+        const Literal* el = &(*ei)->literal();
 
-		if (literal.predicate() == el->predicate() && literal.arity() == el->arity()) {
-			effect_match = (*ei);
-		}
-	}
+        if (literal.predicate() == el->predicate() && literal.arity() == el->arity()) {
+            effect_match = (*ei);
+        }
+    }
 
-	if (effect_match == 0) 
-	{
-		yyerror("literal " + domain->predicates().name(literal.predicate()) +
-			" not found as effect of pseudo-step" + pseudo_steps.first->action().name());
-	}
-	
-	// Check that the Literal exists as a precondition of the second pseudo-step
-	// If so, store the literal as an open precondition for the causal link
-	const OpenCondition* op_match = 0;
+    if (effect_match == 0) 
+    {
+        yyerror("literal " + domain->predicates().name(literal.predicate()) +
+            " not found as effect of pseudo-step" + pseudo_steps.first->action().name());
+    }
+    
+    // Check that the Literal exists as a precondition of the second pseudo-step
+    // If so, store the literal as an open precondition for the causal link
+    const OpenCondition* op_match = 0;
 
-	const Formula& pseudo_step_condition = pseudo_steps.second->action().condition();
+    const Formula& pseudo_step_condition = pseudo_steps.second->action().condition();
 
-	if (typeid(pseudo_step_condition) == typeid(Atom))
-	{
-		const Atom& atom = dynamic_cast<const Atom&>(pseudo_step_condition);
-		if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
-			op_match = new OpenCondition(pseudo_steps.second->id(), atom);
-		}		
-	}
+    if (typeid(pseudo_step_condition) == typeid(Atom))
+    {
+        const Atom& atom = dynamic_cast<const Atom&>(pseudo_step_condition);
+        if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
+            op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+        }        
+    }
 
-	else if (typeid(pseudo_step_condition) == typeid(Negation))
-	{
-		const Negation& negation = dynamic_cast<const Negation&>(pseudo_step_condition);
-		if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
-			op_match = new OpenCondition(pseudo_steps.second->id(), negation);
-		}
-	}
+    else if (typeid(pseudo_step_condition) == typeid(Negation))
+    {
+        const Negation& negation = dynamic_cast<const Negation&>(pseudo_step_condition);
+        if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
+            op_match = new OpenCondition(pseudo_steps.second->id(), negation);
+        }
+    }
 
-	else if (typeid(pseudo_step_condition) == typeid(Conjunction))
-	{
-		// for each conjunct, check if it's an Atom or Negation; skip any other types
-		const Conjunction& conj = dynamic_cast<const Conjunction&>(pseudo_step_condition);
-		for (FormulaList::const_iterator fi = conj.conjuncts().begin();
-			fi != conj.conjuncts().end();
-			++fi)
-		{
-			if (typeid(**fi) == typeid(Atom))
-			{
-				const Atom& atom = dynamic_cast<const Atom&>(**fi);
-				if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
-					op_match = new OpenCondition(pseudo_steps.second->id(), atom);
-				}
-			}
+    else if (typeid(pseudo_step_condition) == typeid(Conjunction))
+    {
+        // for each conjunct, check if it's an Atom or Negation; skip any other types
+        const Conjunction& conj = dynamic_cast<const Conjunction&>(pseudo_step_condition);
+        for (FormulaList::const_iterator fi = conj.conjuncts().begin();
+            fi != conj.conjuncts().end();
+            ++fi)
+        {
+            if (typeid(**fi) == typeid(Atom))
+            {
+                const Atom& atom = dynamic_cast<const Atom&>(**fi);
+                if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
+                    op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+                }
+            }
 
-			else if (typeid(**fi) == typeid(Negation))
-			{
-				const Negation& negation = dynamic_cast<const Negation&>(**fi);
-				if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
-					op_match = new OpenCondition(pseudo_steps.second->id(), negation);
-				}
+            else if (typeid(**fi) == typeid(Negation))
+            {
+                const Negation& negation = dynamic_cast<const Negation&>(**fi);
+                if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
+                    op_match = new OpenCondition(pseudo_steps.second->id(), negation);
+                }
 
-			}
+            }
 
-			else  {
-				continue;
-			}
-		}
-	}
+            else  {
+                continue;
+            }
+        }
+    }
 
-	else
-	{
-		yywarning("unable to create causal link to precondition within " + pseudo_steps.second->action().name()
-			+ "; linked pseudo-step preconditions are limited to literals");
-	}
+    else
+    {
+        yywarning("unable to create causal link to precondition within " + pseudo_steps.second->action().name()
+            + "; linked pseudo-step preconditions are limited to literals");
+    }
 
-	if (op_match == 0)
-	{
-		yyerror("literal " + domain->predicates().name(literal.predicate()) +
-			" not found as a precondition of pseudo-step" + pseudo_steps.second->action().name());
-	}
+    if (op_match == 0)
+    {
+        yyerror("literal " + domain->predicates().name(literal.predicate()) +
+            " not found as a precondition of pseudo-step" + pseudo_steps.second->action().name());
+    }
 
-	const Link* link = new Link(pseudo_steps.first->id(), StepTime::AT_END, *op_match);
+    const Link* link = new Link(pseudo_steps.first->id(), StepTime::AT_END, *op_match);
 
 
-	// For each of the literal's terms, corresponding Bindings must be added to the decomposition.
-	for (size_t i = 0; i < literal.arity(); ++i)
-	{
-		// Add a term binding between the terms of:
-		// the effect of the first pseudo-step and
-		// the precondition of the second pseudo-step
-		Term effect_term = effect_match->literal().term(i);		
-		Term precondition_term = op_match->literal()->term(i);
+    // For each of the literal's terms, corresponding Bindings must be added to the decomposition.
+    for (size_t i = 0; i < literal.arity(); ++i)
+    {
+        // Add a term binding between the terms of:
+        // the effect of the first pseudo-step and
+        // the precondition of the second pseudo-step
+        Term effect_term = effect_match->literal().term(i);        
+        Term precondition_term = op_match->literal()->term(i);
 
-		Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(),
-			precondition_term, pseudo_steps.second->id());
+        Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(),
+            precondition_term, pseudo_steps.second->id());
 
-		if (new_binding == 0) {
-			yyerror("cannot create needed binding for causal link due to incompatibility of terms");
-		}
+        if (new_binding == 0) {
+            yyerror("cannot create needed binding for causal link due to incompatibility of terms");
+        }
 
-		else {
-			decomposition->add_binding(*new_binding);
-		}
-	}
+        else {
+            decomposition->add_binding(*new_binding);
+        }
+    }
 
-	return link;
+    return link;
 }
 
 /* Adds a link to the current decomposition. */
 static void add_link(const Link& link)
 {
-	decomposition->add_link(link);
+    decomposition->add_link(link);
 }
 
 
@@ -1685,48 +1685,48 @@ static void prepare_conditional_effect(const Formula& condition) {
 
 /* Adds types, constants, or objects to the current domain or problem. */
 static void add_names(const std::vector<const std::string*>* names,
-		      const Type& type) {
+              const Type& type) {
   for (std::vector<const std::string*>::const_iterator si = names->begin();
        si != names->end(); si++) {
     const std::string* s = *si;
     if (name_kind == TYPE_KIND) {
       if (*s == TypeTable::OBJECT_NAME) {
-	yywarning("ignoring declaration of reserved type `object'");
+    yywarning("ignoring declaration of reserved type `object'");
       } else if (*s == TypeTable::NUMBER_NAME) {
-	yywarning("ignoring declaration of reserved type `number'");
+    yywarning("ignoring declaration of reserved type `number'");
       } else {
-	const Type* t = domain->types().find_type(*s);
-	if (t == 0) {
-	  t = &domain->types().add_type(*s);
-	}
-	if (!TypeTable::add_supertype(*t, type)) {
-	  yyerror("cyclic type hierarchy");
-	}
+    const Type* t = domain->types().find_type(*s);
+    if (t == 0) {
+      t = &domain->types().add_type(*s);
+    }
+    if (!TypeTable::add_supertype(*t, type)) {
+      yyerror("cyclic type hierarchy");
+    }
       }
     } else if (name_kind == CONSTANT_KIND) {
       const Object* o = domain->terms().find_object(*s);
       if (o == 0) {
-	domain->terms().add_object(*s, type);
+    domain->terms().add_object(*s, type);
       } else {
-	TypeSet components;
-	TypeTable::components(components, TermTable::type(*o));
-	components.insert(type);
-	TermTable::set_type(*o, make_type(components));
+    TypeSet components;
+    TypeTable::components(components, TermTable::type(*o));
+    components.insert(type);
+    TermTable::set_type(*o, make_type(components));
       }
     } else { /* name_kind == OBJECT_KIND */
       if (domain->terms().find_object(*s) != 0) {
-	yywarning("ignoring declaration of object `" + *s
-		  + "' previously declared as constant");
+    yywarning("ignoring declaration of object `" + *s
+          + "' previously declared as constant");
       } else {
-	const Object* o = problem->terms().find_object(*s);
-	if (o == 0) {
-	  problem->terms().add_object(*s, type);
-	} else {
-	  TypeSet components;
-	  TypeTable::components(components, TermTable::type(*o));
-	  components.insert(type);
-	  TermTable::set_type(*o, make_type(components));
-	}
+    const Object* o = problem->terms().find_object(*s);
+    if (o == 0) {
+      problem->terms().add_object(*s, type);
+    } else {
+      TypeSet components;
+      TypeTable::components(components, TermTable::type(*o));
+      components.insert(type);
+      TermTable::set_type(*o, make_type(components));
+    }
       }
     }
     delete s;
@@ -1740,50 +1740,50 @@ static void add_variables(const std::vector<const std::string*>* names, const Ty
 {
   for (std::vector<const std::string*>::const_iterator si = names->begin();
        si != names->end(); 
-	   si++) 
+       si++) 
   {
     const std::string* s = *si;
     
-	if (predicate != 0) 
-	{
+    if (predicate != 0) 
+    {
       if (!repeated_predicate) {
-		PredicateTable::add_parameter(*predicate, type);
+        PredicateTable::add_parameter(*predicate, type);
       }
     } 
-	
-	else if (function != 0) 
-	{
+    
+    else if (function != 0) 
+    {
       if (!repeated_function) {
-		FunctionTable::add_parameter(*function, type);
+        FunctionTable::add_parameter(*function, type);
       }
     } 
-	
-	else 
-	{
+    
+    else 
+    {
       if (context.shallow_find(*s) != 0) {
-		yyerror("repetition of parameter `" + *s + "'");
+        yyerror("repetition of parameter `" + *s + "'");
       } 
-	  
-	  else if (context.find(*s) != 0) {
-		yywarning("shadowing parameter `" + *s + "'");
+      
+      else if (context.find(*s) != 0) {
+        yywarning("shadowing parameter `" + *s + "'");
       }
 
       Variable var = TermTable::add_variable(type);
       context.insert(*s, var);
       
-	  if (!quantified.empty()) {
-		quantified.push_back(var);
+      if (!quantified.empty()) {
+        quantified.push_back(var);
       } 
-	  
-	  else { 
+      
+      else { 
 
-		if(action != 0) {
-		  action->add_parameter(var);
-		}
+        if(action != 0) {
+          action->add_parameter(var);
+        }
 
-		else { /* decomposition != 0 */
-		  decomposition->add_parameter(var);
-		}
+        else { /* decomposition != 0 */
+          decomposition->add_parameter(var);
+        }
 
       }
     }
@@ -1849,8 +1849,8 @@ static void add_term(const std::string* name) {
     } else {
       const TypeList& params = PredicateTable::parameters(*atom_predicate);
       if (params.size() > n
-	  && !TypeTable::subtype(TermTable::type(term), params[n])) {
-	yyerror("type mismatch");
+      && !TypeTable::subtype(TermTable::type(term), params[n])) {
+    yyerror("type mismatch");
       }
     }
   } else if (fluent_function != 0) {
@@ -1860,8 +1860,8 @@ static void add_term(const std::string* name) {
     } else {
       const TypeList& params = FunctionTable::parameters(*fluent_function);
       if (params.size() > n
-	  && !TypeTable::subtype(TermTable::type(term), params[n])) {
-	yyerror("type mismatch");
+      && !TypeTable::subtype(TermTable::type(term), params[n])) {
+    yyerror("type mismatch");
       }
     }
   }
@@ -1874,10 +1874,10 @@ static const Atom* make_atom() {
   size_t n = term_parameters.size();
   if (PredicateTable::parameters(*atom_predicate).size() < n) {
     yyerror("too many parameters passed to predicate `"
-	    + PredicateTable::name(*atom_predicate) + "'");
+        + PredicateTable::name(*atom_predicate) + "'");
   } else if (PredicateTable::parameters(*atom_predicate).size() > n) {
     yyerror("too few parameters passed to predicate `"
-	    + PredicateTable::name(*atom_predicate) + "'");
+        + PredicateTable::name(*atom_predicate) + "'");
   }
   const Atom& atom = Atom::make(*atom_predicate, term_parameters);
   atom_predicate = 0;
@@ -1890,10 +1890,10 @@ static const Fluent* make_fluent() {
   size_t n = term_parameters.size();
   if (FunctionTable::parameters(*fluent_function).size() < n) {
     yyerror("too many parameters passed to function `"
-	    + FunctionTable::name(*fluent_function) + "'");
+        + FunctionTable::name(*fluent_function) + "'");
   } else if (FunctionTable::parameters(*fluent_function).size() > n) {
     yyerror("too few parameters passed to function `"
-	    + FunctionTable::name(*fluent_function) + "'");
+        + FunctionTable::name(*fluent_function) + "'");
   }
   const Fluent& fluent = Fluent::make(*fluent_function, term_parameters);
   fluent_function = 0;
@@ -1903,7 +1903,7 @@ static const Fluent* make_fluent() {
 
 /* Creates a subtraction. */
 static const Expression* make_subtraction(const Expression& term,
-					  const Expression* opt_term) {
+                      const Expression* opt_term) {
   if (opt_term != 0) {
     return &Subtraction::make(term, *opt_term);
   } else {
@@ -1934,7 +1934,7 @@ static const Formula* make_negation(const Formula& negand) {
       requirements->negative_preconditions = true;
     }
   } else if (!requirements->disjunctive_preconditions
-	     && typeid(negand) != typeid(Equality)) {
+         && typeid(negand) != typeid(Equality)) {
     yywarning("assuming `:disjunctive-preconditions' requirement");
     requirements->disjunctive_preconditions = true;
   }
@@ -1979,7 +1979,7 @@ static const Formula* make_exists(const Formula& body) {
     } else {
       Exists& exists = *new Exists();
       for (size_t i = n + 1; i <= m; i++) {
-	exists.add_parameter(quantified[i].as_variable());
+    exists.add_parameter(quantified[i].as_variable());
       }
       exists.set_body(body);
       quantified.resize(n, Term(0));
@@ -2007,7 +2007,7 @@ static const Formula* make_forall(const Formula& body) {
     } else {
       Forall& forall = *new Forall();
       for (size_t i = n + 1; i <= m; i++) {
-	forall.add_parameter(quantified[i].as_variable());
+    forall.add_parameter(quantified[i].as_variable());
       }
       forall.set_body(body);
       quantified.resize(n, Term(0));
@@ -2023,21 +2023,21 @@ static const Formula* make_forall(const Formula& body) {
 /* Adds the current effect to the currect action. */
 static void add_effect(const Literal& literal) 
 {
-	PredicateTable::make_dynamic(literal.predicate());
-	Effect* effect = new Effect(literal, effect_time);
-	
-	for (TermList::const_iterator vi = quantified.begin(); vi != quantified.end(); vi++) 
-	{
-		if ((*vi).variable()) {
-			effect->add_parameter((*vi).as_variable());
-		}
-	}
+    PredicateTable::make_dynamic(literal.predicate());
+    Effect* effect = new Effect(literal, effect_time);
+    
+    for (TermList::const_iterator vi = quantified.begin(); vi != quantified.end(); vi++) 
+    {
+        if ((*vi).variable()) {
+            effect->add_parameter((*vi).as_variable());
+        }
+    }
 
-	if (effect_condition != 0) {
-		effect->set_condition(*effect_condition);
-	}
+    if (effect_condition != 0) {
+        effect->set_condition(*effect_condition);
+    }
 
-	action->add_effect(*effect);
+    action->add_effect(*effect);
 }
 
 
