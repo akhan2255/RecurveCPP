@@ -67,7 +67,7 @@
 						)
 
         :links		    (
-		;;				 (step1 (in ?person ?car) step2)
+						 (step1 (in ?person ?car) step2)
 		;;				 (step1 (in ?person ?car) step3)
 		;;				 (step2 (at ?car ?to) step3)
 						)

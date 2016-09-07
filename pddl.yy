@@ -280,6 +280,10 @@ static const Ordering* make_ordering(const std::string* pseudo_step_name1,
 /* Adds an ordering to the current decomposition. */
 static void add_ordering(const Ordering& ordering);
 
+/* Returns a binding between the terms, or 0 if they cannot be bound. Two terms cannot be bound 
+   if they are incompatible types or if they're both objects (neither one is a variable). */
+static Binding* bind_terms(const Term& first, int first_id, const Term& second, int second_id);
+
 /* Creates a causal link between the pseudo-steps with the parameter names, 
    over the given literal. */
 static const Link* make_link(const std::string* pseudo_step_name1,
@@ -389,7 +393,7 @@ static void add_init_literal(float time, const Literal& literal);
 %type <ordering> ordering
 %type <step> pseudo_step
 %type <formula> da_gd timed_gd timed_gds formula conjuncts disjuncts
-%type <literal> name_literal
+%type <literal> name_literal term_formula
 %type <atom> atomic_name_formula atomic_term_formula
 %type <expr> f_exp opt_f_exp ground_f_exp opt_ground_f_exp
 %type <fluent> ground_f_head f_head
@@ -614,14 +618,14 @@ da_body2 : /* empty */
 /* Decompositions. */
 
 decomposition_def : '(' DECOMPOSITION name 									
-						DECOMPOSITION_NAME name { make_decomposition($3, $5); }
+						DECOMPOSITION_NAME name           { make_decomposition($3, $5); }
 						parameters decomposition_body ')' { add_decomposition(); decomposition_pseudo_steps.clear(); }
 				  ;
 
 decomposition_body  : STEPS '(' steps ')' decomposition_body2
 				    ;
 
-decomposition_body2 : LINKS links decomposition_body3
+decomposition_body2 : LINKS '(' links ')' decomposition_body3
 					| decomposition_body3
 					;
 
@@ -634,25 +638,25 @@ steps : /* empty */
 	  | steps step
 	  ;
 
-step  : '(' name pseudo_step ')'	{ decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
+step  : '(' name pseudo_step ')'	   { decomposition_pseudo_steps.insert( std::make_pair(*$2, $3) ); add_pseudo_step(*$3); }
 	  ;
 
-pseudo_step : '(' name				{ prepare_pseudostep($2); } 
-				  terms ')'			{ $$ = make_pseudostep(); }
+pseudo_step : '(' name				   { prepare_pseudostep($2); } 
+				  terms ')'			   { $$ = make_pseudostep(); }
 			;
 
 links : /* empty */
-	  | links link					{ add_link(*$2); }
+	  | links link					   { add_link(*$2); }
 	  ;
 
-link  : '(' name '(' name_literal ')' name ')' { $$ = make_link($2, *$4, $6); }
+link  : '(' name term_formula name ')' { $$ = make_link($2, *$3, $4); }
       ;
 
 orderings : /* empty*/
-		  | orderings ordering		{ add_ordering(*$2); }
+		  | orderings ordering		   { add_ordering(*$2); }
 		  ;
 
-ordering : '(' name name ')'		{ $$ = make_ordering($2, $3); }
+ordering : '(' name name ')'		   { $$ = make_ordering($2, $3); }
 		 ;
 
 /* ====================================================================== */
@@ -808,36 +812,35 @@ metric_spec : '(' METRIC maximize { metric_fluent = true; } ground_f_exp ')'
 /* ====================================================================== */
 /* Formulas. */
 
-formula : atomic_term_formula { $$ = &TimedLiteral::make(*$1, formula_time); }
-        | '(' '=' term term ')' { $$ = make_equality($3, $4); }
-        | '(' not formula ')' { $$ = make_negation(*$3); }
-        | '(' and conjuncts ')' { $$ = $3; }
-        | '(' or { require_disjunction(); } disjuncts ')' { $$ = $4; }
-        | '(' imply { require_disjunction(); } formula formula ')'
-            { $$ = &(!*$4 || *$5); }
-        | '(' exists { prepare_exists(); } '(' variables ')' formula ')'
-            { $$ = make_exists(*$7); }
-        | '(' forall { prepare_forall(); } '(' variables ')' formula ')'
-            { $$ = make_forall(*$7); }
+formula : atomic_term_formula                                            { $$ = &TimedLiteral::make(*$1, formula_time); }
+        | '(' '=' term term ')'                                          { $$ = make_equality($3, $4); }
+        | '(' not formula ')'                                            { $$ = make_negation(*$3); }
+        | '(' and conjuncts ')'                                          { $$ = $3; }
+        | '(' or     { require_disjunction(); } disjuncts ')'            { $$ = $4; }
+        | '(' imply  { require_disjunction(); } formula formula ')'      { $$ = &(!*$4 || *$5); }
+        | '(' exists { prepare_exists(); } '(' variables ')' formula ')' { $$ = make_exists(*$7); }
+        | '(' forall { prepare_forall(); } '(' variables ')' formula ')' { $$ = make_forall(*$7); }
         ;
 
-conjuncts : /* empty */ { $$ = &Formula::TRUE; }
+conjuncts : /* empty */       { $$ = &Formula::TRUE; }
           | conjuncts formula { $$ = &(*$1 && *$2); }
           ;
 
-disjuncts : /* empty */ { $$ = &Formula::FALSE; }
+disjuncts : /* empty */       { $$ = &Formula::FALSE; }
           | disjuncts formula { $$ = &(*$1 || *$2); }
           ;
 
-atomic_term_formula : '(' predicate { prepare_atom($2); } terms ')'
-                        { $$ = make_atom(); }
+term_formula : atomic_term_formula { $$ = $1; }
+             | '(' not atomic_term_formula ')' { $$ = &Negation::make(*$3); }
+             ;
+
+atomic_term_formula : '(' predicate { prepare_atom($2); } terms ')'  { $$ = make_atom(); }
                     ;
 
-atomic_name_formula : '(' predicate { prepare_atom($2); } names ')'
-                        { $$ = make_atom(); }
+atomic_name_formula : '(' predicate { prepare_atom($2); } names ')'  { $$ = make_atom(); }
                     ;
 
-name_literal : atomic_name_formula { $$ = $1; }
+name_literal : atomic_name_formula             { $$ = $1; }
              | '(' not atomic_name_formula ')' { $$ = &Negation::make(*$3); }
              ;
 
@@ -888,7 +891,7 @@ ground_f_head : '(' function { prepare_fluent($2); } names ')'
 /* Terms and types. */
 
 terms : /* empty */
-      | terms name { add_term($2); }
+      | terms name     { add_term($2); }
       | terms variable { add_term($2); }
       ;
 
@@ -896,7 +899,7 @@ names : /* empty */
       | names name { add_term($2); }
       ;
 
-term : name { $$ = new Term(make_term($1)); }
+term : name     { $$ = new Term(make_term($1)); }
      | variable { $$ = new Term(make_term($1)); }
      ;
 
@@ -1464,6 +1467,65 @@ static void add_ordering(const Ordering& ordering)
 	decomposition->add_ordering(ordering);
 }
 
+/* Returns a binding between the terms, or 0 if they cannot be bound. Two terms cannot be bound 
+   if they are incompatible types or if they're both objects (neither one is a variable). */
+static Binding* bind_terms(const Term& first, int first_id, const Term& second, int second_id)
+{
+	// Return zero if both terms are objects.
+	if (first.object() && second.object()) {
+		return 0;
+	}
+
+	else if (first.variable() && second.variable()) 
+	{
+		// Check for type compatibility.
+		Type first_t = TermTable::type(first);
+		Type second_t = TermTable::type(second);
+
+		const Type* most_specific = TypeTable::most_specific(first_t, second_t);
+		if (most_specific == 0) {
+			return 0; // incompatible types
+		}
+
+		else
+		{
+			// The most specific Term will serve as Term for the binding.
+			// The other will serve as a Variable.
+			if (*most_specific == first_t) {
+				return new Binding(first.as_variable(), first_id, second, second_id, true);
+			}
+
+			else {
+				return new Binding(second.as_variable(), second_id, first, first_id, true);
+			}
+		}
+	}
+
+	else  
+	{
+		// Only one of them will be a variable (the other will be a term)
+		Variable variable = first.variable() ? first.as_variable() : second.as_variable();
+		Term term = first.variable() ? second : first;
+ 
+		// Check for type compatibility; the term should be the most specific type, so
+		// its type should be the subtype of the variable.
+		Type variable_t = TermTable::type(variable);
+		Type term_t = TermTable::type(term);
+
+		if (! TypeTable::subtype(term_t, variable_t)) {
+			return 0; // incompatible types
+		}
+
+		else 
+		{
+			// return the binding!
+			return new Binding(variable, first.variable() ? first_id : second_id,
+							   term, first.variable() ? second_id : first_id, true);
+		}
+	}
+}
+
+
 /* Creates a causal link between the pseudo-steps with the parameter names, 
    over the given literal. */
 static const Link* make_link(const std::string* pseudo_step_name1, 
@@ -1480,15 +1542,117 @@ static const Link* make_link(const std::string* pseudo_step_name1,
 			+ " to itself in decomposition " + decomposition->name() + ")");
 	}
 
-	// Need to check:
-	
-	// the Literal exists as an effect of the first pseudo-step
-	
-	// the Literal exists as a precondition of the second pseudo-step
+	// Check that the Literal exists as an effect of the first pseudo-step
+	// If so, store the effect for the causal link
+	const Effect* effect_match = 0;
 
-	// if the Literal contains some ground Term, a corresponding Binding must be added to the decomposition
+	for (EffectList::const_iterator ei = pseudo_steps.first->action().effects().begin();
+		ei != pseudo_steps.first->action().effects().end();
+		++ei)
+	{
+		const Literal* el = &(*ei)->literal();
 
-	return NULL;
+		if (literal.predicate() == el->predicate() && literal.arity() == el->arity()) {
+			effect_match = (*ei);
+		}
+	}
+
+	if (effect_match == 0) 
+	{
+		yyerror("literal " + domain->predicates().name(literal.predicate()) +
+			" not found as effect of pseudo-step" + pseudo_steps.first->action().name());
+	}
+	
+	// Check that the Literal exists as a precondition of the second pseudo-step
+	// If so, store the literal as an open precondition for the causal link
+	const OpenCondition* op_match = 0;
+
+	const Formula& pseudo_step_condition = pseudo_steps.second->action().condition();
+
+	if (typeid(pseudo_step_condition) == typeid(Atom))
+	{
+		const Atom& atom = dynamic_cast<const Atom&>(pseudo_step_condition);
+		if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
+			op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+		}		
+	}
+
+	else if (typeid(pseudo_step_condition) == typeid(Negation))
+	{
+		const Negation& negation = dynamic_cast<const Negation&>(pseudo_step_condition);
+		if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
+			op_match = new OpenCondition(pseudo_steps.second->id(), negation);
+		}
+	}
+
+	else if (typeid(pseudo_step_condition) == typeid(Conjunction))
+	{
+		// for each conjunct, check if it's an Atom or Negation; skip any other types
+		const Conjunction& conj = dynamic_cast<const Conjunction&>(pseudo_step_condition);
+		for (FormulaList::const_iterator fi = conj.conjuncts().begin();
+			fi != conj.conjuncts().end();
+			++fi)
+		{
+			if (typeid(**fi) == typeid(Atom))
+			{
+				const Atom& atom = dynamic_cast<const Atom&>(**fi);
+				if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
+					op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+				}
+			}
+
+			else if (typeid(**fi) == typeid(Negation))
+			{
+				const Negation& negation = dynamic_cast<const Negation&>(**fi);
+				if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
+					op_match = new OpenCondition(pseudo_steps.second->id(), negation);
+				}
+
+			}
+
+			else  {
+				continue;
+			}
+		}
+	}
+
+	else
+	{
+		yywarning("unable to create causal link to precondition within " + pseudo_steps.second->action().name()
+			+ "; linked pseudo-step preconditions are limited to literals");
+	}
+
+	if (op_match == 0)
+	{
+		yyerror("literal " + domain->predicates().name(literal.predicate()) +
+			" not found as a precondition of pseudo-step" + pseudo_steps.second->action().name());
+	}
+
+	const Link* link = new Link(pseudo_steps.first->id(), StepTime::AT_END, *op_match);
+
+
+	// For each of the literal's terms, corresponding Bindings must be added to the decomposition.
+	for (size_t i = 0; i < literal.arity(); ++i)
+	{
+		// Add a term binding between the terms of:
+		// the effect of the first pseudo-step and
+		// the precondition of the second pseudo-step
+		Term effect_term = effect_match->literal().term(i);		
+		Term precondition_term = op_match->literal()->term(i);
+
+		Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(),
+			precondition_term, pseudo_steps.second->id());
+
+		if (new_binding == 0) {
+			yyerror("cannot create needed binding for causal link due to incompatibility of terms");
+		}
+
+		else {
+			decomposition->add_binding(*new_binding);
+		}
+	}
+
+	return link;
 }
 
 /* Adds a link to the current decomposition. */

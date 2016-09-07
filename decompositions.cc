@@ -84,16 +84,16 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
              ++fi)
         {   
             // Iterate over each conjunct and attempt to convert it to an effect.
-            if (typeid(*fi) == typeid(Atom))
+            if (typeid(**fi) == typeid(Atom))
             {
-                const Atom& atom = dynamic_cast<const Atom&>(composite_precondition);
+                const Atom& atom = dynamic_cast<const Atom&>(**fi);
                 Effect* dummy_initial_effect = new Effect(atom, Effect::AT_END);
                 dummy_initial->add_effect(*dummy_initial_effect);
             }
 
-            else if (typeid(*fi) == typeid(Negation))
+            else if (typeid(**fi) == typeid(Negation))
             {
-                const Negation& negation = dynamic_cast<const Negation&>(composite_precondition);
+                const Negation& negation = dynamic_cast<const Negation&>(**fi);
                 Effect* dummy_initial_effect = new Effect(negation, Effect::AT_END);
                 dummy_initial->add_effect(*dummy_initial_effect);
             }
