@@ -117,7 +117,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
          ei != composite_action_schema->effects().end();
          ++ei)
     {
-        const Literal& lit = (*ei)->literal();
+        const Literal& lit = (*ei)->literal(); // TODO: Should I copy?  Or just pass directly?
         dummy_goal_preconditions->add_conjunct(lit);
     }
     dummy_goal_action_schema->set_condition(*dummy_goal_preconditions);
@@ -133,9 +133,68 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 }
 
 
-/* Adds a pseudo-step to this decomposition. */
-void Decomposition::add_pseudo_step(const Step& pseudo_step) {
+
+
+
+
+
+/* Checks whether this decomposition satisfies the legality criteria defined by the DPOCL
+   planning system, defined by Young, Pollack, and Moore. */
+bool Decomposition::satisfies_dpocl_legality_criteria()
+{
+    // The legality criteria is as follows:
+    //  (1) contains a dummy initial step whose effects are the preconditions of the parent step, and these codesignate in the bindings.
+    //  (2) contains a dummy final step whose effects are the preconditions of the parent step, and these codesignate in the bindings.
+    //  (3) has ordering constraints ensuring that s_i precedes all other steps and s_f succeeds all other steps, and finally
+    //  (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
+
+    // Items (1), (2), and (3) are guaranteed through the construction of the schema.
+    // Thus, this method checks (4).
+
+    bool satisfies = false;
     
+    // Get the dummy initial and goal steps
+    Step dummy_initial = pseudo_steps_[0];
+    Step dummy_goal = pseudo_steps_[0];
+    
+    // Setup the fringe with the dummy initial's id.
+    std::vector<int> fringe_of_ids;
+    fringe_of_ids.push_back(dummy_initial.id());
+
+    // While the search fringe has elements,
+    while (!fringe_of_ids.empty())
+    {
+        // Pop the back of the fringe
+        int id = fringe_of_ids[fringe_of_ids.size() - 1];
+        fringe_of_ids.pop_back();
+
+        // Goal test
+        if (id == dummy_goal.id()) {
+            satisfies = true;
+            break;
+        }
+
+        // Generate new edges to look through, and add them to the fringe
+        else
+        {
+            LinkList outgoing_edges = link_list_.outgoing_links(id);
+            for (LinkList::const_iterator li = outgoing_edges.begin(); li != outgoing_edges.end(); ++li)
+            {
+                // The id to add to the fringe is the id of the sink step of the link
+                Link outgoing_edge = *li;
+                fringe_of_ids.push_back(outgoing_edge.to_id());
+            }
+        }
+    }
+
+    return satisfies;
+}
+
+
+
+/* Adds a pseudo-step to this decomposition. */
+void Decomposition::add_pseudo_step(const Step& pseudo_step) 
+{    
     // Adds the step
     pseudo_steps_.push_back(pseudo_step);
 
@@ -143,11 +202,11 @@ void Decomposition::add_pseudo_step(const Step& pseudo_step) {
     // I must add two ordering constraints for the pseudo_step:
 
     // The initial dummy step must precede the step:
-    Step dummy_initial = pseudo_steps()[0];
+    Step dummy_initial = pseudo_steps_[0];
     this->add_ordering(Ordering(dummy_initial.id(), StepTime::AT_END, pseudo_step.id(), StepTime::AT_START));
 
     // The goal dummy step must succeed the step:
-    Step dummy_goal = pseudo_steps()[1];
+    Step dummy_goal = pseudo_steps_[1];
     this->add_ordering(Ordering(pseudo_step.id(), StepTime::AT_END, dummy_goal.id(), StepTime::AT_START));
 }
 
