@@ -92,6 +92,140 @@ StepTime start_time(FormulaTime ft) {
 
 
 /* ====================================================================== */
+/* OrderingList */
+
+
+/* Performs a depth traversal and returns true if the depth traversal encounters the starting node,
+   false otherwise. */
+bool OrderingList::can_find_self_in_depth_traversal(std::vector<int>* adjacency_list,
+	int vertex, bool visited[], bool* recursive_stack)
+{
+	if (visited[vertex] == false)
+	{
+		// Mark the current node as visited and part of the recursion stack
+		visited[vertex] = true;
+		recursive_stack[vertex] = true;
+
+		// Recur for all vertices adjacent to this vertex
+		std::vector<int>::iterator ai;
+		for (ai = adjacency_list[vertex].begin(); ai != adjacency_list[vertex].end(); ++ai)
+		{
+			if (!visited[*ai] && can_find_self_in_depth_traversal(adjacency_list, *ai, visited, recursive_stack)) {
+				return true;
+			}
+
+			else if (recursive_stack[*ai]) {
+				return true;
+			}
+		}
+	}
+	recursive_stack[vertex] = false; // remove vertex from recursion stack
+	return false;
+}
+
+
+/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
+OrderingList OrderingList::ordered_after(int step_id) const
+{
+	// Create a list to return
+	OrderingList ordered_after;
+
+	// Filter all those orderings from the copy whose "before_id" is not the parameter.
+	for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
+	{
+		const Ordering o = *oi;
+		if (o.before_id() == step_id) {
+			ordered_after.push_back(o); // add
+		}
+	}
+
+	return ordered_after;
+}
+
+
+/* Returns a vector of all the unique step ids in this ordering list. */
+std::vector<int> OrderingList::unique_step_ids() const 
+{
+	// collect a vector of unique ids, and return it.
+	std::vector<int> unique_step_ids;
+
+	for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
+	{
+		const Ordering o = *oi;
+
+		// if you can't find the before_id, add it
+		if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.before_id()) == 
+			unique_step_ids.end()) {
+			unique_step_ids.push_back(o.before_id());
+		}
+
+		// if you can't find the after_id, add it
+		if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.after_id()) == 
+			unique_step_ids.end()) {
+			unique_step_ids.push_back(o.after_id());
+		}
+	}
+
+	return unique_step_ids;
+}
+
+
+/* Returns true if the Orderings in this list give rise to a cycle. */
+bool OrderingList::contains_cycle()
+{
+	OrderingList orderings = *this;
+
+	// Construct graph out of ordering list
+	std::vector<int>  vertices = orderings.unique_step_ids();
+	std::vector<int>* adjacency_list = new std::vector<int>[vertices.size()];
+
+	for (int vertex = 0; vertex < vertices.size(); ++vertex)
+	{
+		// get the step_id that corresponds to this vertex
+		int step_id = vertices[vertex];
+
+		// get the OrderingList that corresponds to all outgoing edges from this vertex
+		OrderingList ordered_after = orderings.ordered_after(step_id);
+
+		// for each edge, register it on the adjacency list
+		for (OrderingList::const_iterator oi = ordered_after.begin(); oi != ordered_after.end(); ++oi)
+		{
+			const Ordering edge = *oi;
+			int sink_step_id = edge.after_id();
+
+			// find the index in the vertices array corresponding to the sink_step_id
+			std::vector<int>::iterator sink_step_id_itr = std::find(vertices.begin(), vertices.end(), sink_step_id);
+			int position_of_sink_step_id = sink_step_id_itr - vertices.begin();
+
+			// register the edge on the adjacency list
+			adjacency_list[vertex].push_back(position_of_sink_step_id);
+		}
+
+	}
+
+	// Initialize all vertices as unvisited, and not part of the recursion
+	bool* visited = new bool[vertices.size()];
+	bool* recursive_stack = new bool[vertices.size()];
+	for (int i = 0; i < vertices.size(); ++i)
+	{
+		visited[i] = false;
+		recursive_stack[i] = false;
+	}
+
+	// Go through each vertex, and see if you can find it twice in a depth-first traversal
+	for (int i = 0; i < vertices.size(); ++i)
+	{
+		if (can_find_self_in_depth_traversal(adjacency_list, i, visited, recursive_stack)) {
+			return true;
+		}
+	}
+
+	// If you can't find the same vertex twice for any vertex, there are no cycles
+	return false;
+}
+
+
+/* ====================================================================== */
 /* BoolVector */
 
 /*

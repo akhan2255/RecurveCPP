@@ -127,6 +127,22 @@ private:
 * List of Orderings.
 */
 struct OrderingList : std::vector < Ordering > {
+
+	/* Performs a depth traversal and returns true if the depth traversal encounters the starting node,
+	false otherwise. */
+	static bool can_find_self_in_depth_traversal(std::vector<int>* adjacency_list,
+		int vertex, bool visited[], bool* recursive_stack);
+
+	/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
+	OrderingList ordered_after(int step_id) const;
+
+	/* Returns a vector of all the unique step ids in this ordering list. */
+	std::vector<int> unique_step_ids() const;
+
+public:
+
+	/* Returns true if the Orderings in this list give rise to a cycle. */
+	bool contains_cycle();
 };
 
 
