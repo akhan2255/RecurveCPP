@@ -187,7 +187,9 @@ namespace test
 			// Check an ordering
 			OrderingList travel_drive_orderings = travel_drive->ordering_list();
 			Assert::IsFalse(travel_drive_orderings.empty(), L"Orderings were specified as part of the decomposition.");
-			Ordering step1_step2 = travel_drive_orderings[0];
+
+            int step1_step2_idx = ((travel_drive->pseudo_steps().size()-2) * 2) + 1;
+			Ordering step1_step2 = travel_drive_orderings[step1_step2_idx];
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_step2.before_id(), L"The preceeding pseudo step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_step2.after_id(), L"The succeeding pseudo step is `drive'");
 

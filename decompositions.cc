@@ -42,15 +42,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
       composite_action_schema_(composite_action_schema),
       name_(name) 
 {
-    // From the paper by Young, Pollack, and Moore:
-    // Each decomposition schema:
-    // (1) contains a dummy initial step whose effects are the preconditions of the parent step, and these codesignate in the bindings.
-    // (2) contains a dummy final step whose effects are the preconditions of the parent step, and these codesignate in the bindings.
-    // (3) has ordering constraints ensuring that s_i precedes all other steps, and
-    // (4) each effect of s_i has a path of causal links that terminates in a precondition of s_f.
-
-
-
     /* ---------------------------------------------------------------- */
     /* Dummy Initial Step Construction  */
 
@@ -135,13 +126,29 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     // build pseudo_steps
     pseudo_steps_.push_back(*dummy_initial_step);
     pseudo_steps_.push_back(*dummy_goal_step);
-   
+
+    // add orderings between the dummy initial and dummy final
+    Ordering* init_goal = new Ordering(dummy_initial_step->id(), StepTime::AT_END, dummy_goal_step->id(), StepTime::AT_START);
+    ordering_list_.push_back(*init_goal);
 }
 
 
 /* Adds a pseudo-step to this decomposition. */
 void Decomposition::add_pseudo_step(const Step& pseudo_step) {
+    
+    // Adds the step
     pseudo_steps_.push_back(pseudo_step);
+
+    // To satisfy the legality criteria for DPOCL defined by Young, Pollack, and Moore,
+    // I must add two ordering constraints for the pseudo_step:
+
+    // The initial dummy step must precede the step:
+    Step dummy_initial = pseudo_steps()[0];
+    this->add_ordering(Ordering(dummy_initial.id(), StepTime::AT_END, pseudo_step.id(), StepTime::AT_START));
+
+    // The goal dummy step must succeed the step:
+    Step dummy_goal = pseudo_steps()[1];
+    this->add_ordering(Ordering(pseudo_step.id(), StepTime::AT_END, dummy_goal.id(), StepTime::AT_START));
 }
 
 /* Adds a binding to this decomposition. */
