@@ -6,13 +6,9 @@
 				rdu lax - place
 	)
     (:predicates
-        (person		?person - person)
-        (place		?place - place)
-        (plane		?plane - plane)
-		(car		?car - car)
-        (at			?thing - object	?place - place)
-        (in			?person - person		?vehicle - transport)
-        (has		?person - person		?tickets))
+        (at			?thing - object		?place - place)
+        (in			?person - person	?vehicle - transport)
+        (has		?person - person	?tickets))
 		
 	;; A person travels from one place to another using some transport. 
 	(:action travel
@@ -67,9 +63,11 @@
 						)
 
         :links		    (
-						 (step1 (in ?person ?car) step2)
-						 (step1 (in ?person ?car) step3)
-						 (step2 (at ?car ?to) step3)
+		                 (init  (at ?person rdu)  step1) ;; -1 to -3
+						 (step1 (in ?person ?car) step2) ;; -3 to -4
+						 (step1 (in ?person ?car) step3) ;; -3 to -5
+						 (step2 (at ?car ?to)     step3) ;; -4 to -5
+						 (step3 (at ?person ?to)   goal) ;; -5 to -2
 						)
 
 		:orderings		( 

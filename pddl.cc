@@ -3948,8 +3948,11 @@ static void add_pseudo_step(const Step& pseudo_step)
    decomposition. */
 static void register_dummy_pseudo_steps()
 {
-	const Step* dummy_initial = &decomposition->pseudo_steps()[0];
-	const Step* dummy_final = &decomposition->pseudo_steps()[1];
+    const Step  dummy_initial_step = decomposition->pseudo_steps()[0];
+	const Step* dummy_initial = new Step(dummy_initial_step);
+
+    const Step  dummy_goal_step = decomposition->pseudo_steps()[1];
+	const Step* dummy_final = new Step(dummy_goal_step);
 
 	decomposition_pseudo_steps.insert( std::make_pair(std::string("init"), dummy_initial) );
 	decomposition_pseudo_steps.insert( std::make_pair(std::string("goal"), dummy_final) );
@@ -4028,7 +4031,7 @@ static Binding* bind_terms(const Term& first, int first_id, const Term& second, 
 
         const Type* most_specific = TypeTable::most_specific(first_t, second_t);
         if (most_specific == 0) {
-            return 0; // incompatible types
+            return 0; // incompatible types // XXX THERE IS A BUG THAT CAUSES THIS TO BE TRIGGERED
         }
 
         else
@@ -4178,14 +4181,15 @@ static const Link* make_link(const std::string* pseudo_step_name1,
     // For each of the literal's terms, corresponding Bindings must be added to the decomposition.
     for (size_t i = 0; i < literal.arity(); ++i)
     {
+		Term t = literal.term(i);
+
         // Add a term binding between the terms of:
         // the effect of the first pseudo-step and
         // the precondition of the second pseudo-step
         Term effect_term = effect_match->literal().term(i);        
         Term precondition_term = op_match->literal()->term(i);
 
-        Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(),
-            precondition_term, pseudo_steps.second->id());
+        Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(), precondition_term, pseudo_steps.second->id());
 
         if (new_binding == 0) {
             yyerror("cannot create needed binding for causal link due to incompatibility of terms");

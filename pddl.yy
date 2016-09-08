@@ -1662,14 +1662,15 @@ static const Link* make_link(const std::string* pseudo_step_name1,
     // For each of the literal's terms, corresponding Bindings must be added to the decomposition.
     for (size_t i = 0; i < literal.arity(); ++i)
     {
+		Term t = literal.term(i);
+
         // Add a term binding between the terms of:
         // the effect of the first pseudo-step and
         // the precondition of the second pseudo-step
         Term effect_term = effect_match->literal().term(i);        
         Term precondition_term = op_match->literal()->term(i);
 
-        Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(),
-            precondition_term, pseudo_steps.second->id());
+        Binding* new_binding = bind_terms(effect_term, pseudo_steps.first->id(), precondition_term, pseudo_steps.second->id());
 
         if (new_binding == 0) {
             yyerror("cannot create needed binding for causal link due to incompatibility of terms");

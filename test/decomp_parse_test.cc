@@ -151,6 +151,7 @@ namespace test
             Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
             Assert::IsTrue(decomp_dummy_initial_step.action().condition().tautology(), L"Decomposition dummy initial step should have no preconditions.");
 
+
             Step decomp_dummy_final_step = travel_drive->pseudo_steps()[1];
             Assert::AreEqual(std::string("<decomposition-goal-for-drive>"), decomp_dummy_final_step.action().name());
             Assert::AreEqual((size_t) 0, decomp_dummy_final_step.action().effects().size(), L"Decomposition dummy final step should have no effects.");
@@ -197,7 +198,7 @@ namespace test
 			// Check causal link - step references
 			LinkList travel_drive_links = travel_drive->link_list();
 			Assert::IsFalse(travel_drive_links.empty(), L"Causal links were specified as part of the decomposition.");
-			Link step1_in_person_car_step2 = travel_drive_links[0];
+			Link step1_in_person_car_step2 = travel_drive_links[1];
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_in_person_car_step2.from_id(), L"The source step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_in_person_car_step2.to_id(), L"The sink step is `drive'");
 
@@ -211,7 +212,7 @@ namespace test
 
 			// Check bindings
 			BindingList travel_drive_bindings = travel_drive->binding_list();
-			Assert::AreEqual((size_t) 16, travel_drive_bindings.size(), L"There should be 16 bindings.");
+			Assert::AreEqual((size_t) 20, travel_drive_bindings.size(), L"There should be 20 bindings.");
 
 			// Check causal link - term bindings
 			for (size_t i = 0; i < link_condition->arity(); ++i)
