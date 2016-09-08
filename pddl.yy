@@ -1429,8 +1429,11 @@ static void add_pseudo_step(const Step& pseudo_step)
    decomposition. */
 static void register_dummy_pseudo_steps()
 {
-	const Step* dummy_initial = &decomposition->pseudo_steps()[0];
-	const Step* dummy_final = &decomposition->pseudo_steps()[1];
+    const Step  dummy_initial_step = decomposition->pseudo_steps()[0];
+	const Step* dummy_initial = new Step(dummy_initial_step);
+
+    const Step  dummy_goal_step = decomposition->pseudo_steps()[1];
+	const Step* dummy_final = new Step(dummy_goal_step);
 
 	decomposition_pseudo_steps.insert( std::make_pair(std::string("init"), dummy_initial) );
 	decomposition_pseudo_steps.insert( std::make_pair(std::string("goal"), dummy_final) );
