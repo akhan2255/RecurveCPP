@@ -102,6 +102,11 @@ inline bool operator==(const Link& l1, const Link& l2) {
 * List of Links.
 */
 struct LinkList : std::vector < Link > {
+
+    /* Returns a list of Links whose source step is given by the step_id. If no such links exist,
+       this method returns an empty list. */
+    const LinkList outgoing_links(int step_id) const;
+
 };
 
 

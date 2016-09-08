@@ -90,6 +90,29 @@ Link::~Link() {
 
 
 /* ====================================================================== */
+/* LinkList */
+
+/* Returns a list of Links whose source step is given by the step_id. If no such links exist,
+this method returns an empty list. */
+const LinkList LinkList::outgoing_links(int step_id) const
+{
+    LinkList outgoing_links;
+
+    for (LinkList::const_iterator li = this->begin(); li != this->end(); ++li)
+    {
+        Link l = *li;
+        if (l.from_id() == step_id) {
+            outgoing_links.push_back(l);
+        }
+    }
+
+    return outgoing_links;
+}
+
+
+
+
+/* ====================================================================== */
 /* Plan */
 
 /*
