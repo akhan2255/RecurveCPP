@@ -171,7 +171,7 @@ std::vector<int> OrderingList::unique_step_ids() const
 
 
 /* Returns true if the Orderings in this list give rise to a cycle. */
-bool OrderingList::contains_cycle()
+bool OrderingList::contains_cycle() const
 {
 	OrderingList orderings = *this;
 
