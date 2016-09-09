@@ -216,6 +216,44 @@ const Formula& Constant::negation() const {
 size_t Literal::next_id = 1;
 
 
+/* Checks whether this literal is syntactically equal to the other; i.e. the valence,
+   predicate, arity, and term types are all equivalent. */
+bool Literal::syntactically_equal(const Literal& first, const Literal &second)
+{
+    // Compare valence (whether they are both an Atom, or both a Negation)
+    if (typeid(first) != typeid(second)) {
+        return false;
+    }
+
+    else
+    {
+        // Compare the predicates.
+        if (first.predicate() != second.predicate()) {
+            return false;
+        }
+
+        // Compare arity.
+        else if (first.arity() != second.arity()) {
+            return false;
+        }
+
+        else
+        {
+            // Go through each of the terms, and compare type equality.
+            for (size_t i = 0; i < first.arity(); ++i)
+            {
+                if (TermTable::type(first.term(i)) != TermTable::type(second.term(i))) {
+                    return false;
+                }
+            }
+
+            // We've checked all the relevant attributes!
+            return true;
+        }
+    }
+}
+
+
 /* Assigns an id to this literal. */
 void Literal::assign_id(bool ground) {
   if (ground) {
@@ -349,7 +387,6 @@ Atom::~Atom() {
     atoms.erase(ai);
   }
 }
-
 
 /* Returns this formula subject to the given substitutions. */
 const Atom& Atom::substitution(const SubstitutionMap& subst) const {

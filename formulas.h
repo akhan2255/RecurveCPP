@@ -155,7 +155,7 @@ struct Constant : public Formula {
 
 	/* Returns this formula subject to the given substitutions. */
 	virtual const Constant& substitution(const SubstitutionMap& subst) const;
-
+    
 	/* Returns an instantiation of this formula. */
 	virtual const Constant& instantiation(const SubstitutionMap& subst,
 		const Problem& problem) const;
@@ -202,8 +202,13 @@ struct Atom;
  * An abstract literal.
  */
 struct Literal : public Formula {
+
 	/* Returns the id for this literal (zero if lifted). */
 	size_t id() const { return id_; }
+
+    /* Checks whether this literal is syntactically equal to the other; i.e. the valence, 
+       predicate, arity, and term types are all equivalent. */
+    static bool syntactically_equal(const Literal& first, const Literal &second);
 
 	/* Returns the predicate of this literal. */
 	virtual const Predicate& predicate() const = 0;
@@ -217,10 +222,8 @@ struct Literal : public Formula {
 	/* Returns the atom associated with this literal. */
 	virtual const Atom& atom() const = 0;
 
-	/* Returns a formula that separates the given effect from anything
-	   definitely asserted by this formula. */
-	virtual const Formula& separator(const Effect& effect,
-		const Domain& domain) const;
+	/* Returns a formula that separates the given effect from anything definitely asserted by this formula. */
+	virtual const Formula& separator(const Effect& effect, const Domain& domain) const;
 
 	/* Returns this formula subject to the given substitutions. */
 	virtual const Literal& substitution(const SubstitutionMap& subst) const = 0;
@@ -258,6 +261,7 @@ namespace std {
  * An atom.
  */
 struct Atom : public Literal {
+
 	/* Returns an atomic formula with the given predicate and terms. */
 	static const Atom& make(const Predicate& predicate, const TermList& terms);
 
@@ -344,6 +348,7 @@ namespace std {
  * A negated atom.
  */
 struct Negation : public Literal {
+
 	/* Returns a negation of the given atom. */
 	static const Negation& make(const Atom& atom);
 

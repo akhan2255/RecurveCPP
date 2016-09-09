@@ -1619,7 +1619,8 @@ static const Link* make_link(const std::string* pseudo_step_name1,
     {
         const Literal* el = &(*ei)->literal();
 
-        if (literal.predicate() == el->predicate() && literal.arity() == el->arity()) {
+        // To be a match, it first has to match the predicate type and the arity...
+        if (Literal::syntactically_equal(literal, *el)) {
             effect_match = (*ei);
         }
     }
@@ -1636,20 +1637,12 @@ static const Link* make_link(const std::string* pseudo_step_name1,
 
     const Formula& pseudo_step_condition = pseudo_steps.second->action().condition();
 
-    if (typeid(pseudo_step_condition) == typeid(Atom))
+    if (typeid(pseudo_step_condition) == typeid(Atom) || typeid(pseudo_step_condition) == typeid(Negation))
     {
-        const Atom& atom = dynamic_cast<const Atom&>(pseudo_step_condition);
-        if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
-            op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+        const Literal* cond = dynamic_cast<const Literal*>(&pseudo_step_condition);
+        if (Literal::syntactically_equal(literal, *cond)) {
+            op_match = new OpenCondition(pseudo_steps.second->id(), *cond);
         }        
-    }
-
-    else if (typeid(pseudo_step_condition) == typeid(Negation))
-    {
-        const Negation& negation = dynamic_cast<const Negation&>(pseudo_step_condition);
-        if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
-            op_match = new OpenCondition(pseudo_steps.second->id(), negation);
-        }
     }
 
     else if (typeid(pseudo_step_condition) == typeid(Conjunction))
@@ -1660,32 +1653,24 @@ static const Link* make_link(const std::string* pseudo_step_name1,
             fi != conj.conjuncts().end();
             ++fi)
         {
-            if (typeid(**fi) == typeid(Atom))
+            if (typeid(**fi) == typeid(Atom) || typeid(**fi) == typeid(Negation))
             {
-                const Atom& atom = dynamic_cast<const Atom&>(**fi);
-                if (atom.predicate() == literal.predicate() && atom.arity() == literal.arity()) {
-                    op_match = new OpenCondition(pseudo_steps.second->id(), atom);
+                const Literal* cond = dynamic_cast<const Literal*>(*fi);
+                if (Literal::syntactically_equal(literal, *cond)) {
+                    op_match = new OpenCondition(pseudo_steps.second->id(), *cond);
                 }
-            }
-
-            else if (typeid(**fi) == typeid(Negation))
-            {
-                const Negation& negation = dynamic_cast<const Negation&>(**fi);
-                if (negation.predicate() == literal.predicate() && negation.arity() == literal.arity()) {
-                    op_match = new OpenCondition(pseudo_steps.second->id(), negation);
-                }
-
             }
 
             else  {
-                continue;
+                // skip this literal, and see if we can find another one in the conjunction to link to.
+                continue; 
             }
         }
     }
 
     else
     {
-        yywarning("unable to create causal link to precondition within " + pseudo_steps.second->action().name()
+        yyerror("unable to create causal link to precondition within " + pseudo_steps.second->action().name()
             + "; linked pseudo-step preconditions are limited to literals");
     }
 
