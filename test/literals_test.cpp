@@ -3,37 +3,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace Microsoft{
-    namespace VisualStudio {
-        namespace CppUnitTestFramework {
-
-            template<>
-            static std::wstring ToString<Atom>(const Atom& a) {
-                std::stringstream ss;
-                ss << "(" << a.id() << " ";
-                for (size_t i = 0; i < a.arity(); ++i) 
-                {
-                    ss << a.term(i);
-
-                    if ((i + 1) != a.arity()) {
-                        ss << " ";
-                    }
-                }
-                ss << ") at memory location ";
-                ss << &a;
-
-
-                std::string str = ss.str();
-                std::wstring wstr;
-                wstr.assign(str.begin(), str.end());
-                return wstr;
-            }
-
-        }
-    }
-}
-
-
 namespace test
 {
 	TEST_CLASS(LiteralTests)
