@@ -140,7 +140,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
 /* Checks whether this decomposition satisfies the legality criteria defined by the DPOCL
    planning system, defined by Young, Pollack, and Moore. */
-bool Decomposition::satisfies_dpocl_legality_criteria()
+bool Decomposition::satisfies_dpocl_legality_criteria() const
 {
     // The legality criteria is as follows:
     //  (1) contains a dummy initial step whose effects are the preconditions of the parent step, and these codesignate in the bindings.

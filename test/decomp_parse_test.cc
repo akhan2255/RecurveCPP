@@ -104,7 +104,6 @@ namespace test
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_in_person_car_step2.from_id(), L"The source step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_in_person_car_step2.to_id(), L"The sink step is `drive'");
 
-
 			// Check causal link - established condition
 			const Literal* in_person_car_literal = &in_person_car->literal();
 			const Literal* link_condition = &step1_in_person_car_step2.condition();
@@ -140,6 +139,9 @@ namespace test
 					Assert::Fail(L"There should be a binding that matches terms in a causal link");
 				}
 			}
+
+            // Check the decomposition legality criteria
+            Assert::IsTrue(travel_drive->satisfies_dpocl_legality_criteria(), L"This decomposition schema should be considered legal.");
         }
 
         TEST_METHOD(ParseDecompositionsRequirement)

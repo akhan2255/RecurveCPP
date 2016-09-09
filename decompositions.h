@@ -39,7 +39,7 @@ struct Decomposition {
 
     /* Checks whether this decomposition satisfies the legality criteria defined by the DPOCL
        planning system, defined by Young, Pollack, and Moore. */
-    bool satisfies_dpocl_legality_criteria();
+    bool satisfies_dpocl_legality_criteria() const;
 
     /* Adds a pseudo-step to this decomposition. */
     void add_pseudo_step(const Step& pseudo_step);
