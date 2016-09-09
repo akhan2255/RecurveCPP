@@ -1,16 +1,20 @@
-# Decompositional VHPOP
+# Recurve
 
-Decompositional VHPOP is a variant of the [versatile heuristic partial order planner](http://www.tempastic.org/vhpop/) developed by [Håkan L. S. Younes](http://www.cs.cmu.edu/~lorens/).
-
-------------
-### Decompositional Details
-The decompositional nature of VHPOP comes through its ability to handle action decomposition, a feature typically found in hierarchical task networks.  For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
+Recurve is a decompositional planner; i.e. a planning system that combines *hierarchical reasoning* as discussed in hierarchical task networks (HTNs) and *least-commitment refinement reasoning* as discussed in partial-order causal link planning. For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
 More details for this section are forthcoming.
 
-#### Installing as a Visual Studio Project
+Recurve is a variant of the [versatile heuristic partial order planner](http://www.tempastic.org/vhpop/) originally developed by [Håkan L. S. Younes](http://www.cs.cmu.edu/~lorens/).
+
+## Etymology
+
+The system is called *Recurve* in reference to its predecessor, the [Longbow planning system](https://web.archive.org/web/19991010235639/http://www.isp.pitt.edu/~young/longbow/). Longbow was the more popular of the two publicly available planners able to perform decompositional planning (the other being the [DPOCL](https://web.archive.org/web/19990427093301/http://www.isp.pitt.edu/%7Eyoung/dpocl/dpocl.html)). Like Longbow, (a) [Recurve is a type of bow](https://en.wikipedia.org/wiki/Recurve_bow).  VHPOP was designed to enable POCL planners to compete with state-of-the-art heuristic search planners in terms of speed, and so I thought it appropriate to name the system after a type of bow designed for speed. 
+
+## Install
+
+### Installing as a Visual Studio Project
 Currently, the only "installation" this project supports is installing as a Visual Studio 2013 (VS2013) project on Windows (7+).  The following instructions assume you have access to a VS2013 development environment.
 
-##### Instructions
+#### Instructions
 In the instructions that follow, I'm going to assume that you have no blank characters in any of the paths that I reference. Blank characters can wreak havoc on Cygwin (which is needed), so use them at your own risk.
 
 First, install [Cygwin](https://www.cygwin.com/) (I use the 64-bit version, but in theory it should work with the 32-bit version as well). When prompted for packages, install the following ones (both Developer and Libs when available):
@@ -50,6 +54,10 @@ Fifth, add the following new System variable in the Environment Variables:
  * Variable Name: `BISONFLEX_INC`
  * Variable Value: `$PATH_TO_CYGWIN\home\$USER\Developer\include\`
 
+
+
+ 
+ 
 ------------
 ### VHPOP Details
 VHPOP is a versatile heuristic partial order planner loosely based on
@@ -189,4 +197,6 @@ The use of multiple flaw selection strategies is similar to running multiple ins
 
 ------------
 
-
+## Credits
+- bow (icon) by Christopher T. Howlett from the Noun Project
+- Robot (icon) by Roman Zhigora from the Noun Project
