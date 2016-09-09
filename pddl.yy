@@ -594,10 +594,10 @@ function_decl : '(' function { make_function($2); } variables ')'
 /* Actions. */
 
 action_def : '(' ACTION name { make_action($3, false, false); } parameters action_body ')' { add_action(); }
-           | '(' DURATIVE_ACTION { require_durative_actions(); }
-                 name { make_action($3, true, false); } parameters DURATION duration_constraint da_body ')' { add_action(); }
+           | '(' DURATIVE_ACTION name { require_durative_actions(); make_action($3, true, false); } 
+                 parameters DURATION duration_constraint da_body ')' { add_action(); }
            ;
-
+               
 parameters : /* empty */
            | PARAMETERS '(' variables ')'
            ;
