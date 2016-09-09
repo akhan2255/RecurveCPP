@@ -1,7 +1,7 @@
 # Recurve
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/recardona/Recurve/recardona/dpocl-parsing/img/icon.png" width="350"/>
+  <img src="https://raw.githubusercontent.com/recardona/Recurve/recardona/dpocl-parsing/img/icon.png" width="150"/>
 </p>
 
 Recurve is a decompositional planner; i.e. a planning system that combines *hierarchical reasoning* as discussed in hierarchical task networks (HTNs) and *least-commitment refinement reasoning* as discussed in partial-order causal link planning. For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
