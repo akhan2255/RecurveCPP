@@ -229,6 +229,9 @@ static void require_disjunction();
 /* Adds :duration-inequalities to the requirements. */
 static void require_duration_inequalities();
 
+/* Adds: :durative-actions to the requirements. */
+static void require_durative_actions();
+
 /* Adds: :decompositions to the requirements. */
 static void require_decompositions();
 
@@ -504,33 +507,44 @@ require_keys : require_key
              | require_keys require_key
              ;
 
-require_key : STRIPS { requirements->strips = true; }
-            | TYPING { requirements->typing = true; }
-            | NEGATIVE_PRECONDITIONS
-                { requirements->negative_preconditions = true; }
-            | DISJUNCTIVE_PRECONDITIONS
-                { requirements->disjunctive_preconditions = true; }
-            | EQUALITY { requirements->equality = true; }
-            | EXISTENTIAL_PRECONDITIONS
-                { requirements->existential_preconditions = true; }
-            | UNIVERSAL_PRECONDITIONS
-                { requirements->universal_preconditions = true; }
-            | QUANTIFIED_PRECONDITIONS
-                { requirements->quantified_preconditions(); }
-            | CONDITIONAL_EFFECTS { requirements->conditional_effects = true; }
-            | FLUENTS { requirements->fluents = true; }
-            | ADL { requirements->adl(); }
-            | DURATIVE_ACTIONS { requirements->durative_actions = true; }
-            | DURATION_INEQUALITIES
-                { requirements->duration_inequalities = true; }
-            | CONTINUOUS_EFFECTS
-                { yyerror("`:continuous-effects' not supported"); }
+require_key : STRIPS                    { requirements->strips = true; }
+            | TYPING                    { requirements->typing = true; }
+            | NEGATIVE_PRECONDITIONS    { requirements->negative_preconditions = true; }
+            | DISJUNCTIVE_PRECONDITIONS { requirements->disjunctive_preconditions = true; }
+            | EQUALITY                  { requirements->equality = true; }
+            | EXISTENTIAL_PRECONDITIONS { requirements->existential_preconditions = true; }
+            | UNIVERSAL_PRECONDITIONS   { requirements->universal_preconditions = true; }
+            | QUANTIFIED_PRECONDITIONS  { requirements->quantified_preconditions(); }
+            | CONDITIONAL_EFFECTS       { requirements->conditional_effects = true; }
+            | FLUENTS                   { requirements->fluents = true; }
+            | ADL                       { requirements->adl(); }
+            | DURATIVE_ACTIONS          
+                {
+                    if(requirements->decompositions == true) {
+                        yyerror(":durative-actions cannot be combined with :decompositions at this time");
+                    }
+                    
+                    else{
+                        requirements->durative_actions = true; 
+                    }
+                }
+            | DURATION_INEQUALITIES     { requirements->duration_inequalities = true; }
+            | CONTINUOUS_EFFECTS        { yyerror("`:continuous-effects' not supported"); }
             | TIMED_INITIAL_LITERALS
                 {
                     requirements->durative_actions = true;
                     requirements->timed_initial_literals = true;
                 }
-            | DECOMPOSITIONS { requirements->decompositions = true; }
+            | DECOMPOSITIONS            
+                {
+                    if(requirements->durative_actions == true) {
+                        yyerror(":decompositions cannot be combined with :durative-actions at this time");
+                    }
+
+                    else {
+                        requirements->decompositions = true; 
+                    }
+                }
             ;
 
 types_def : '(' TYPES { require_typing(); name_kind = TYPE_KIND; }
@@ -580,7 +594,8 @@ function_decl : '(' function { make_function($2); } variables ')'
 /* Actions. */
 
 action_def : '(' ACTION name { make_action($3, false, false); } parameters action_body ')' { add_action(); }
-           | '(' DURATIVE_ACTION name { make_action($3, true, false); } parameters DURATION duration_constraint da_body ')' { add_action(); }
+           | '(' DURATIVE_ACTION { require_durative_actions(); }
+                 name { make_action($3, true, false); } parameters DURATION duration_constraint da_body ')' { add_action(); }
            ;
 
 parameters : /* empty */
@@ -1130,12 +1145,36 @@ static void require_duration_inequalities() {
   }
 }
 
+/* Adds :durative-actions to the requirements. */
+static void require_durative_actions() {
+
+  if(requirements->decompositions == true) {
+    yyerror(":durative-actions cannot be combined with :decompositions at this time");
+  }
+
+  else {
+      if (!requirements->durative_actions) {
+        yywarning("assuming `:durative-actions' requirement");
+        requirements->durative_actions = true;
+      }
+  }
+
+}
+
 /* Adds :decompositions to the requirements. */
 static void require_decompositions() {
-  if (!requirements->decompositions) {
-    yywarning("assuming `:decompositions' requirement");
-    requirements->decompositions = true;
+
+  if(requirements->durative_actions == true) {
+    yyerror(":decompositions cannot be combined with :durative-actions at this time");
   }
+
+  else {
+      if (!requirements->decompositions) {
+        yywarning("assuming `:decompositions' requirement");
+        requirements->decompositions = true;
+      }
+  }
+
 }
 
 
