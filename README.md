@@ -1,5 +1,9 @@
 # Recurve
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/recardona/Recurve/recardona/dpocl-parsing/img/icon.png" width="350"/>
+</p>
+
 Recurve is a decompositional planner; i.e. a planning system that combines *hierarchical reasoning* as discussed in hierarchical task networks (HTNs) and *least-commitment refinement reasoning* as discussed in partial-order causal link planning. For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
 More details for this section are forthcoming.
 
@@ -7,7 +11,7 @@ Recurve is a variant of the [versatile heuristic partial order planner](http://w
 
 ## Etymology
 
-The system is called *Recurve* in reference to its predecessor, the [Longbow planning system](https://web.archive.org/web/19991010235639/http://www.isp.pitt.edu/~young/longbow/). Longbow was the more popular of the two publicly available planners able to perform decompositional planning (the other being the [DPOCL](https://web.archive.org/web/19990427093301/http://www.isp.pitt.edu/%7Eyoung/dpocl/dpocl.html)). Like Longbow, (a) [Recurve is a type of bow](https://en.wikipedia.org/wiki/Recurve_bow).  VHPOP was designed to enable POCL planners to compete with state-of-the-art heuristic search planners in terms of speed, and so I thought it appropriate to name the system after a type of bow designed for speed. 
+The system is called *Recurve* in reference to its predecessor, the [Longbow planning system](https://web.archive.org/web/19991010235639/http://www.isp.pitt.edu/~young/longbow/). Longbow was the more popular of the two publicly available planners able to perform decompositional planning (the other being the [DPOCL](https://web.archive.org/web/19990427093301/http://www.isp.pitt.edu/%7Eyoung/dpocl/dpocl.html)). Like Longbow, a [Recurve is a type of bow](https://en.wikipedia.org/wiki/Recurve_bow).  VHPOP was designed to enable POCL planners to compete with state-of-the-art heuristic search planners in terms of speed, and so I thought it appropriate to name the system after a type of bow designed for speed. 
 
 ## Install
 
