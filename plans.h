@@ -103,13 +103,22 @@ inline bool operator==(const Link& l1, const Link& l2) {
 */
 struct LinkList : std::vector < Link > {
 
-    /* Returns a list of Links whose source step is given by the step_id. If no such links exist,
+	/* Returns a vector of all the unique step ids in this link list. */
+	std::vector<int> unique_step_ids() const;
+
+public:
+
+    /* Returns a list of links whose source step is given by the step_id. If no such links exist,
        this method returns an empty list. */
     const LinkList outgoing_links(int step_id) const;
 
-	/* Checks whether this LinkList contains a path from the step given by the source_id to the
+	/* Checks whether this link list contains a path from the step given by the source_id to the
 	   step given by the destination_id.*/
-	const bool contains_path(int source_id, int destination_id) const;
+	bool contains_path(int source_id, int destination_id) const;
+
+	/* Checks whether this Links in this link list give rise to a cycle. */
+	bool contains_cycle() const;
+
 };
 
 

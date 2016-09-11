@@ -36,7 +36,7 @@ namespace test
 			OpenCondition step4_2(-4, Formula::TRUE);
 			OpenCondition step5_1(-5, Formula::TRUE);
 			
-			complicated.push_back(Link(-3, StepTime::AT_END, goal));
+			complicated.push_back(Link(-3, StepTime::AT_END, goal_1));
 			complicated.push_back(Link(-6, StepTime::AT_END, step3_1));
 			complicated.push_back(Link(-6, StepTime::AT_END, step4_1));
 			complicated.push_back(Link(-5, StepTime::AT_END, step4_2));
@@ -52,5 +52,41 @@ namespace test
 
 		}
 
+        TEST_METHOD(ContainsCycleTest)
+        {
+            // Magic numbers:
+            int init_id = -1;
+            int goal_id = -2;
+
+            // no cycle path of several steps
+            LinkList no_cycle;
+            Assert::IsFalse(no_cycle.contains_cycle());
+
+            OpenCondition goal_1(goal_id, Formula::TRUE);
+            OpenCondition step3_1(-3, Formula::TRUE);
+            OpenCondition step6_1(-6, Formula::TRUE);
+            OpenCondition step4_1(-4, Formula::TRUE);
+            OpenCondition step4_2(-4, Formula::TRUE);
+            OpenCondition step5_1(-5, Formula::TRUE);
+
+            no_cycle.push_back(Link(-3, StepTime::AT_END, goal_1));
+            no_cycle.push_back(Link(-6, StepTime::AT_END, step3_1));
+            no_cycle.push_back(Link(-6, StepTime::AT_END, step4_1));
+            no_cycle.push_back(Link(-5, StepTime::AT_END, step4_2));
+            no_cycle.push_back(Link(init_id, StepTime::AT_END, step6_1));
+            no_cycle.push_back(Link(init_id, StepTime::AT_END, step5_1));
+            Assert::IsFalse(no_cycle.contains_cycle());
+
+            // Copy the list
+            LinkList cycle = no_cycle;
+            Assert::IsFalse(no_cycle.contains_cycle());
+
+            // The method should work even in the presence of cycles
+            OpenCondition cycle_condition(init_id, Formula::TRUE);
+            cycle.push_back(Link(-3, StepTime::AT_END, cycle_condition));
+            Assert::IsTrue(cycle.contains_cycle());
+        }
+
 	};
+
 }
