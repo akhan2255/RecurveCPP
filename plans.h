@@ -107,6 +107,9 @@ struct LinkList : std::vector < Link > {
        this method returns an empty list. */
     const LinkList outgoing_links(int step_id) const;
 
+	/* Checks whether this LinkList contains a path from the step given by the source_id to the
+	   step given by the destination_id.*/
+	const bool contains_path(int source_id, int destination_id) const;
 };
 
 

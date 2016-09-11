@@ -93,7 +93,7 @@ Link::~Link() {
 /* LinkList */
 
 /* Returns a list of Links whose source step is given by the step_id. If no such links exist,
-this method returns an empty list. */
+   this method returns an empty list. */
 const LinkList LinkList::outgoing_links(int step_id) const
 {
     LinkList outgoing_links;
@@ -107,6 +107,56 @@ const LinkList LinkList::outgoing_links(int step_id) const
     }
 
     return outgoing_links;
+}
+
+/* Checks whether this LinkList contains a path from the step given by the source_id to the
+   step given by the destination_id. */
+const bool LinkList::contains_path(int source_id, int destination_id) const
+{
+	// Setup the visited list
+	std::vector<int> visited;
+
+	// Setup the fringe.
+	std::vector<int> fringe;
+	fringe.push_back(source_id);
+
+	// While the search fringe has elements,
+	while (!fringe.empty())
+	{
+		// Pop the back of the fringe - a depth-first search
+		int id = fringe[fringe.size() - 1];
+		fringe.pop_back();
+
+		// Goal test
+		if (id == destination_id) {
+			return true;
+		}
+
+		else
+		{
+			// Check that we haven't already visited this node.
+			if (std::find(visited.begin(), visited.end(), id) != visited.end()) {
+				continue; // skip - don't generate edges for this node again
+			}
+
+			else 
+			{
+				// Mark this node as visited
+				visited.push_back(id);
+
+				// Generate new edges to look through, and add them to the fringe
+				LinkList outgoing_edges = this->outgoing_links(id);
+				for (LinkList::const_iterator li = outgoing_edges.begin(); li != outgoing_edges.end(); ++li)
+				{
+					// The id to add to the fringe is the id of the sink step of the link
+					Link outgoing_edge = *li;
+					fringe.push_back(outgoing_edge.to_id());
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 

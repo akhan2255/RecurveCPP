@@ -89,6 +89,7 @@
   <ItemGroup>
     <ClCompile Include="actions_test.cpp" />
     <ClCompile Include="decomp_parse_test.cc" />
+    <ClCompile Include="linklist_test.cpp" />
     <ClCompile Include="literals_test.cpp" />
     <ClCompile Include="orderings_test.cc" />
     <ClCompile Include="stdafx.cpp">
