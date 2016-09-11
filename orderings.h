@@ -136,7 +136,7 @@ struct OrderingList : std::vector < Ordering > {
 
 public:
 
-	/* Returns true if the Orderings in this list give rise to a cycle. */
+	/* Checks whether the Orderings in this list give rise to a cycle. */
 	bool contains_cycle() const;
 };
 

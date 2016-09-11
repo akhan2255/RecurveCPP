@@ -151,14 +151,14 @@ bool OrderingList::contains_cycle() const
 		 si != unique_step_ids.end(); 
 		 ++si)
 	{
-		int step_id = *si;
+		int start_id = *si;
 		
 		// Setup the visited list
 		std::vector<int> visited;
 
 		// Setup the fringe
 		std::vector<int> fringe;
-		fringe.push_back(step_id);
+        fringe.push_back(start_id);
 
 		// While the search fringe has elements,
 		while (!fringe.empty()) 
@@ -168,8 +168,17 @@ bool OrderingList::contains_cycle() const
 			fringe.pop_back();
 
 			// Check to see if we've seen this before
-			if (std::find(visited.begin(), visited.end(), id) != visited.end()) {
-				return true; // cycle found!
+			if (std::find(visited.begin(), visited.end(), id) != visited.end()) 
+            {
+
+                // If we've seen it before, check that it's the one we started with
+                if (id == start_id) {
+                    return true; // cycle found!
+                }
+
+                else {
+                    continue;
+                }
 			}
 
 			else
@@ -189,7 +198,7 @@ bool OrderingList::contains_cycle() const
 		}
 	} // end for
 
-	// No depth first search has found the starting node, so no cycles detected!
+	// No depth first search has found its corresponding starting node, so no cycles detected!
 	return false;
 }
 
