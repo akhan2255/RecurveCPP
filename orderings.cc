@@ -94,36 +94,6 @@ StepTime start_time(FormulaTime ft) {
 /* ====================================================================== */
 /* OrderingList */
 
-
-/* Performs a depth traversal and returns true if the depth traversal encounters the starting node,
-   false otherwise. */
-bool OrderingList::can_find_self_in_depth_traversal(std::vector<int>* adjacency_list,
-	int vertex, bool visited[], bool* recursive_stack)
-{
-	if (visited[vertex] == false)
-	{
-		// Mark the current node as visited and part of the recursion stack
-		visited[vertex] = true;
-		recursive_stack[vertex] = true;
-
-		// Recur for all vertices adjacent to this vertex
-		std::vector<int>::iterator ai;
-		for (ai = adjacency_list[vertex].begin(); ai != adjacency_list[vertex].end(); ++ai)
-		{
-			if (!visited[*ai] && can_find_self_in_depth_traversal(adjacency_list, *ai, visited, recursive_stack)) {
-				return true;
-			}
-
-			else if (recursive_stack[*ai]) {
-				return true;
-			}
-		}
-	}
-	recursive_stack[vertex] = false; // remove vertex from recursion stack
-	return false;
-}
-
-
 /* Returns an OrderingList of Orderings where the given step is marked to come before another. */
 OrderingList OrderingList::ordered_after(int step_id) const
 {
@@ -173,54 +143,53 @@ std::vector<int> OrderingList::unique_step_ids() const
 /* Returns true if the Orderings in this list give rise to a cycle. */
 bool OrderingList::contains_cycle() const
 {
-	OrderingList orderings = *this;
+	// Get every unique step id within this ordering list
+	std::vector<int> unique_step_ids = this->unique_step_ids();
 
-	// Construct graph out of ordering list
-	std::vector<int>  vertices = orderings.unique_step_ids();
-	std::vector<int>* adjacency_list = new std::vector<int>[vertices.size()];
-
-	for (int vertex = 0; vertex < vertices.size(); ++vertex)
+	// For each such id, attempt to find yourself in a depth traversal
+	for (std::vector<int>::const_iterator si = unique_step_ids.begin(); 
+		 si != unique_step_ids.end(); 
+		 ++si)
 	{
-		// get the step_id that corresponds to this vertex
-		int step_id = vertices[vertex];
+		int step_id = *si;
+		
+		// Setup the visited list
+		std::vector<int> visited;
 
-		// get the OrderingList that corresponds to all outgoing edges from this vertex
-		OrderingList ordered_after = orderings.ordered_after(step_id);
+		// Setup the fringe
+		std::vector<int> fringe;
+		fringe.push_back(step_id);
 
-		// for each edge, register it on the adjacency list
-		for (OrderingList::const_iterator oi = ordered_after.begin(); oi != ordered_after.end(); ++oi)
+		// While the search fringe has elements,
+		while (!fringe.empty()) 
 		{
-			const Ordering edge = *oi;
-			int sink_step_id = edge.after_id();
+			// Pop the back of the fringe - a depth-first search
+			int id = fringe[fringe.size() - 1];
+			fringe.pop_back();
 
-			// find the index in the vertices array corresponding to the sink_step_id
-			std::vector<int>::iterator sink_step_id_itr = std::find(vertices.begin(), vertices.end(), sink_step_id);
-			int position_of_sink_step_id = sink_step_id_itr - vertices.begin();
+			// Check to see if we've seen this before
+			if (std::find(visited.begin(), visited.end(), id) != visited.end()) {
+				return true; // cycle found!
+			}
 
-			// register the edge on the adjacency list
-			adjacency_list[vertex].push_back(position_of_sink_step_id);
+			else
+			{
+				// Register the node as visited.
+				visited.push_back(id);
+
+				// Generate new edges to look through, and add them to the fringe
+				OrderingList ordered_after = this->ordered_after(id);
+				for (OrderingList::const_iterator oi = ordered_after.begin(); oi != ordered_after.end(); ++oi)
+				{
+					// The id to add to the fringe is the id of the step ordered after
+					Ordering o = *oi;
+					fringe.push_back(o.after_id());
+				}
+			}
 		}
+	} // end for
 
-	}
-
-	// Initialize all vertices as unvisited, and not part of the recursion
-	bool* visited = new bool[vertices.size()];
-	bool* recursive_stack = new bool[vertices.size()];
-	for (int i = 0; i < vertices.size(); ++i)
-	{
-		visited[i] = false;
-		recursive_stack[i] = false;
-	}
-
-	// Go through each vertex, and see if you can find it twice in a depth-first traversal
-	for (int i = 0; i < vertices.size(); ++i)
-	{
-		if (can_find_self_in_depth_traversal(adjacency_list, i, visited, recursive_stack)) {
-			return true;
-		}
-	}
-
-	// If you can't find the same vertex twice for any vertex, there are no cycles
+	// No depth first search has found the starting node, so no cycles detected!
 	return false;
 }
 

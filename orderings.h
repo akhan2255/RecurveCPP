@@ -128,11 +128,6 @@ private:
 */
 struct OrderingList : std::vector < Ordering > {
 
-	/* Performs a depth traversal and returns true if the depth traversal encounters the starting node,
-	false otherwise. */
-	static bool can_find_self_in_depth_traversal(std::vector<int>* adjacency_list,
-		int vertex, bool visited[], bool* recursive_stack);
-
 	/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
 	OrderingList ordered_after(int step_id) const;
 
@@ -153,6 +148,7 @@ public:
  * Collection of ordering constraints.
  */
 struct Orderings {
+
     /* Minimum distance between two ordered steps. */
     static float threshold;
 
@@ -202,8 +198,8 @@ struct Orderings {
         const PlanningGraph* pg,
         const Bindings* bindings) const = 0;
 
-    /* Fills the given tables with distances for each step from the
-       start step, and returns the greatest distance. */
+    /* Fills the given tables with distances for each step from the start step, 
+	   and returns the greatest distance. */
     virtual float schedule(std::map<size_t, float>& start_times, std::map<size_t, float>& end_times) const = 0;
 
     /* Returns the makespan of this ordering collection. */
