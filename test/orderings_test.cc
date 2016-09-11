@@ -14,6 +14,7 @@ namespace test
 			OrderingList no_cycles;
 			no_cycles.push_back(Ordering(-1, StepTime::AT_END, -2, StepTime::AT_START));
 			no_cycles.push_back(Ordering(-2, StepTime::AT_END, -3, StepTime::AT_START));
+            no_cycles.push_back(Ordering(-2, StepTime::AT_END, -4, StepTime::AT_START));
 			no_cycles.push_back(Ordering(-4, StepTime::AT_END, -3, StepTime::AT_START));
 			no_cycles.push_back(Ordering(-5, StepTime::AT_END, -4, StepTime::AT_START));
 			no_cycles.push_back(Ordering(-6, StepTime::AT_END, -1, StepTime::AT_START));
