@@ -15,7 +15,7 @@ namespace test
 			int init_id = -1;
 			int goal_id = -2;
 
-			// An empty list should contain no path.
+			// An empty list should contain no path
 			LinkList empty;
 			Assert::IsFalse(empty.contains_path(0, 100));
 			Assert::IsFalse(empty.contains_path(-50, 100));
@@ -27,7 +27,7 @@ namespace test
 			Assert::IsTrue(simple.contains_path(init_id, goal_id));
 			Assert::IsFalse(simple.contains_path(goal_id, init_id));
 
-			// More complicated path of several steps.
+			// More complicated path of several steps
 			LinkList complicated;
 			OpenCondition goal_1(goal_id, Formula::TRUE);
 			OpenCondition step3_1(-3, Formula::TRUE);
@@ -36,7 +36,6 @@ namespace test
 			OpenCondition step4_2(-4, Formula::TRUE);
 			OpenCondition step5_1(-5, Formula::TRUE);
 			
-
 			complicated.push_back(Link(-3, StepTime::AT_END, goal));
 			complicated.push_back(Link(-6, StepTime::AT_END, step3_1));
 			complicated.push_back(Link(-6, StepTime::AT_END, step4_1));
