@@ -151,43 +151,45 @@ bool Decomposition::satisfies_dpocl_legality_criteria() const
     // Items (1), (2), and (3) are guaranteed through the construction of the schema.
     // Thus, this method checks (4).
 
-    bool satisfies = false;
-    
     // Get the dummy initial and goal steps
     Step dummy_initial = pseudo_steps_[0];
-    Step dummy_goal = pseudo_steps_[0];
-    
-    // Setup the fringe with the dummy initial's id.
-    std::vector<int> fringe_of_ids;
-    fringe_of_ids.push_back(dummy_initial.id());
+    Step dummy_goal = pseudo_steps_[1];
 
-    // While the search fringe has elements,
-    while (!fringe_of_ids.empty())
+    // Get every effect of the dummy initial step
+    EffectList initial_effects = dummy_initial.action().effects();
+
+    // Get every causal link that starts at the dummy initial step
+    LinkList initial_outgoing_links = link_list_.outgoing_links(dummy_initial.id());
+
+    // Verify that every effect of the dummy initial appears as the condition being established in 
+    // one of the causal links and verify they lead to path culminating in the goal step
+    for (EffectList::const_iterator ei = initial_effects.begin(); ei != initial_effects.end(); ++ei)
     {
-        // Pop the back of the fringe
-        int id = fringe_of_ids[fringe_of_ids.size() - 1];
-        fringe_of_ids.pop_back();
+        Effect e = **ei;
+        bool path_exists = false;
 
-        // Goal test
-        if (id == dummy_goal.id()) {
-            satisfies = true;
-            break;
-        }
-
-        // Generate new edges to look through, and add them to the fringe
-        else
+        for (LinkList::const_iterator li = initial_outgoing_links.begin(); li != initial_outgoing_links.end(); ++li)
         {
-            LinkList outgoing_edges = link_list_.outgoing_links(id);
-            for (LinkList::const_iterator li = outgoing_edges.begin(); li != outgoing_edges.end(); ++li)
+            Link l = *li;
+
+            // if we have a syntactic literal match, continue the search
+            if (Literal::syntactically_equal(e.literal(), l.condition())) 
             {
-                // The id to add to the fringe is the id of the sink step of the link
-                Link outgoing_edge = *li;
-                fringe_of_ids.push_back(outgoing_edge.to_id());
+                // attempt to find a path to the goal step through this link
+                if (link_list_.contains_path(l.to_id(), dummy_goal.id())) 
+                {
+                    path_exists = true;
+                    break; // go on to the next effect
+                }
             }
         }
-    }
 
-    return satisfies;
+        if (!path_exists) {
+            return false;
+        }
+    }
+   
+    return true;
 }
 
 
