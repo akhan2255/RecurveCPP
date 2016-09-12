@@ -1745,12 +1745,14 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
 
 
 /* Seaches open conditions for a flaw to select. */
-int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
+int FlawSelectionOrder::select_open_cond(
+                     FlawSelection& selection,
 					 const Plan& plan,
 					 const Problem& problem,
 					 const PlanningGraph* pg,
 					 int first_criterion,
-					 int last_criterion) const {
+					 int last_criterion) const 
+{
   if (first_criterion > last_criterion || plan.open_conds() == NULL) {
     return std::numeric_limits<int>::max();
   }
@@ -2027,20 +2029,21 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 
 
 /* Selects a flaw from the flaws of the given plan. */
-const Flaw& FlawSelectionOrder::select(const Plan& plan,
-				       const Problem& problem,
-				       const PlanningGraph* pg) const {
+const Flaw& FlawSelectionOrder::select(const Plan& plan, const Problem& problem, 
+    const PlanningGraph* pg) const 
+{
   FlawSelection selection;
   selection.flaw = NULL;
   selection.criterion = std::numeric_limits<int>::max();
-  int last_criterion = select_unsafe(selection, plan, problem,
-				     first_unsafe_criterion_,
-				     last_unsafe_criterion_);
-  select_open_cond(selection, plan, problem, pg, first_open_cond_criterion_,
-		   std::min(last_open_cond_criterion_, last_criterion));
+
+  int last_criterion = select_unsafe(selection, plan, problem, first_unsafe_criterion_, last_unsafe_criterion_);
+  select_open_cond(selection, plan, problem, pg, first_open_cond_criterion_, std::min(last_open_cond_criterion_, last_criterion));
+
   if (selection.flaw != NULL) {
     return *selection.flaw;
-  } else {
+  } 
+  
+  else {
     return plan.mutex_threats()->head;
   }
 }
