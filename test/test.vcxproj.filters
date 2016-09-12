@@ -50,6 +50,9 @@
     <ClCompile Include="linklist_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="decomp_plan_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="composite_action.pddl">
