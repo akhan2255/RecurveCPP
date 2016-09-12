@@ -1180,27 +1180,30 @@ void Plan::cleanup() {
 
 
 /* Constructs a plan. */
-Plan::Plan(const Chain<Step>* steps, size_t num_steps,
+Plan::Plan(
+    const Chain<Step>* steps, size_t num_steps,
     const Chain<Link>* links, size_t num_links,
     const Orderings& orderings, const Bindings& bindings,
     const Chain<Unsafe>* unsafes, size_t num_unsafes,
     const Chain<OpenCondition>* open_conds, size_t num_open_conds,
     const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,
     const Chain<MutexThreat>* mutex_threats, const Plan* parent)
-    : steps_(steps), num_steps_(num_steps),
+    :
+    steps_(steps), num_steps_(num_steps),
     links_(links), num_links_(num_links),
     orderings_(&orderings), bindings_(&bindings),
     unsafes_(unsafes), num_unsafes_(num_unsafes),
     open_conds_(open_conds), num_open_conds_(num_open_conds),
     unexpanded_steps_(unexpanded_steps), num_unexpanded_steps_(num_unexpanded_steps),
     mutex_threats_(mutex_threats)
-    {
+{
     RCObject::ref(steps);
     RCObject::ref(links);
     Orderings::register_use(&orderings);
     Bindings::register_use(&bindings);
     RCObject::ref(unsafes);
     RCObject::ref(open_conds);
+    RCObject::ref(unexpanded_steps);
     RCObject::ref(mutex_threats);
 #ifdef DEBUG_MEMORY
     created_plans++;
