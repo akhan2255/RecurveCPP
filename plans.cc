@@ -631,63 +631,69 @@ static const Bindings* step_instantiation(const Chain<Step>* steps, size_t n,
 
 /* Returns the initial plan representing the given problem, or NULL
    if initial conditions or goals of the problem are inconsistent. */
-const Plan* Plan::make_initial_plan(const Problem& problem) {
-    
-    /* Create goal of problem. */
-    if (params->ground_actions) {
+const Plan* Plan::make_initial_plan(const Problem& problem) 
+{
+    // Create goal of problem
+    if (params->ground_actions) 
+    {
         goal_action = new GroundAction("", false, false);
         const Formula& goal_formula = problem.goal().instantiation(SubstitutionMap(), problem);
         goal_action->set_condition(goal_formula);
     }
-    else {
+
+    else 
+    {
         goal_action = new ActionSchema("", false, false);
         goal_action->set_condition(problem.goal());
     }
 
-    /* Chain of open conditions. */
+    // Chain and number of open conditions
     const Chain<OpenCondition>* open_conds = NULL;
-
-    /* Number of open conditions. */
     size_t num_open_conds = 0;
     
-    /* Bindings introduced by goal. */
+    // Bindings introduced by goal
     BindingList new_bindings;
     
-    /* Add goals as open conditions. */
-    if (!add_goal(open_conds, num_open_conds, new_bindings,
-        goal_action->condition(), GOAL_ID)) {
-        /* Goals are inconsistent. */
+    // Add goals as open conditions
+    if (!add_goal(open_conds, num_open_conds, new_bindings, goal_action->condition(), GOAL_ID)) 
+    {
+        // Goals are inconsistent
         RCObject::ref(open_conds);
         RCObject::destructive_deref(open_conds);
         return NULL;
     }
     
-    /* Make chain of mutex threat place holder. */
+    // Make chain of mutex threat place holder
     const Chain<MutexThreat>* mutex_threats = new Chain<MutexThreat>(MutexThreat(), NULL);
-    /* Make chain of initial steps. */
-    const Chain<Step>* steps =
+
+    // Make chain of initial steps
+    const Chain<Step>* steps = 
         new Chain<Step>(Step(0, problem.init_action()),
         new Chain<Step>(Step(GOAL_ID, *goal_action), NULL));
     size_t num_steps = 0;
     
-    /* Variable bindings. */
+    // Variable bindings
     const Bindings* bindings = &Bindings::EMPTY;
     
-    /* Step orderings. */
+    // Step orderings
     const Orderings* orderings;
     
-    if (domain->requirements.durative_actions) {
+    if (domain->requirements.durative_actions) 
+    {    
         const TemporalOrderings* to = new TemporalOrderings();
-        /*
-         * Add steps for timed initial literals.
-         */
+        
+        // Add steps for timed initial literals
         for (TimedActionTable::const_iterator ai = problem.timed_actions().begin();
-            ai != problem.timed_actions().end(); ai++) {
+             ai != problem.timed_actions().end(); 
+             ai++) 
+        {
             num_steps++;
             steps = new Chain<Step>(Step(num_steps, *(*ai).second), steps);
             const TemporalOrderings* tmp = to->refine((*ai).first, steps->head);
             delete to;
-            if (tmp == NULL) {
+
+            if (tmp == NULL) 
+            {
                 RCObject::ref(open_conds);
                 RCObject::destructive_deref(open_conds);
                 RCObject::ref(steps);
@@ -701,10 +707,17 @@ const Plan* Plan::make_initial_plan(const Problem& problem) {
     else {
         orderings = new BinaryOrderings();
     }
-    
-    /* Return initial plan. */
-    return new Plan(steps, num_steps, NULL, 0, *orderings, *bindings,
-        NULL, 0, open_conds, num_open_conds, NULL, 0, mutex_threats, NULL);
+
+    // Return initial plan.
+    return new Plan(
+        steps, num_steps, 
+        NULL, 0, // -> links, num_links
+        *orderings, *bindings,
+        NULL, 0, // -> unsafes, num_unsafes
+        open_conds, num_open_conds, 
+        NULL, 0, // -> unexpanded_steps, num_unexpanded_steps
+        mutex_threats, 
+        NULL); // -> parent
 }
 
 
