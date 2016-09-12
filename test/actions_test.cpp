@@ -10,7 +10,7 @@ namespace test
 	{
 	public:
 		
-		TEST_METHOD(actionschema_constructor)
+		TEST_METHOD(ActionSchemaConstructor)
 		{
             // Manually create an action schema:
             // Name: fly

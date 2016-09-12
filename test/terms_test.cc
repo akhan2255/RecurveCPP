@@ -12,7 +12,7 @@ namespace test
 	{
 	public:
 
-        TEST_METHOD(static_add_variable)
+        TEST_METHOD(StaticAddVariable)
         {
             Type sword(1);
             Variable sword_var = TermTable::add_variable(sword);
@@ -28,7 +28,7 @@ namespace test
 
         }
 
-        TEST_METHOD(static_set_type)
+        TEST_METHOD(StaticSetType)
         {
             // Declare something of one type
             Type sword(1);
@@ -46,7 +46,7 @@ namespace test
         }
 
 		
-		TEST_METHOD(add_object)
+		TEST_METHOD(AddObject)
 		{
             Type sword(1);
             std::string name = "sword1";
