@@ -2375,27 +2375,19 @@ int Plan::make_link(
             return 0;
         }
 
-        /*
-         * Add a new link.
-         */
+        // Add a new link.
         const Chain<Link>* new_links =
             new Chain<Link>(Link(step.id(), end_time(effect), open_cond), links());
 
-        /*
-         * Find any threats to the newly established link.
-         */
+        // Find any threats to the newly established link.
         const Chain<Unsafe>* new_unsafes = unsafes();
         size_t new_num_unsafes = num_unsafes();
-        link_threats(new_unsafes, new_num_unsafes, new_links->head, new_steps,
-            *new_orderings, *bindings);
+        link_threats(new_unsafes, new_num_unsafes, new_links->head, new_steps, *new_orderings, *bindings);
 
-        /*
-         * If this is a new step, find links it threatens.
-         */
+        // If this is a new step, find links it threatens.
         const Chain<MutexThreat>* new_mutex_threats = mutex_threats();
         if (step.id() > num_steps()) {
-            step_threats(new_unsafes, new_num_unsafes, step,
-                links(), *new_orderings, *bindings);
+            step_threats(new_unsafes, new_num_unsafes, step, links(), *new_orderings, *bindings);
         }
 
         /* Adds the new plan. */
