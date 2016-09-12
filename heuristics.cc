@@ -1993,6 +1993,22 @@ int FlawSelectionOrder::select_open_cond(
 }
 
 
+/* Searches unexpanded abstract steps for a flaw to select. */
+int FlawSelectionOrder::select_unexpanded_step(
+    FlawSelection& selection,
+    const Plan& plan,
+    const Problem& problem,
+    int first_criterion,
+    int last_criterion) const
+{
+    // TODO:
+    // Depending on the values of first_criterion and last_criterion, 
+    // this method will affect the flaw identified in the FlawSelection object.
+
+    return last_criterion;
+}
+
+
 /* Selects a flaw from the flaws of the given plan. */
 const Flaw& FlawSelectionOrder::select(const Plan& plan, const Problem& problem, 
     const PlanningGraph* pg) const 
@@ -2003,6 +2019,7 @@ const Flaw& FlawSelectionOrder::select(const Plan& plan, const Problem& problem,
 
   int last_criterion = select_unsafe(selection, plan, problem, first_unsafe_criterion_, last_unsafe_criterion_);
   select_open_cond(selection, plan, problem, pg, first_open_cond_criterion_, std::min(last_open_cond_criterion_, last_criterion));
+  select_unexpanded_step(selection, plan, problem, first_open_cond_criterion_, std::min(last_open_cond_criterion_, last_criterion));
 
   if (selection.flaw != NULL) {
     return *selection.flaw;

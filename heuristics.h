@@ -403,6 +403,11 @@ private:
     int select_open_cond(FlawSelection& selection, const Plan& plan,
         const Problem& problem, const PlanningGraph* pg,
         int first_criterion, int last_criterion) const;
+
+    /* Searches unexpanded abstract steps for a flaw to select. */
+    int select_unexpanded_step(FlawSelection& selection, const Plan& plan,
+        const Problem& problem,
+        int first_criterion, int last_criterion) const;
 };
 
 
