@@ -214,46 +214,11 @@ void HeuristicValue::increase_makespan(float x) {
   makespan_ += x;
 }
 
-#if 0
-/* Equality operator for heuristic values. */
-bool operator==(const HeuristicValue& v1, const HeuristicValue& v2) {
-  return (v1.add_cost() == v2.add_cost() && v1.add_work() == v2.add_work()
-	  && v1.makespan() == v2.makespan());
-}
-#endif
-
 /* Inequality operator for heuristic values. */
 bool operator!=(const HeuristicValue& v1, const HeuristicValue& v2) {
   return (v1.add_cost() != v2.add_cost() || v1.add_work() != v2.add_work()
 	  || v1.makespan() != v2.makespan());
 }
-
-#if 0
-/* Less than operator for heuristic values. */
-bool operator<(const HeuristicValue& v1, const HeuristicValue& v2) {
-  return (v1 <= v2 && v1 != v2);
-}
-
-
-/* Greater than operator for heuristic values. */
-bool operator>(const HeuristicValue& v1, const HeuristicValue& v2) {
-  return (v1 >= v2 && v1 != v2);
-}
-
-
-/* Less than or equal to operator for heuristic values. */
-bool operator<=(const HeuristicValue& v1, const HeuristicValue& v2) {
-  return (v1.add_cost() <= v2.add_cost() && v1.add_work() <= v2.add_work()
-	  && v1.makespan() <= v2.makespan());
-}
-
-
-/* Greater than or equal to operator for heuristic values. */
-bool operator>=(const HeuristicValue& v1, const HeuristicValue& v2) {
-  return (v1.add_cost() >= v2.add_cost() && v1.add_work() >= v2.add_work()
-	  && v1.makespan() >= v2.makespan());
-}
-#endif
 
 /* Returns the componentwise minimum heuristic value, given two
    heuristic values. */

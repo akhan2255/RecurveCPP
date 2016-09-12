@@ -108,27 +108,11 @@ private:
     /* Value according to the makespan heursitic. */
     float makespan_;
 };
-#if 0
-/* Equality operator for heuristic values. */
-bool operator==(const HeuristicValue& v1, const HeuristicValue& v2);
-#endif
+
 /* Inequality operator for heuristic values. */
 bool operator!=(const HeuristicValue& v1, const HeuristicValue& v2);
-#if 0
-/* Less than operator for heuristic values. */
-bool operator<(const HeuristicValue& v1, const HeuristicValue& v2);
 
-/* Greater than operator for heuristic values. */
-bool operator>(const HeuristicValue& v1, const HeuristicValue& v2);
-
-/* Less than or equal to operator for heuristic values. */
-bool operator<=(const HeuristicValue& v1, const HeuristicValue& v2);
-
-/* Greater than or equal to operator for heuristic values. */
-bool operator>=(const HeuristicValue& v1, const HeuristicValue& v2);
-#endif
-/* Returns the componentwise minimum heuristic value, given two
-   heuristic values. */
+/* Returns the componentwise minimum heuristic value, given two heuristic values. */
 HeuristicValue min(const HeuristicValue& v1, const HeuristicValue& v2);
 
 /* Output operator for heuristic values. */
