@@ -924,7 +924,7 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                 }
             }
 
-
+            // TODO: ADD THIS BACK IN
             //      struct itimerval timer;
             //#ifdef PROFILING
             //      getitimer(ITIMER_VIRTUAL, &timer);
