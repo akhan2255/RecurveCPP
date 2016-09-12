@@ -728,10 +728,10 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
     /* Setup */
 
 
-    /* Set planning parameters. */
+    // Set planning parameters.
     params = &p;
 
-    /* Set current domain and problem. */
+    // Set current domain and problem.
     domain = &problem.domain();
     ::problem = &problem;
 
@@ -1894,27 +1894,33 @@ void Plan::handle_open_condition(PlanList& plans, const OpenCondition& open_cond
     {
         const ActionEffectMap* achievers = literal_achievers(*literal);
         
-        if (achievers != NULL) {
+        if (achievers != NULL) 
+        {
             add_step(plans, *literal, open_cond, *achievers);
             reuse_step(plans, *literal, open_cond, *achievers);
         }
 
         const Negation* negation = dynamic_cast<const Negation*>(literal);
-        if (negation != NULL) {
-            new_cw_link(plans, problem->init_action().effects(),
-                *negation, open_cond);
+        if (negation != NULL) 
+        {
+            new_cw_link(plans, problem->init_action().effects(), *negation, open_cond);
         }
     }
-    else {
+
+    else 
+    {
         const Disjunction* disj = open_cond.disjunction();
         if (disj != NULL) {
             handle_disjunction(plans, *disj, open_cond);
         }
-        else {
+        
+        else 
+        {
             const Inequality* neq = open_cond.inequality();
             if (neq != NULL) {
                 handle_inequality(plans, *neq, open_cond);
             }
+        
             else {
                 throw std::logic_error("unknown kind of open condition");
             }
@@ -2040,18 +2046,22 @@ bool Plan::addable_steps(int& refinements, const Literal& literal,
 
 
 /* Handles a literal open condition by adding a new step. */
-void Plan::add_step(PlanList& plans, const Literal& literal, const OpenCondition& open_cond, const ActionEffectMap& achievers) const 
+void Plan::add_step(PlanList& plans, const Literal& literal, const OpenCondition& open_cond, 
+    const ActionEffectMap& achievers) const 
 {
-    for (ActionEffectMap::const_iterator ai = achievers.begin();
-        ai != achievers.end(); 
-        ai++) 
+    // For every action that could achieve the open condition,
+    for (ActionEffectMap::const_iterator ai = achievers.begin(); ai != achievers.end();  ai++) 
     {
+        // Get the action
         const Action& action = *(*ai).first;
         
-        // needed to avoid adding a dummy action, which, by convention begins with "<"
+        // Check that it's not a dummy action, which by convention begins with "<"
         if (action.name().substr(0, 1) != "<") 
         {
+            // Get the effect of the action needed to satisfy the open condition,
             const Effect& effect = *(*ai).second;
+
+            // Add a new causal link
             new_link(plans, Step(num_steps() + 1, action), effect, literal, open_cond);
         }
     }
@@ -2130,20 +2140,20 @@ void Plan::reuse_step(PlanList& plans, const Literal& literal,
    to the given open condition added. */
 int Plan::new_link(
     PlanList& plans, 
-    const Step& step, 
-    const Effect& effect, 
-    const Literal& literal, 
-    const OpenCondition& open_cond, 
+    const Step& step, const Effect& effect, 
+    const Literal& literal, const OpenCondition& open_cond, 
     bool test_only) const 
 {
     BindingList mgu;
+
+    // If we can find consistent bindings that unify the effect of the step and the open literal,
     if (bindings_->unify(mgu, effect.literal(), step.id(), literal, open_cond.step_id())) 
     {
+        // Create the link with the new set of bindings
         return make_link(plans, step, effect, literal, open_cond, mgu, test_only);
     }
     
-    else 
-    {
+    else  {
         return 0;
     }
 }
@@ -2219,12 +2229,15 @@ int Plan::new_cw_link(PlanList& plans, const EffectList& effects,
 
 /* Returns a plan with a link added from the given effect to the
    given open condition. */
-int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
+int Plan::make_link(
+    PlanList& plans, 
+    const Step& step, const Effect& effect,
     const Literal& literal, const OpenCondition& open_cond,
-    const BindingList& unifier, bool test_only) const {
-    /*
-     * Add bindings needed to unify effect and goal.
-     */
+    const BindingList& unifier, 
+    bool test_only) const 
+{
+    
+    // Add bindings needed to unify effect and goal.
     BindingList new_bindings;
     SubstitutionMap forall_subst;
     if (test_only) {
@@ -2246,9 +2259,7 @@ int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
         }
     }
 
-    /*
-     * If the effect is conditional, add condition as goal.
-     */
+    // If the effect is conditional, add condition as goal.
     const Chain<OpenCondition>* new_open_conds =
         test_only ? NULL : open_conds()->remove(open_cond);
     size_t new_num_open_conds = test_only ? 0 : num_open_conds() - 1;
@@ -2285,9 +2296,7 @@ int Plan::make_link(PlanList& plans, const Step& step, const Effect& effect,
         }
     }
 
-    /*
-     * See if this is a new step.
-     */
+    // See if this is a new step.
     const Bindings* bindings = bindings_;
     const Chain<Step>* new_steps = test_only ? NULL : steps();
     int new_num_steps = test_only ? 0 : num_steps();
