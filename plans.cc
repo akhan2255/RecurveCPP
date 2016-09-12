@@ -1237,7 +1237,10 @@ const Bindings* Plan::bindings() const {
 
 /* Checks if this plan is complete. */
 bool Plan::complete() const {
-    return unsafes() == NULL && open_conds() == NULL && mutex_threats() == NULL;
+    return unsafes() == NULL && 
+        open_conds() == NULL && 
+        mutex_threats() == NULL && 
+        unexpanded_steps() == NULL;
 }
 
 
