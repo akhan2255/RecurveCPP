@@ -2390,13 +2390,31 @@ int Plan::make_link(
             step_threats(new_unsafes, new_num_unsafes, step, links(), *new_orderings, *bindings);
         }
 
-        /* Adds the new plan. */
-        plans.push_back(new Plan(new_steps, new_num_steps, new_links,
-            num_links() + 1, *new_orderings, *bindings,
+        // If this is a new composite step, register an unexpanded composite step flaw
+        const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
+        size_t new_num_unexpanded_steps = num_unexpanded_steps();
+        if (step.id() > num_steps()) 
+        {
+            if (step.action().composite())
+            {
+                new_unexpanded_steps =
+                    new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(step.id()), 
+                    new_unexpanded_steps);
+                new_num_unexpanded_steps++;
+            }
+
+        }
+
+        // Adds the new plan.
+        plans.push_back(new Plan(
+            new_steps, new_num_steps, 
+            new_links, num_links() + 1, 
+            *new_orderings, *bindings,
             new_unsafes, new_num_unsafes,
             new_open_conds, new_num_open_conds,
-            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
-            new_mutex_threats, this));
+            new_unexpanded_steps, new_num_unexpanded_steps,
+            new_mutex_threats, 
+            this));
     }
     return 1;
 }
