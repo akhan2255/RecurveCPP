@@ -646,12 +646,22 @@ decomposition_body  : STEPS '(' steps ')'                 { register_dummy_pseud
                     ;
 
 decomposition_body2 : LINKS '(' links ')' decomposition_body3
+                        {
+                          if (decomposition->link_list().contains_cycle()) {
+                           yyerror("cycle detected in links for decomposition " + decomposition->name());
+                          }
+                        }
                     | decomposition_body3
                     ;
 
 
 decomposition_body3 : /* empty */
-                    | ORDERINGS '(' orderings ')'
+                    | ORDERINGS '(' orderings ')'         
+                        {
+                          if (decomposition->ordering_list().contains_cycle()) {
+                            yyerror("cycle detected in orderings for decomposition " + decomposition->name());
+                          } 
+                        }
                     ;
 
 steps : /* empty */
@@ -1315,11 +1325,6 @@ static void make_decomposition(const std::string* composite_action_name, const s
 /* Adds the current decomposition to the current domain. */
 static void add_decomposition()
 {
-	// Check that the orderings are consistent (no cycles)
-	if (decomposition->ordering_list().contains_cycle()) {
-		yyerror("cycle detected in orderings for decomposition " + decomposition->name());
-	}
-
 	// Check that there exists a path of causal links from all init dummy effects to all goal dummy preconditions
 	// TODO
 
