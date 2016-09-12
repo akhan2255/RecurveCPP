@@ -192,11 +192,9 @@ inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
 /* ====================================================================== */
 /* UnexpandedCompositeStep */
 
-/*
- * An unexpanded composite step flaw is when a composite step is added to
- * the plan, and there exists no decomposition link in the plan that
- * specifies its decomposition into more primitive steps.
- */
+/* An unexpanded composite step flaw is when a composite step is added to the plan, and there 
+   exists no decomposition link in the plan that specifies its decomposition into more primitive 
+   steps. */
 struct UnexpandedCompositeStep : public Flaw {
 
     /* Constructs an unexpanded composite step flaw. */
