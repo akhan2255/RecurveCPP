@@ -722,8 +722,8 @@ const Plan* Plan::make_initial_plan(const Problem& problem)
 
 
 /* Returns plan for given problem. */
-const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_problem) {
-
+const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_problem) 
+{
     /* ---------------------------------------------------------------- */
     /* Setup */
 
@@ -1237,10 +1237,10 @@ const Bindings* Plan::bindings() const {
 
 /* Checks if this plan is complete. */
 bool Plan::complete() const {
-    return unsafes() == NULL && 
-        open_conds() == NULL && 
-        mutex_threats() == NULL && 
-        unexpanded_steps() == NULL;
+    return unsafes() == NULL 
+        && open_conds() == NULL 
+        && mutex_threats() == NULL 
+        && unexpanded_steps() == NULL;
 }
 
 
