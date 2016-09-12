@@ -1,15 +1,9 @@
 (define (problem travel-to-la)
     (:domain travel)
-    (:objects alice bob - person
-              accord - car)
+    (:objects alice bob - person)
     (:init 
-        (person bob)
-		(person alice)
-        (place raleigh)
-        (place la)
-        (car accord)
-		(at alice la)
-        (at bob raleigh)
-        (at accord raleigh))
+		(at alice lax)
+        (at bob rdu)
+        (at rental rdu))
         
-(:goal (at bob la)))
+(:goal (at bob lax)))
