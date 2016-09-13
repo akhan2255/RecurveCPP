@@ -1225,6 +1225,7 @@ Plan::~Plan() {
     Bindings::unregister_use(bindings_);
     RCObject::destructive_deref(unsafes_);
     RCObject::destructive_deref(open_conds_);
+    RCObject::destructive_deref(unexpanded_steps_);
     RCObject::destructive_deref(mutex_threats_);
 }
 
