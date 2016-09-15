@@ -218,7 +218,6 @@ static bool read_file(const char* name)
     }
 }
 
-
 /* Cleanup function. */
 static void cleanup()
 {
@@ -499,17 +498,18 @@ int main(int argc, char* argv[])
             {
                 std::vector<FlawSelectionOrder> decomposition_compatible;
 
-                // In a decompositional domain, in order to guarantee completeness, 
-                // we need to ensure that every flaw selection strategy can handle
-                // unexpanded composite step flaws - those that cannot, are removed
+                // In a decompositional domain, in order to guarantee completeness, we need to ensure 
+                // that every flaw selection strategy can handle unexpanded composite step flaws - 
+                // those that cannot, are removed
                 for (std::vector<FlawSelectionOrder>::const_iterator fi = params.flaw_orders.begin(); fi != params.flaw_orders.end(); ++fi)
                 {
-                    FlawSelectionOrder fso = *fi;
-                    //std::vector<
-                    
-
+                    if (fi->is_decomposition_complete()) {
+                        decomposition_compatible.push_back(*fi);
+                    }
                 }
 
+                // If no decomposition compatible flaw selection orders remain, add a default one.
+                // TODO
             }
 
             
