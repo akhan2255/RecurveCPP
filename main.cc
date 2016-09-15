@@ -273,18 +273,18 @@ int main(int argc, char* argv[])
 
     atexit(cleanup);
 
-    /* Default planning parameters. */
+    // Default planning parameters.
     Parameters params;
     bool no_flaw_order = true;
     bool no_search_limit = true;
 
-    /* Set default verbosity. */
+    // Set default verbosity. 
     verbosity = 2;
 
-    /* Set default warning level. */
+    // Set default warning level.
     warning_level = 1;
 
-    /* Get command line options. */
+    // Get command line options.
     while (1)
     {
         int option_index = 0;
@@ -438,10 +438,10 @@ int main(int argc, char* argv[])
 
     try 
     {
-        /* Read pddl files. */
+        // Read pddl files.
         if (optind < argc) 
         {
-            /* Use remaining command line arguments as file names. */
+            // Use remaining command line arguments as file names.
             while (optind < argc) 
             {
                 if (!read_file(argv[optind++])) {
@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 
         else 
         {
-            /* No remaining command line argument, so read from standard input. */
+            // No remaining command line argument, so read from standard input.
             yyin = stdin;
             if (yyparse() != 0) {
                 return -1;
@@ -461,7 +461,7 @@ int main(int argc, char* argv[])
 
         if (verbosity > 1) 
         {
-            /* Display domains and problems. */
+            // Display domains and problems.
             std::cerr 
                 << "----------------------------------------" 
                 << std::endl
@@ -487,7 +487,7 @@ int main(int argc, char* argv[])
 
         std::cerr.setf(std::ios::unitbuf);
 
-        /* Solve the problems. */
+        // Solve the problems.
         for (Problem::ProblemMap::const_iterator pi = Problem::begin(); pi != Problem::end();) 
         {
             const Problem& problem = *(*pi).second;
