@@ -309,6 +309,9 @@ struct SelectionCriterion {
     /* Whether this criterion applies to unsafe open conditions. */
     bool unsafe_open_cond;
     
+    /* Whether this criterion applies to unexpanded composite steps. */
+    bool unexpanded_composite_step;
+
     /* The maximum number of refinements allowed for a flaw that this criterion applies to. */
     int max_refinements;
 
