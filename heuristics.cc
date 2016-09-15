@@ -1382,7 +1382,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
     }
 
     else if (strcasecmp(n, "MC-Loc-Conf") == 0) {
-        return *this = "{n,s}LR/[u}MC_add/{l}MC_add";
+        return *this = "{n,s}LR/{u}MC_add/{l}MC_add";
     }
 
     else if (strcasecmp(n, "MW") == 0) {
