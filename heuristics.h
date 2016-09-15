@@ -339,6 +339,9 @@ struct FlawSelectionOrder
     /* Selects a flaw selection order from a name. */
     FlawSelectionOrder& operator=(const std::string& name);
 
+    /* Returns the name of this flaw selection order. */
+    const std::string name() const { return name_; }
+
     /* Checks if this flaw order needs a planning graph. */
     bool needs_planning_graph() const;
 
@@ -365,6 +368,9 @@ private:
 
     /* Selection criteria. */
     std::vector<SelectionCriterion> selection_criteria_;
+
+    /* The name of this flaw selection order.*/
+    std::string name_;
     
     /* Whether a planning graph is needed by this flaw selection order. */
     bool needs_pg_;

@@ -1266,6 +1266,8 @@ FlawSelectionOrder::FlawSelectionOrder(const std::string& name) {
 /* Selects a flaw selection order from a name. */
 FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name) 
 {
+    name_ = name;
+
     const char* n = name.c_str();
     if (strcasecmp(n, "UCPOP") == 0) {
         return *this = "{n,s}LIFO/{o}LIFO";
