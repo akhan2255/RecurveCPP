@@ -493,6 +493,26 @@ int main(int argc, char* argv[])
             const Problem& problem = *(*pi).second;
             pi++;
             std::cout << ';' << problem.name() << std::endl;
+
+            // Check if we have a decompositional domain
+            if (problem.domain().requirements.decompositions) 
+            {
+                std::vector<FlawSelectionOrder> decomposition_compatible;
+
+                // In a decompositional domain, in order to guarantee completeness, 
+                // we need to ensure that every flaw selection strategy can handle
+                // unexpanded composite step flaws - those that cannot, are removed
+                for (std::vector<FlawSelectionOrder>::const_iterator fi = params.flaw_orders.begin(); fi != params.flaw_orders.end(); ++fi)
+                {
+                    FlawSelectionOrder fso = *fi;
+                    //std::vector<
+                    
+
+                }
+
+            }
+
+            
            
             //      struct itimerval timer = { { 1000000, 900000 }, { 1000000, 900000 } };
             //#ifdef PROFILING
