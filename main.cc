@@ -45,22 +45,22 @@
 #endif
 
 /* Name of package */
-#define PACKAGE "vhpop"
+#define PACKAGE "recurve"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "lorens@cs.cmu.edu"
+#define PACKAGE_BUGREPORT "recardon@ncsu.edu"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "VHPOP"
+#define PACKAGE_NAME "Recurve"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "VHPOP 3.0"
+#define PACKAGE_STRING "Recurve 0.1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "vhpop"
+#define PACKAGE_TARNAME "recurve"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.0"
+#define PACKAGE_VERSION "0.1"
 
 /* The parse function. */
 extern int yyparse();
@@ -73,37 +73,39 @@ extern int yydebug;
 
 /* Name of current file. */
 std::string current_file;
+
 /* Level of warnings. */
 int warning_level;
+
 /* Verbosity level. */
 int verbosity;
 
-
 /* Program options. */
-static struct option long_options[] = {
-        { "action-cost", required_argument, NULL, 'a' },
-        { "domain-constraints", optional_argument, NULL, 'd' },
-        { "flaw-order", required_argument, NULL, 'f' },
-        { "ground-actions", no_argument, NULL, 'g' },
-        { "heuristic", required_argument, NULL, 'h' },
-        { "limit", required_argument, NULL, 'l' },
-        { "random-open-conditions", no_argument, NULL, 'r' },
-        { "search-algorithm", required_argument, NULL, 's' },
-        { "seed", required_argument, NULL, 'S' },
-        { "tolerance", required_argument, NULL, 't' },
-        { "time-limit", required_argument, NULL, 'T' },
-        { "verbose", optional_argument, NULL, 'v' },
-        { "version", no_argument, NULL, 'V' },
-        { "weight", required_argument, NULL, 'w' },
-        { "warnings", optional_argument, NULL, 'W' },
-        { "help", no_argument, NULL, '?' },
-        { 0, 0, 0, 0 }
+static struct option long_options[] =
+{
+    { "action-cost", required_argument, NULL, 'a' },
+    { "domain-constraints", optional_argument, NULL, 'd' },
+    { "flaw-order", required_argument, NULL, 'f' },
+    { "ground-actions", no_argument, NULL, 'g' },
+    { "heuristic", required_argument, NULL, 'h' },
+    { "limit", required_argument, NULL, 'l' },
+    { "random-open-conditions", no_argument, NULL, 'r' },
+    { "search-algorithm", required_argument, NULL, 's' },
+    { "seed", required_argument, NULL, 'S' },
+    { "tolerance", required_argument, NULL, 't' },
+    { "time-limit", required_argument, NULL, 'T' },
+    { "verbose", optional_argument, NULL, 'v' },
+    { "version", no_argument, NULL, 'V' },
+    { "weight", required_argument, NULL, 'w' },
+    { "warnings", optional_argument, NULL, 'W' },
+    { "help", no_argument, NULL, '?' },
+    { 0, 0, 0, 0 }
 };
 static const char OPTION_STRING[] = "a:d::f:gh:l:rs:S:t:T:v::Vw:W::?";
 
-
 /* Displays help. */
-static void display_help() {
+static void display_help() 
+{
     std::cout << "usage: " << PACKAGE << " [options] [file ...]" << std::endl
         << "options:" << std::endl
         << "  -a a,  --action-cost=a" << std::endl
@@ -161,12 +163,13 @@ static void display_help() {
         << "Report bugs to <" PACKAGE_BUGREPORT ">." << std::endl;
 }
 
-
 /* Displays version information. */
-static void display_version() {
+static void display_version()
+{
     std::cout << PACKAGE_STRING << std::endl
-        << "Copyright (C) 2002-2004 Carnegie Mellon University"
+        << "Original copyright (C) 2002-2004 Carnegie Mellon University"
         << std::endl
+        << "Decompositional planning extensions are copyright (C) 2016-Present North Carolina State University"
         << PACKAGE_NAME
         << " comes with NO WARRANTY, to the extent permitted by law."
         << std::endl
@@ -175,19 +178,39 @@ static void display_version() {
         << "see the file named COPYING in the " PACKAGE_NAME
         << " distribution." << std::endl
         << std::endl
-        << "Written by H\345kan L. S. Younes." << std::endl;
+        << "Originally written by H\345kan L. S. Younes."
+        << std::endl
+        << "Decompositional planning extensions written by Rogelio E. Cardona-Rivera"
+        << std::endl;
 }
 
+/* Displays an error message. */
+static void display_error(std::runtime_error e)
+{
+    std::cerr
+        << PACKAGE
+        << ": "
+        << e.what()
+        << std::endl
+        << "Try `"
+        << PACKAGE
+        << " --help' for more information."
+        << std::endl;
+}
 
 /* Parses the given file, and returns true on success. */
-static bool read_file(const char* name) {
+static bool read_file(const char* name)
+{
     yyin = fopen(name, "r");
-    if (yyin == NULL) {
-        std::cerr << PACKAGE << ':' << name << ": " << strerror(errno)
-            << std::endl;
+
+    if (yyin == NULL)
+    {
+        std::cerr << PACKAGE << ':' << name << ": " << strerror(errno) << std::endl;
         return false;
     }
-    else {
+
+    else
+    {
         current_file = name;
         bool success = (yyparse() == 0);
         fclose(yyin);
@@ -197,10 +220,10 @@ static bool read_file(const char* name) {
 
 
 /* Cleanup function. */
-static void cleanup() {
+static void cleanup()
+{
     Problem::clear();
     Domain::clear();
-
 #ifdef DEBUG_MEMORY
     RCObject::print_statistics(std::cerr);
     std::cerr << "Formulas created: " << created_formulas << std::endl
@@ -224,7 +247,6 @@ static void cleanup() {
 #endif
 }
 
-
 #ifdef DEBUG_MEMORY
 size_t created_formulas = 0;
 size_t deleted_formulas = 0;
@@ -244,7 +266,6 @@ size_t created_plans = 0;
 size_t deleted_plans = 0;
 #endif
 
-
 /* The main program. */
 int main(int argc, char* argv[])
 {
@@ -256,222 +277,265 @@ int main(int argc, char* argv[])
     Parameters params;
     bool no_flaw_order = true;
     bool no_search_limit = true;
+
     /* Set default verbosity. */
     verbosity = 2;
+
     /* Set default warning level. */
     warning_level = 1;
 
-    /*
-     * Get command line options.
-     */
+    /* Get command line options. */
     while (1)
     {
         int option_index = 0;
-        int c = getopt_long(argc, argv, OPTION_STRING,
-            long_options, &option_index);
+        int c = getopt_long(argc, argv, OPTION_STRING, long_options, &option_index);
+        
         if (c == -1) {
             break;
         }
-        switch (c) {
+
+        switch (c) 
+        {
             case 'a':
                 try {
                     params.set_action_cost(optarg);
                 }
-                catch (const InvalidActionCost& e) {
-                    std::cerr << PACKAGE ": " << e.what() << std::endl
-                        << "Try `" PACKAGE " --help' for more information."
-                        << std::endl;
+                
+                catch (const InvalidActionCost& e) 
+                {
+                    display_error(e);
                     return -1;
                 }
+                
                 break;
+
             case 'd':
                 params.domain_constraints = true;
                 params.keep_static_preconditions = (optarg == NULL || atoi(optarg) != 0);
                 break;
+
             case 'f':
-                try {
+                try 
+                {
                     if (no_flaw_order) {
                         params.flaw_orders.clear();
                         no_flaw_order = false;
                     }
+
                     params.flaw_orders.push_back(FlawSelectionOrder(optarg));
                 }
-                catch (const InvalidFlawSelectionOrder& e) {
-                    std::cerr << PACKAGE << ": " << e.what() << std::endl
-                        << "Try `" << PACKAGE << " --help' for more information."
-                        << std::endl;
+                
+                catch (const InvalidFlawSelectionOrder& e) 
+                {
+                    display_error(e);
                     return -1;
                 }
+
                 break;
+
             case 'g':
                 params.ground_actions = true;
                 break;
+            
             case 'h':
                 try {
                     params.heuristic = optarg;
                 }
-                catch (const InvalidHeuristic& e) {
-                    std::cerr << PACKAGE ": " << e.what() << std::endl
-                        << "Try `" PACKAGE " --help' for more information."
-                        << std::endl;
+
+                catch (const InvalidHeuristic& e) 
+                {
+                    display_error(e);
                     return -1;
                 }
+
                 break;
+
             case 'l':
-                if (no_search_limit) {
+                if (no_search_limit) 
+                {
                     params.search_limits.clear();
                     no_search_limit = false;
                 }
+                
                 if (optarg == std::string("unlimited")) {
                     params.search_limits.push_back(UINT_MAX);
                 }
+                
                 else {
                     params.search_limits.push_back(atoi(optarg));
                 }
+                
                 break;
+
             case 'r':
                 params.random_open_conditions = true;
                 break;
+
             case 's':
                 try {
                     params.set_search_algorithm(optarg);
                 }
-                catch (const InvalidSearchAlgorithm& e) {
-                    std::cerr << PACKAGE ": " << e.what() << std::endl
-                        << "Try `" PACKAGE " --help' for more information."
-                        << std::endl;
+                
+                catch (const InvalidSearchAlgorithm& e) 
+                {
+                    display_error(e);
                     return -1;
                 }
+
                 break;
+
             case 'S':
                 srand(atoi(optarg));
                 break;
+
             case 't':
                 if (optarg == std::string("unlimited")) {
                     Orderings::threshold = std::numeric_limits<float>::max();
                 }
+
                 else {
                     Orderings::threshold = (float)atof(optarg);
                 }
+
                 break;
+            
             case 'T':
                 params.time_limit = atoi(optarg);
                 break;
+
             case 'v':
                 verbosity = (optarg != NULL) ? atoi(optarg) : 1;
                 break;
+
             case 'V':
                 display_version();
                 return 0;
+
             case 'w':
                 params.weight = (float)atof(optarg);
                 break;
+
             case 'W':
                 warning_level = (optarg != NULL) ? atoi(optarg) : 1;
                 break;
+
             case '?':
                 if (optopt == '?') {
                     display_help();
                     return 0;
                 }
+
             case ':':
             default:
-                std::cerr << "Try `" PACKAGE " --help' for more information."
-                    << std::endl;
+                std::cerr << "Try `" PACKAGE " --help' for more information." << std::endl;
                 return -1;
         }
     }
-    for (size_t i = 0;
-        i < params.flaw_orders.size() - params.search_limits.size(); i++) {
+
+    for (size_t i = 0; i < params.flaw_orders.size() - params.search_limits.size(); i++) {
         params.search_limits.push_back(params.search_limits.back());
     }
 
-    std::cerr << "here without bugs" << std::endl;
-    try {
-        /*
-         * Read pddl files.
-         */
-        if (optind < argc) {
-            /*
-             * Use remaining command line arguments as file names.
-             */
-            while (optind < argc) {
+    try 
+    {
+        /* Read pddl files. */
+        if (optind < argc) 
+        {
+            /* Use remaining command line arguments as file names. */
+            while (optind < argc) 
+            {
                 if (!read_file(argv[optind++])) {
                     return -1;
                 }
             }
         }
-        else {
-            /*
-             * No remaining command line argument, so read from standard input.
-             */
+
+        else 
+        {
+            /* No remaining command line argument, so read from standard input. */
             yyin = stdin;
             if (yyparse() != 0) {
                 return -1;
             }
         }
 
-        if (verbosity > 1) {
-            /*
-             * Display domains and problems.
-             */
-            std::cerr << "----------------------------------------" << std::endl
-                << "domains:" << std::endl;
-            for (Domain::DomainMap::const_iterator di = Domain::begin();
-                di != Domain::end(); di++) {
+        if (verbosity > 1) 
+        {
+            /* Display domains and problems. */
+            std::cerr 
+                << "----------------------------------------" 
+                << std::endl
+                << "domains:" 
+                << std::endl;
+            
+            for (Domain::DomainMap::const_iterator di = Domain::begin(); di != Domain::end(); di++) {
                 std::cerr << std::endl << *(*di).second << std::endl;
             }
-            std::cerr << "----------------------------------------" << std::endl
-                << "problems:" << std::endl;
-            for (Problem::ProblemMap::const_iterator pi = Problem::begin();
-                pi != Problem::end(); pi++) {
+
+            std::cerr << "----------------------------------------" 
+                << std::endl
+                << "problems:" 
+                << std::endl;
+            
+            for (Problem::ProblemMap::const_iterator pi = Problem::begin(); pi != Problem::end(); pi++) {
                 std::cerr << std::endl << *(*pi).second << std::endl;
             }
-            std::cerr << "----------------------------------------" << std::endl;
+
+            std::cerr << "----------------------------------------"
+                << std::endl;
         }
 
         std::cerr.setf(std::ios::unitbuf);
 
-        /*
-         * Solve the problems.
-         */
-        for (Problem::ProblemMap::const_iterator pi = Problem::begin();
-            pi != Problem::end();) {
+        /* Solve the problems. */
+        for (Problem::ProblemMap::const_iterator pi = Problem::begin(); pi != Problem::end();) 
+        {
             const Problem& problem = *(*pi).second;
             pi++;
             std::cout << ';' << problem.name() << std::endl;
+           
             //      struct itimerval timer = { { 1000000, 900000 }, { 1000000, 900000 } };
             //#ifdef PROFILING
             //      setitimer(ITIMER_VIRTUAL, &timer, NULL);
             //#else
             //      setitimer(ITIMER_PROF, &timer, NULL);
             //#endif
-            const Plan* plan =
-                Plan::plan(problem, params,
-                !ALWAYS_DELETE_ALL && pi == Problem::end());
-            if (plan != NULL) {
-                if (plan->complete()) {
-                    if (verbosity > 0) {
+            
+            const Plan* plan = Plan::plan(problem, params, !ALWAYS_DELETE_ALL && pi == Problem::end());
+            if (plan != NULL) 
+            {
+                if (plan->complete()) 
+                {
+                    if (verbosity > 0) 
+                    {
 #ifdef DEBUG
                         std::cerr << "Depth of solution: " << plan->depth() << std::endl;
 #endif
                         std::cerr << "Number of steps: " << plan->num_steps() << std::endl;
                     }
+
                     std::cout << *plan << std::endl;
                 }
-                else {
+
+                else 
+                {
                     std::cout << "no plan" << std::endl;
-                    std::cout << ";Search limit reached." << std::endl;
+                    std::cout << "; Search limit reached." << std::endl;
                 }
             }
-            else {
+
+            else 
+            {
                 std::cout << "no plan" << std::endl;
-                std::cout << ";Problem has no solution." << std::endl;
+                std::cout << "; Problem has no solution." << std::endl;
             }
-            if (ALWAYS_DELETE_ALL || pi != Problem::end()) {
+
+            if (ALWAYS_DELETE_ALL || pi != Problem::end()) 
+            {
                 if (plan != NULL) {
                     delete plan;
                 }
+            
                 Plan::cleanup();
             }
             //#ifdef PROFILING
@@ -485,11 +549,15 @@ int main(int argc, char* argv[])
             //      std::cout << "Time: " << std::max(0, int(1000.0*t + 0.5)) << std::endl;
         }
     }
-    catch (const std::exception& e) {
+
+    catch (const std::exception& e) 
+    {
         std::cerr << PACKAGE ": " << e.what() << std::endl;
         return -1;
     }
-    catch (...) {
+
+    catch (...) 
+    {
         std::cerr << PACKAGE ": fatal error" << std::endl;
         return -1;
     }

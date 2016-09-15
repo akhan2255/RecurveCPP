@@ -101,7 +101,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BISONFLEX_INC);</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="types.cc" />
-    <ClCompile Include="vhpop.cc" />
+    <ClCompile Include="main.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="actions.h" />
