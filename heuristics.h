@@ -276,22 +276,9 @@ struct InvalidFlawSelectionOrder : public std::runtime_error {
 /* SelectionCriterion */
 
 /*
- * A selection criterion.
- *
- * The specification of a selection criterion more or less follows the
- * notation of (Pollack, Joslin, and Paolucci 1997).  Their LC is here
- * called LR (least refinements) because we use LC to denote least
- * heuristic cost.  While not mentioned by Pollack et al., we have
- * implemented MR and REUSE for completeness.  These are the opposites
- * of LR and NEW, respectively.  We define four completely new
- * tie-breaking strategies based on heuristic evaluation functions.
- * These are LC (least cost), MC (most cost), LW (least work), and MW
- * (most work).  It is required that a heuristic is specified in
- * conjunction with the use of any of these four strategies.  Finally,
- * we introduce three new flaw types.  These are 't' for static open
- * conditions, 'u' for unsafe open conditions, and 'l' for local open
- * conditions.  All three select subsets of 'o', so {t,o}, {u,o}, and
- * {t,o} reduce to {o}.
+   A selection criterion. We adopt the following notation to succinctly specify selection criteria:
+   {flaw types}[max refinements]ordering criterion (inspired by Pollack, Joslin, and Paolucci 1997).
+   See README.md file for details on flaw types and ordering criteria supported by Recurve.
  */
 struct SelectionCriterion {
     

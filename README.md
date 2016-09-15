@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/recardona/Recurve/recardona/dpocl-parsing/img/icon.png" width="150" align="left"/>
 </p>
 
-Recurve is a decompositional planner; i.e. a planning system that combines *hierarchical reasoning* as discussed in hierarchical task networks (HTNs) and *least-commitment refinement reasoning* as discussed in partial-order causal link planning. For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
+Recurve is a decompositional planner; i.e. a planning system that combines *hierarchical reasoning* as discussed in hierarchical task networks (HTNs) and *least-commitment refinement reasoning* as discussed in partial-order causal link (POCL) planning. For details on the decompositional planning process, [consult this paper](http://www.research.ed.ac.uk/portal/files/18535716/Young_Pollack_ET_AL_1994_Decomposition_and_Casuality_in_Partial_Order_Planning.pdf).
 More details for this section are forthcoming.
 
 Recurve is a variant of the [versatile heuristic partial order planner](http://www.tempastic.org/vhpop/) originally developed by [Håkan L. S. Younes](http://www.cs.cmu.edu/~lorens/).
@@ -59,13 +59,8 @@ Fifth, add the following new System variable in the Environment Variables:
  * Variable Value: `$PATH_TO_CYGWIN\home\$USER\Developer\include\`
 
 
-
- 
- 
-------------
-### VHPOP Details
-VHPOP is a versatile heuristic partial order planner loosely based on
-UCPOP with the following main features:
+## Implementation
+Recurve is built atop VHPOP, a versatile heuristic partial order planner. VHPOP itself is loosely based on UCPOP with the following main features:
 * Can plan with either ground or lifted actions.
 * Can enforce joint parameter domain constraints when using lifted actions.
 * Has several different plan ranking heuristics to choose from that can be combined into complex plan ranking functions.
@@ -74,13 +69,9 @@ UCPOP with the following main features:
 * Implements A\* , IDA\*, and hill climbing search.
 * Fully supports levels 1 and 3 of PDDL2.1.
 
-For installation instructions, see `INSTALL`.
-For copyright information and distribution restrictions, see `COPYING`.
 
-
-#### Search Algorithms
-You can select the search algorithms to use with the `-s` flag.  The
-options are as follows:
+### Search Algorithms
+You can select the search algorithms to use with the `-s` flag.  The options are as follows:
 * `A` for A*.
 * `IDA` for IDA*.
 * `HC` for hill climbing.
@@ -93,7 +84,7 @@ VHPOP currently provides three definitions of action costs, selected through the
 * `RELATIVE` uses relative duration as action costs.
 
 
-#### Plan Selection
+### Plan Selection
 The plan ranking function is specified with the `-h` flag.  A plan ranking function is a sequence of simple heuristic plan ranking functions in decreasing order of significance.  
 
 For example, `S+OC/LIFO` uses the number of steps plus the number of open conditions of a plan as primary rank, and selects plans in LIFO order in case the primary rank of several plans are the same.  Some simple plan ranking functions use a weight, which can be specified with the `-w` flag.  VHPOP implements the following simple plan ranking functions:
@@ -118,72 +109,84 @@ For example, `S+OC/LIFO` uses the number of steps plus the number of open condit
 * `MAXR_COST` uses the `MAXR` cost heuristic.
 * `MAXR_WORK` uses the `MAXR` work heuristic.
 
-#### Flaw Selection
-A flaw selection strategy is an ordered list of selection criteria. Each selection criterion is of the form:
+### Flaw Selection 
+Flaw selection is performed relative to a flaw selection strategy. A flaw selection strategy is an ordered list of selection criteria. Each selection criterion is of the form:
 ```
 {flaw types}[max refinements]ordering criterion
 ```
 This applies to flaws of the given types which can be resolved in at most "max refinements" ways.  The limit on number of refinements is optional and can be left out.  The ordering criterion is used to order flaws that the selection criterion applies to.  LIFO order is used if the ordering criterion cannot be used to distinguish two or more flaws.
 
-The different flaw types are:
-* `o` (open condition), 
-* `t` (static open condition), 
-* `l` (local open condition), 
-* `u` (unsafe open condition),
-* `n` (non-separable threat), and 
-* `s` (separable threat).  
+#### Flaw Types
 
-The different ordering criteria are: 
-* `LIFO`, 
-* `FIFO`, 
-* `R` (random), 
-* `LR` (least refinements first), 
-* `MR` (opposite of `LR`), 
-* `New` (open conditions that can be resolved with new step first), 
-* `Reuse` (opposite of `New`),
-* `MC_h` (most cost with heuristic `h`), 
-* `LC_h` (opposite of `MC_h`), 
-* `MW_h` (most work with heuristic `h`), 
-* `LW_h` (opposite of `MW_h`).
+| Flaw Type  |  Description               |
+|-----------:|:---------------------------|
+|  `o`       | Open condition             |
+|  `t`       | Static open condition      |
+|  `l`       | Local open condition       |
+|  `u`       | Unsafe open condition      |
+|  `n`       | Non-separable threat       |
+|  `s`       | Separable threat           |
+|  `x`       | Unexpanded composite step  |
+
+#### Ordering Criteria
+
+| Ordering Criterion | Description                        |
+|-------------------:|:-----------------------------------|
+|  `LIFO`            | Priority to flaws created later    |
+|  `FIFO`            | Priority to flaws created earlier  |
+|  `R`               | Random                             |
+|  `LR`              | Least refinements first            |
+|  `MR`              | Opposite of `LR`                   |
+|  `New`     | Open conditions that can be resolved with new step first |
+|  `Reuse`           | Opposite of `New`                  |
+|  `MC_h`            | Most cost with heuristic `h`       |
+|  `LC_h`            | Opposite of `MC_h`                 |
+|  `MW_h`            | Most work with heuristic `h`       |
+|  `LW_h`            | Opposite of `MW_h`                 |
+
 
 Flaws are matched with selection criteria, and it is required for completeness that every flaw matches at least one selection criterion in a flaw selection strategy.  The flaw that matches the earliest selection criterion, and is ordered before any other flaws matching the same criterion (according to the ordering criterion), is the flaw that gets selected by the flaw selection strategy.  
 
 Note that we do not always need to test all flaws.  If, for example, the first selection criterion is `{n,s}LIFO`, and we have found a threat, then we do not need to consider any other flaws for selection.
 
-Most common flaw selection strategies are predefined, along with several novel ones:
 
-* `UCPOP` &rarr; `{n,s}LIFO/{o}LIFO`
-* `UCPOP-LC` &rarr; `{n,s}LIFO/{o}LR`
-* `DSep-LIFO` &rarr; `{n}LIFO/{o}LIFO/{s}LIFO`
-* `DSep-FIFO` &rarr; `{n}LIFO/{o}FIFO/{s}LIFO`
-* `DSep-LC` &rarr; `{n}LIFO/{o}LR/{s}LIFO`
-* `DUnf-LIFO` &rarr; `{n,s}0LIFO/{n,s}1LIFO/{o}LIFO/{n,s}LIFO`
-* `DUnf-FIFO` &rarr; `{n,s}0LIFO/{n,s}1LIFO/{o}FIFO/{n,s}LIFO`
-* `DUnf-LC` &rarr;	`{n,s}0LIFO/{n,s}1LIFO/{o}LR/{n,s}LIFO`
-* `DUnf-Gen` &rarr;	`{n,s,o}0LIFO/{n,s,o}1LIFO/{n,s,o}LIFO`
-* `DRes-LIFO` &rarr; `{n,s}0LIFO/{o}LIFO/{n,s}LIFO`
-* `DRes-FIFO` &rarr; `{n,s}0LIFO/{o}FIFO/{n,s}LIFO`
-* `DRes-LC` &rarr; `{n,s}0LIFO/{o}LR/{n,s}LIFO`
-* `DEnd-LIFO` &rarr; `{o}LIFO/{n,s}LIFO`
-* `DEnd-FIFO` &rarr; `{o}FIFO/{n,s}LIFO`
-* `DEnd-LC` &rarr; `{o}LR/{n,s}LIFO`
-* `LCFR` &rarr;	`{n,s,o}LR`
-* `LCFR-DSep` &rarr; `{n,o}LR/{s}LR`
-* `ZLIFO` &rarr; `{n}LIFO/{o}0LIFO/{o}1NEW/{o}LIFO/{s}LIFO`
-* `ZLIFO*` &rarr; `{o}0LIFO/{n,s}LIFO/{o}1NEW/{o}LIFO`
-* `Static` &rarr; `{t}LIFO/{n,s}LIFO/{o}LIFO`
-* `LCFR-Loc` &rarr;	`{n,s,l}LR`
-* `LCFR-Conf` &rarr; `{n,s,u}LR/{o}LR`
-* `LCFR-Loc-Conf` &rarr; `{n,s,u}LR/{l}LR`
-* `MC` &rarr; `{n,s}LR/{o}MC_add`
-* `MC-Loc` &rarr; `{n,s}LR/{l}MC_add`
-* `MC-Loc-Conf`	&rarr; `{n,s}LR/{u}MC_add/{l}MC_add`
-* `MW`	&rarr; `{n,s}LR/{o}MW_add`
-* `MW-Loc` &rarr; `{n,s}LR/{l}MW_add`
-* `MW-Loc-Conf` &rarr; `{n,s}LR/{u}MW_add/{l}MW_add`
+#### Pre-defined Flaw Selection Strategies
 
-Several flaw selection strategies can be used simultaneously in a
-round-robin scheme.  For example,
+##### POCL Strategies
+The following POCL flaw selection strategies are predefined.
+
+| Flaw Selection Strategy | Description                               |
+|------------------------:|:------------------------------------------|
+| `UCPOP`                 | `{n,s}LIFO/{o}LIFO`                       |
+| `UCPOP-LC`              | `{n,s}LIFO/{o}LR`                         |
+| `DSep-LIFO`             | `{n}LIFO/{o}LIFO/{s}LIFO`                 |
+| `DSep-FIFO`             | `{n}LIFO/{o}FIFO/{s}LIFO`                 |
+| `DSep-LC`               | `{n}LIFO/{o}LR/{s}LIFO`                   |
+| `DUnf-LIFO`             | `{n,s}0LIFO/{n,s}1LIFO/{o}LIFO/{n,s}LIFO` |
+| `DUnf-FIFO`             | `{n,s}0LIFO/{n,s}1LIFO/{o}FIFO/{n,s}LIFO` |
+| `DUnf-LC`               |	`{n,s}0LIFO/{n,s}1LIFO/{o}LR/{n,s}LIFO`   |
+| `DUnf-Gen`              |	`{n,s,o}0LIFO/{n,s,o}1LIFO/{n,s,o}LIFO`   |
+| `DRes-LIFO`             | `{n,s}0LIFO/{o}LIFO/{n,s}LIFO`            |
+| `DRes-FIFO`             | `{n,s}0LIFO/{o}FIFO/{n,s}LIFO`            |
+| `DRes-LC`               | `{n,s}0LIFO/{o}LR/{n,s}LIFO`              |
+| `DEnd-LIFO`             | `{o}LIFO/{n,s}LIFO`                       |
+| `DEnd-FIFO`             | `{o}FIFO/{n,s}LIFO`                       |
+| `DEnd-LC`               | `{o}LR/{n,s}LIFO`                         | 
+| `LCFR`                  |	`{n,s,o}LR`                               |
+| `LCFR-DSep`             | `{n,o}LR/{s}LR`                           || `ZLIFO`                 | `{n}LIFO/{o}0LIFO/{o}1NEW/{o}LIFO/{s}LIFO`|| `ZLIFO*`                | `{o}0LIFO/{n,s}LIFO/{o}1NEW/{o}LIFO`      || `Static`                | `{t}LIFO/{n,s}LIFO/{o}LIFO`               || `LCFR-Loc`              |	`{n,s,l}LR`                               || `LCFR-Conf`             | `{n,s,u}LR/{o}LR`                         || `LCFR-Loc-Conf`         | `{n,s,u}LR/{l}LR`                         || `MC`                    | `{n,s}LR/{o}MC_add`                       || `MC-Loc`                | `{n,s}LR/{l}MC_add`                       || `MC-Loc-Conf`	          | `{n,s}LR/{u}MC_add/{l}MC_add`             || `MW`	                  | `{n,s}LR/{o}MW_add`                       | | `MW-Loc`                | `{n,s}LR/{l}MW_add`                       || `MW-Loc-Conf`           | `{n,s}LR/{u}MW_add/{l}MW_add`             |
+
+##### Decompositional Strategies
+The following decompositional flaw selection strategies are predefined (well, not really, but they will be).
+
+| Flaw Selection Strategy | Description                               |
+|------------------------:|:------------------------------------------|
+| `Longbow`               | `{n,s}LIFO/{o}LIFO/{x}LIFO`               |
+| `Recurve` (default)     | `{x}LIFO/{n,s,o}LR`                         |
+
+
+#### Using Multiple Flaw Selection Strategies
+
+Several flaw selection strategies can be used simultaneously in a round-robin scheme.  For example,
 
 ```sh
   ./vhpop -f LCFR -l 10000 -f MW -l unlimited <domain> <problem>
@@ -193,13 +196,14 @@ specifies that both `LCFR` and `MW` should be used.  The search limit with `LCFR
 The use of multiple flaw selection strategies is similar to running multiple instances of VHPOP concurrently.  A separate search queue is kept for each flaw selection strategy.  Flaw selection strategies are switched after 1,000; 2,000; 4,000; 8,000; etc. generated search nodes or when the search limit is reached for a strategy.  The first plan, if any, found is returned as the solution regardless of which flaw selection strategy was used.
 
 
-#### Plans for Future Improvements
+## Future Development Roadmap
 * Add better support for plan optimization metric (currently ignored).
 * Allow secondary ordering criterion for flaw selection strategies.
 * Add support for numeric effects and preconditions (level 2 of PDDL2.1).
 * Add support for axioms (PDDL2.2).
 
-------------
+## Copyright
+See `COPYING`.
 
 ## Credits
 - bow (icon) by Christopher T. Howlett from the Noun Project
