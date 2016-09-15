@@ -348,6 +348,14 @@ struct FlawSelectionOrder
     /* Checks if this flaw order needs a planning graph. */
     bool needs_planning_graph() const;
 
+    /* Checks if this flaw order is POCL complete: every POCL flaw matches at least one selection
+       criterion in the flaw order. */
+    bool is_pocl_complete() const;
+
+    /* Checks if this flaw order is decomposition complete: it is POCL complete and it has at least
+       one selection criterion that can handle unexpanded composite steps. */
+    bool is_decomposition_complete() const;
+
     /* Selects a flaw from the flaws of the given plan. */
     const Flaw& select(const Plan& plan, const Problem& problem, const PlanningGraph* pg) const;
 

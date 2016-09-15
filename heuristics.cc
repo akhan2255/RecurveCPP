@@ -1646,6 +1646,50 @@ bool FlawSelectionOrder::needs_planning_graph() const {
   return needs_pg_;
 }
 
+/* Checks if this flaw order is POCL complete: every POCL flaw matches at least one selection
+   criterion in the flaw order. */
+bool FlawSelectionOrder::is_pocl_complete() const
+{
+    // Threat handlers
+    bool found_non_separable, found_separable = false;
+    
+    // Open condition handlers
+    bool found_open_cond, found_local_open_cond = false;
+
+    // Search the selection criteria
+    for (std::vector<SelectionCriterion>::const_iterator ci = selection_criteria_.begin();
+         ci != selection_criteria_.end();
+         ++ci)
+    {
+        found_non_separable |= ci->non_separable;
+        found_separable |= ci->separable;
+        found_open_cond |= ci->open_cond;
+        found_local_open_cond |= ci->local_open_cond;
+    }
+
+    // Must find {n}, {s}, and either {o} or {l} to be POCL complete.
+    return (found_non_separable && found_separable && (found_open_cond || found_local_open_cond));
+}
+
+/* Checks if this flaw order is decomposition complete: it is POCL complete and it has at least
+   one selection criterion that can handle unexpanded composite steps. */
+bool FlawSelectionOrder::is_decomposition_complete() const
+{
+    // Unexpanded composite step handler
+    bool found_unexpanded_composite_step = false;
+
+    // Search the selection criteria
+    for (std::vector<SelectionCriterion>::const_iterator ci = selection_criteria_.begin();
+         ci != selection_criteria_.end();
+         ++ci)
+    {
+        found_unexpanded_composite_step |= ci->unexpanded_composite_step;
+    }
+
+    return (found_unexpanded_composite_step && is_pocl_complete());
+}
+
+
 
 /* Seaches threats for a flaw to select. */
 int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
