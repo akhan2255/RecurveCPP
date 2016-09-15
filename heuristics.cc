@@ -1264,75 +1264,142 @@ FlawSelectionOrder::FlawSelectionOrder(const std::string& name) {
 
 
 /* Selects a flaw selection order from a name. */
-FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name) {
-  const char* n = name.c_str();
-  if (strcasecmp(n, "UCPOP") == 0) {
-    return *this = "{n,s}LIFO/{o}LIFO";
-  } else if (strcasecmp(n, "UCPOP-LC") == 0) {
-    return *this = "{n,s}LIFO/{o}LR";
-  } else if (strncasecmp(n, "DSep-", 5) == 0) {
-    if (strcasecmp(n + 5, "LIFO") == 0) {
-      return *this = "{n}LIFO/{o}LIFO/{s}LIFO";
-    } else if (strcasecmp(n + 5, "FIFO") == 0) {
-      return *this = "{n}LIFO/{o}FIFO/{s}LIFO";
-    } else if (strcasecmp(n + 5, "LC") == 0) {
-      return *this = "{n}LIFO/{o}LR/{s}LIFO";
+FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name) 
+{
+    const char* n = name.c_str();
+    if (strcasecmp(n, "UCPOP") == 0) {
+        return *this = "{n,s}LIFO/{o}LIFO";
     }
-  } else if (strncasecmp(n, "DUnf-", 5) == 0) {
-    if (strcasecmp(n + 5, "LIFO") == 0) {
-      return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}LIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "FIFO") == 0) {
-      return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}FIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "LC") == 0) {
-      return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}LR/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "Gen") == 0) {
-      return *this = "{n,s,o}0LIFO/{n,s,o}1LIFO/{n,s,o}LIFO";
+
+    else if (strcasecmp(n, "UCPOP-LC") == 0) {
+        return *this = "{n,s}LIFO/{o}LR";
     }
-  } else if (strncasecmp(n, "DRes-", 5) == 0) {
-    if (strcasecmp(n + 5, "LIFO") == 0) {
-      return *this = "{n,s}0LIFO/{o}LIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "FIFO") == 0) {
-      return *this = "{n,s}0LIFO/{o}FIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "LC") == 0) {
-      return *this = "{n,s}0LIFO/{o}LR/{n,s}LIFO";
+
+    else if (strncasecmp(n, "DSep-", 5) == 0) 
+    {
+        if (strcasecmp(n + 5, "LIFO") == 0) {
+            return *this = "{n}LIFO/{o}LIFO/{s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "FIFO") == 0) {
+            return *this = "{n}LIFO/{o}FIFO/{s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "LC") == 0) {
+            return *this = "{n}LIFO/{o}LR/{s}LIFO";
+        }
     }
-  } else if (strncasecmp(n, "DEnd-", 5) == 0) {
-    if (strcasecmp(n + 5, "LIFO") == 0) {
-      return *this = "{o}LIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "FIFO") == 0) {
-      return *this = "{o}FIFO/{n,s}LIFO";
-    } else if (strcasecmp(n + 5, "LC") == 0) {
-      return *this = "{o}LR/{n,s}LIFO";
+
+    else if (strncasecmp(n, "DUnf-", 5) == 0) 
+    {
+        if (strcasecmp(n + 5, "LIFO") == 0) {
+            return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}LIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "FIFO") == 0) {
+            return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}FIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "LC") == 0) {
+            return *this = "{n,s}0LIFO/{n,s}1LIFO/{o}LR/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "Gen") == 0) {
+            return *this = "{n,s,o}0LIFO/{n,s,o}1LIFO/{n,s,o}LIFO";
+        }
     }
-  } else if (strcasecmp(n, "LCFR") == 0) {
-    return *this = "{n,s,o}LR";
-  } else if (strcasecmp(n, "LCFR-DSep") == 0) {
-    return *this = "{n,o}LR/{s}LR";
-  } else if (strcasecmp(n, "ZLIFO") == 0) {
-    return *this = "{n}LIFO/{o}0LIFO/{o}1NEW/{o}LIFO/{s}LIFO";
-  } else if (strcasecmp(n, "ZLIFO*") == 0) {
-    return *this = "{o}0LIFO/{n,s}LIFO/{o}1NEW/{o}LIFO";
-  } else if (strcasecmp(n, "Static") == 0) {
-    return *this = "{t}LIFO/{n,s}LIFO/{o}LIFO";
-  } else if (strcasecmp(n, "LCFR-Loc") == 0) {
-    return *this = "{n,s,l}LR";
-  } else if (strcasecmp(n, "LCFR-Conf") == 0) {
-    return *this = "{n,s,u}LR/{o}LR";
-  } else if (strcasecmp(n, "LCFR-Loc-Conf") == 0) {
-    return *this = "{n,s,u}LR/{l}LR";
-  } else if (strcasecmp(n, "MC") == 0) {
-    return *this = "{n,s}LR/{o}MC_add";
-  } else if (strcasecmp(n, "MC-Loc") == 0) {
-    return *this = "{n,s}LR/{l}MC_add";
-  } else if (strcasecmp(n, "MC-Loc-Conf") == 0) {
-    return *this = "{n,s}LR/[u}MC_add/{l}MC_add";
-  } else if (strcasecmp(n, "MW") == 0) {
-    return *this = "{n,s}LR/{o}MW_add";
-  } else if (strcasecmp(n, "MW-Loc") == 0) {
-    return *this = "{n,s}LR/{l}MW_add";
-  } else if (strcasecmp(n, "MW-Loc-Conf") == 0) {
-    return *this = "{n,s}LR/{u}MW_add/{l}MW_add";
-  }
+
+    else if (strncasecmp(n, "DRes-", 5) == 0) 
+    {
+        if (strcasecmp(n + 5, "LIFO") == 0) {
+            return *this = "{n,s}0LIFO/{o}LIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "FIFO") == 0) {
+            return *this = "{n,s}0LIFO/{o}FIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "LC") == 0) {
+            return *this = "{n,s}0LIFO/{o}LR/{n,s}LIFO";
+        }
+    }
+
+    else if (strncasecmp(n, "DEnd-", 5) == 0) 
+    {
+        if (strcasecmp(n + 5, "LIFO") == 0) {
+            return *this = "{o}LIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "FIFO") == 0) {
+            return *this = "{o}FIFO/{n,s}LIFO";
+        }
+
+        else if (strcasecmp(n + 5, "LC") == 0) {
+            return *this = "{o}LR/{n,s}LIFO";
+        }
+    }
+
+    else if (strcasecmp(n, "LCFR") == 0) {
+        return *this = "{n,s,o}LR";
+    }
+
+    else if (strcasecmp(n, "LCFR-DSep") == 0) {
+        return *this = "{n,o}LR/{s}LR";
+    }
+
+    else if (strcasecmp(n, "ZLIFO") == 0) {
+        return *this = "{n}LIFO/{o}0LIFO/{o}1NEW/{o}LIFO/{s}LIFO";
+    }
+
+    else if (strcasecmp(n, "ZLIFO*") == 0) {
+        return *this = "{o}0LIFO/{n,s}LIFO/{o}1NEW/{o}LIFO";
+    }
+
+    else if (strcasecmp(n, "Static") == 0) {
+        return *this = "{t}LIFO/{n,s}LIFO/{o}LIFO";
+    }
+
+    else if (strcasecmp(n, "LCFR-Loc") == 0) {
+        return *this = "{n,s,l}LR";
+    }
+
+    else if (strcasecmp(n, "LCFR-Conf") == 0) {
+        return *this = "{n,s,u}LR/{o}LR";
+    }
+
+    else if (strcasecmp(n, "LCFR-Loc-Conf") == 0) {
+        return *this = "{n,s,u}LR/{l}LR";
+    }
+
+    else if (strcasecmp(n, "MC") == 0) {
+        return *this = "{n,s}LR/{o}MC_add";
+    }
+
+    else if (strcasecmp(n, "MC-Loc") == 0) {
+        return *this = "{n,s}LR/{l}MC_add";
+    }
+
+    else if (strcasecmp(n, "MC-Loc-Conf") == 0) {
+        return *this = "{n,s}LR/[u}MC_add/{l}MC_add";
+    }
+
+    else if (strcasecmp(n, "MW") == 0) {
+        return *this = "{n,s}LR/{o}MW_add";
+    }
+
+    else if (strcasecmp(n, "MW-Loc") == 0) {
+        return *this = "{n,s}LR/{l}MW_add";
+    }
+
+    else if (strcasecmp(n, "MW-Loc-Conf") == 0) {
+        return *this = "{n,s}LR/{u}MW_add/{l}MW_add";
+    }
+
+    else if (strcasecmp(n, "Longbow") == 0) {
+        return *this = "{n,s}LIFO/{o}LIFO";
+    }
+
+
   selection_criteria_.clear();
   needs_pg_ = false;
   first_unsafe_criterion_ = std::numeric_limits<int>::max();
