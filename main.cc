@@ -509,11 +509,15 @@ int main(int argc, char* argv[])
                 }
 
                 // If no decomposition compatible flaw selection orders remain, add a default one.
-                // TODO
+                if (decomposition_compatible.empty()) 
+                {
+                    std::cerr << "No decomposition-compatible flaw selection order specified. Assuming 'Longbow' order." << std::endl;
+                    decomposition_compatible.push_back(FlawSelectionOrder("Longbow"));
+                }
+
+                params.flaw_orders = decomposition_compatible;
             }
 
-            
-           
             //      struct itimerval timer = { { 1000000, 900000 }, { 1000000, 900000 } };
             //#ifdef PROFILING
             //      setitimer(ITIMER_VIRTUAL, &timer, NULL);
