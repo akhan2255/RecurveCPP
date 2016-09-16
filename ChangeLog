@@ -1,3 +1,8 @@
+2016-09-11  Rogelio E. Cardona-Rivera <recardon@ncsu.edu>
+
+	* Added support for parsing decompositional planning constructs.
+
+
 2003-12-09  Håkan L. S. Younes  <lorens@cs.cmu.edu>
 
 	* orderings.cc: Fixed bug returning the incorrect makespan for
