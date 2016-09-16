@@ -1268,6 +1268,12 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 {
     name_ = name;
 
+    // Convert the name into the equivalent flaw selection order, using the notation
+    // developed by Pollack, Joslin, and Paolucci.  A flaw selection order is an
+    // ordered list of flaw selection criterion.
+    
+    // Each individual criterion is specified by: {flaw types}[max refinements]ordering criterion
+    // and (in the order) is delimited by a backslash ('/') character.
     const char* n = name.c_str();
     if (strcasecmp(n, "UCPOP") == 0) {
         return *this = "{n,s}LIFO/{o}LIFO";
@@ -1277,6 +1283,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{n,s}LIFO/{o}LR";
     }
 
+    // The DSep- variants
     else if (strncasecmp(n, "DSep-", 5) == 0) 
     {
         if (strcasecmp(n + 5, "LIFO") == 0) {
@@ -1292,6 +1299,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         }
     }
 
+    // The DUnf- variants
     else if (strncasecmp(n, "DUnf-", 5) == 0) 
     {
         if (strcasecmp(n + 5, "LIFO") == 0) {
@@ -1311,6 +1319,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         }
     }
 
+    // The DRes- variants
     else if (strncasecmp(n, "DRes-", 5) == 0) 
     {
         if (strcasecmp(n + 5, "LIFO") == 0) {
@@ -1326,6 +1335,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         }
     }
 
+    // The DEnd- variants
     else if (strncasecmp(n, "DEnd-", 5) == 0) 
     {
         if (strcasecmp(n + 5, "LIFO") == 0) {
@@ -1341,14 +1351,8 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         }
     }
 
-    else if (strcasecmp(n, "LCFR") == 0) {
-        return *this = "{n,s,o}LR";
-    }
-
-    else if (strcasecmp(n, "LCFR-DSep") == 0) {
-        return *this = "{n,o}LR/{s}LR";
-    }
-
+    
+    // The ZLIFO variants
     else if (strcasecmp(n, "ZLIFO") == 0) {
         return *this = "{n}LIFO/{o}0LIFO/{o}1NEW/{o}LIFO/{s}LIFO";
     }
@@ -1357,8 +1361,18 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{o}0LIFO/{n,s}LIFO/{o}1NEW/{o}LIFO";
     }
 
+    // Static
     else if (strcasecmp(n, "Static") == 0) {
         return *this = "{t}LIFO/{n,s}LIFO/{o}LIFO";
+    }
+
+    // The LCFR- variants
+    else if (strcasecmp(n, "LCFR") == 0) {
+        return *this = "{n,s,o}LR";
+    }
+
+    else if (strcasecmp(n, "LCFR-DSep") == 0) {
+        return *this = "{n,o}LR/{s}LR";
     }
 
     else if (strcasecmp(n, "LCFR-Loc") == 0) {
@@ -1373,6 +1387,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{n,s,u}LR/{l}LR";
     }
 
+    // The MC- variants
     else if (strcasecmp(n, "MC") == 0) {
         return *this = "{n,s}LR/{o}MC_add";
     }
@@ -1385,6 +1400,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{n,s}LR/{u}MC_add/{l}MC_add";
     }
 
+    // The MW- variants
     else if (strcasecmp(n, "MW") == 0) {
         return *this = "{n,s}LR/{o}MW_add";
     }
@@ -1397,247 +1413,416 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{n,s}LR/{u}MW_add/{l}MW_add";
     }
 
+    // The Decompositional Orders
     else if (strcasecmp(n, "Longbow") == 0) {
-        return *this = "{n,s}LIFO/{o}LIFO";
+        return *this = "{n,s}LIFO/{o}LIFO"; //TODO: Add {x}
     }
 
 
-  selection_criteria_.clear();
-  needs_pg_ = false;
-  first_unsafe_criterion_ = std::numeric_limits<int>::max();
-  last_unsafe_criterion_ = 0;
-  first_open_cond_criterion_ = std::numeric_limits<int>::max();
-  last_open_cond_criterion_ = 0;
-  int non_separable_max_refinements = -1;
-  int separable_max_refinements = -1;
-  int open_cond_max_refinements = -1;
-  size_t pos = 0;
-  while (pos < name.length()) {
-    if (name[pos] != '{') {
-      throw InvalidFlawSelectionOrder(name);
-    }
-    pos++;
-    SelectionCriterion criterion;
-    criterion.non_separable = false;
-    criterion.separable = false;
-    criterion.open_cond = false;
-    criterion.local_open_cond = false;
-    criterion.static_open_cond = false;
-    criterion.unsafe_open_cond = false;
-    do {
-      switch (name[pos]) {
-      case 'n':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  criterion.non_separable = true;
-	  if (first_unsafe_criterion_ > last_unsafe_criterion_) {
-	    first_unsafe_criterion_ = selection_criteria_.size();
-	  }
-	  last_unsafe_criterion_ = selection_criteria_.size();
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      case 's':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  criterion.separable = true;
-	  if (first_unsafe_criterion_ > last_unsafe_criterion_) {
-	    first_unsafe_criterion_ = selection_criteria_.size();
-	  }
-	  last_unsafe_criterion_ = selection_criteria_.size();
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      case 'o':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  criterion.open_cond = true;
-	  criterion.local_open_cond = false;
-	  criterion.static_open_cond = false;
-	  criterion.unsafe_open_cond = false;
-	  if (first_open_cond_criterion_ > last_open_cond_criterion_) {
-	    first_open_cond_criterion_ = selection_criteria_.size();
-	  }
-	  last_open_cond_criterion_ = selection_criteria_.size();
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      case 'l':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  if (!criterion.open_cond) {
-	    criterion.local_open_cond = true;
-	    if (first_open_cond_criterion_ > last_open_cond_criterion_) {
-	      first_open_cond_criterion_ = selection_criteria_.size();
-	    }
-	    last_open_cond_criterion_ = selection_criteria_.size();
-	  }
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      case 't':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  if (!criterion.open_cond) {
-	    criterion.static_open_cond = true;
-	    if (first_open_cond_criterion_ > last_open_cond_criterion_) {
-	      first_open_cond_criterion_ = selection_criteria_.size();
-	    }
-	    last_open_cond_criterion_ = selection_criteria_.size();
-	  }
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      case 'u':
-	pos++;
-	if (name[pos] == ',' || name[pos] == '}') {
-	  if (!criterion.open_cond) {
-	    criterion.unsafe_open_cond = true;
-	    if (first_open_cond_criterion_ > last_open_cond_criterion_) {
-	      first_open_cond_criterion_ = selection_criteria_.size();
-	    }
-	    last_open_cond_criterion_ = selection_criteria_.size();
-	  }
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-	break;
-      default:
-	throw InvalidFlawSelectionOrder(name);
-      }
-      if (name[pos] == ',') {
-	pos++;
-	if (name[pos] == '}') {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-      }
-    } while (name[pos] != '}');
-    pos++;
-    size_t next_pos = pos;
-    while (name[next_pos] >= '0' && name[next_pos] <= '9') {
-      next_pos++;
-    }
-    if (next_pos > pos) {
-      std::string number = name.substr(pos, next_pos - pos);
-      criterion.max_refinements = atoi(number.c_str());
-      pos = next_pos;
-    } else {
-      criterion.max_refinements = std::numeric_limits<int>::max();
-    }
-    next_pos = name.find('/', pos);
-    std::string key = name.substr(pos, next_pos - pos);
-    n = key.c_str();
-    if (strcasecmp(n, "LIFO") == 0) {
-      criterion.order = SelectionCriterion::LIFO;
-    } else if (strcasecmp(n, "FIFO") == 0) {
-      criterion.order = SelectionCriterion::FIFO;
-    } else if (strcasecmp(n, "R") == 0) {
-      criterion.order = SelectionCriterion::RANDOM;
-    } else if (strcasecmp(n, "LR") == 0) {
-      criterion.order = SelectionCriterion::LR;
-    } else if (strcasecmp(n, "MR") == 0) {
-      criterion.order = SelectionCriterion::MR;
-    } else {
-      if (criterion.non_separable || criterion.separable) {
-	/* No other orders that the above can be used with threats. */
-	throw InvalidFlawSelectionOrder(name);
-      }
-      if (strcasecmp(n, "NEW") == 0) {
-	criterion.order = SelectionCriterion::NEW;
-      } else if (strcasecmp(n, "REUSE") == 0) {
-	criterion.order = SelectionCriterion::REUSE;
-      } else if (strncasecmp(n, "LC_", 3) == 0) {
-	criterion.order = SelectionCriterion::LC;
-	needs_pg_ = true;
-	if (strcasecmp(n + 3, "ADD") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = false;
-	} else if (strcasecmp(n + 3, "ADDR") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = true;
-	} else if (strcasecmp(n + 3, "MAKESPAN") == 0) {
-	  criterion.heuristic = SelectionCriterion::MAKESPAN;
-	  criterion.reuse = false;
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-      } else if (strncasecmp(n, "MC_", 3) == 0) {
-	criterion.order = SelectionCriterion::MC;
-	needs_pg_ = true;
-	if (strcasecmp(n + 3, "ADD") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = false;
-	} else if (strcasecmp(n + 3, "ADDR") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = true;
-	} else if (strcasecmp(n + 3, "MAKESPAN") == 0) {
-	  criterion.heuristic = SelectionCriterion::MAKESPAN;
-	  criterion.reuse = false;
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-      } else if (strncasecmp(n, "LW_", 3) == 0) {
-	criterion.order = SelectionCriterion::LW;
-	needs_pg_ = true;
-	if (strcasecmp(n + 3, "ADD") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = false;
-	} else if (strcasecmp(n + 3, "ADDR") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = true;
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-      } else if (strncasecmp(n, "MW_", 3) == 0) {
-	criterion.order = SelectionCriterion::MW;
-	needs_pg_ = true;
-	if (strcasecmp(n + 3, "ADD") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = false;
-	} else if (strcasecmp(n + 3, "ADDR") == 0) {
-	  criterion.heuristic = SelectionCriterion::ADD;
-	  criterion.reuse = true;
-	} else {
-	  throw InvalidFlawSelectionOrder(name);
-	}
-      } else {
-	throw InvalidFlawSelectionOrder(name);
-      }
-    }
-    if (criterion.non_separable) {
-      non_separable_max_refinements = std::max(criterion.max_refinements,
-					       non_separable_max_refinements);
-    }
-    if (criterion.separable) {
-      separable_max_refinements = std::max(criterion.max_refinements,
-					   separable_max_refinements);
-    }
-    if (criterion.open_cond || criterion.local_open_cond) {
-      open_cond_max_refinements = std::max(criterion.max_refinements,
-					   open_cond_max_refinements);
-    }
-    selection_criteria_.push_back(criterion);
-    pos = next_pos;
-    if (pos != std::string::npos && name[pos] == '/') 
+    selection_criteria_.clear();
+    needs_pg_ = false;
+    
+    first_unsafe_criterion_ = std::numeric_limits<int>::max();
+    last_unsafe_criterion_ = 0;
+    
+    first_open_cond_criterion_ = std::numeric_limits<int>::max();
+    last_open_cond_criterion_ = 0;
+    
+    int non_separable_max_refinements = -1;
+    int separable_max_refinements = -1;
+    int open_cond_max_refinements = -1;
+    
+    size_t pos = 0;
+
+    // ================================================================
+    // Begin parse code for flaw selection orders
+
+    while (pos < name.length()) 
     {
-        pos++;
-        if (pos >= name.length()) {
+        // ----------------------------------------------------------------
+        // Begin parse code for {flaw types}
+
+        if (name[pos] != '{') {
             throw InvalidFlawSelectionOrder(name);
         }
+
+        pos++;
+        
+        SelectionCriterion criterion;
+        criterion.non_separable = false;
+        criterion.separable = false;
+        criterion.open_cond = false;
+        criterion.local_open_cond = false;
+        criterion.static_open_cond = false;
+        criterion.unsafe_open_cond = false;
+        criterion.unexpanded_composite_step = false;
+
+        do 
+        {
+            switch (name[pos]) 
+            {
+                case 'n':
+                    pos++;
+
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        criterion.non_separable = true;
+                        if (first_unsafe_criterion_ > last_unsafe_criterion_) {
+                            first_unsafe_criterion_ = selection_criteria_.size();
+                        }
+                        
+                        last_unsafe_criterion_ = selection_criteria_.size();
+                    }
+                    
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+                    
+                    break;
+
+                case 's':
+                    pos++;
+                    
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        criterion.separable = true;
+                        if (first_unsafe_criterion_ > last_unsafe_criterion_) {
+                            first_unsafe_criterion_ = selection_criteria_.size();
+                        }
+                    
+                        last_unsafe_criterion_ = selection_criteria_.size();
+                    }
+                    
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+                    
+                    break;
+
+                case 'o':
+                    pos++;
+                    
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        criterion.open_cond = true;
+                        criterion.local_open_cond = false;
+                        criterion.static_open_cond = false;
+                        criterion.unsafe_open_cond = false;
+                    
+                        if (first_open_cond_criterion_ > last_open_cond_criterion_) {
+                            first_open_cond_criterion_ = selection_criteria_.size();
+                        }
+
+                        last_open_cond_criterion_ = selection_criteria_.size();
+                    }
+
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+
+                    break;
+
+                case 'l':
+                    pos++;
+                    
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        if (!criterion.open_cond) 
+                        {
+                            criterion.local_open_cond = true;
+                        
+                            if (first_open_cond_criterion_ > last_open_cond_criterion_) {
+                                first_open_cond_criterion_ = selection_criteria_.size();
+                            }
+
+                            last_open_cond_criterion_ = selection_criteria_.size();
+                        }
+                    }
+
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+
+                    break;
+
+                case 't':
+                    pos++;
+
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        if (!criterion.open_cond) 
+                        {
+                            criterion.static_open_cond = true;
+                        
+                            if (first_open_cond_criterion_ > last_open_cond_criterion_) {
+                                first_open_cond_criterion_ = selection_criteria_.size();
+                            }
+
+                            last_open_cond_criterion_ = selection_criteria_.size();
+                        }
+                    }
+
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+
+                    break;
+
+                case 'u':
+                    pos++;
+                    
+                    if (name[pos] == ',' || name[pos] == '}') 
+                    {
+                        if (!criterion.open_cond) 
+                        {
+                            criterion.unsafe_open_cond = true;
+                            
+                            if (first_open_cond_criterion_ > last_open_cond_criterion_) {
+                                first_open_cond_criterion_ = selection_criteria_.size();
+                            }
+
+                            last_open_cond_criterion_ = selection_criteria_.size();
+                        }
+                    }
+
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+
+                    break;
+
+                default:
+                    throw InvalidFlawSelectionOrder(name);
+            }
+
+            if (name[pos] == ',') 
+            {
+                pos++;
+                if (name[pos] == '}') {
+                    throw InvalidFlawSelectionOrder(name);
+                }
+            }
+        } while (name[pos] != '}');
+
+        // End parse code for {flaw types}
+        // ----------------------------------------------------------------
+
+
+        // ----------------------------------------------------------------
+        // Begin parse code for [max refinements]
+        
+        pos++;
+        size_t next_pos = pos;
+        while (name[next_pos] >= '0' && name[next_pos] <= '9') {
+            next_pos++;
+        }
+
+        if (next_pos > pos) 
+        {
+            std::string number = name.substr(pos, next_pos - pos);
+            criterion.max_refinements = atoi(number.c_str());
+            pos = next_pos;
+        }
+
+        else {
+            criterion.max_refinements = std::numeric_limits<int>::max();
+        }
+        
+        // End parse code for [max refinements]
+        // ----------------------------------------------------------------
+
+        // ----------------------------------------------------------------
+        // Begin parse code for ordering criterion
+        
+        next_pos = name.find('/', pos);
+        std::string key = name.substr(pos, next_pos - pos);
+        n = key.c_str();
+
+        if (strcasecmp(n, "LIFO") == 0) {
+            criterion.order = SelectionCriterion::LIFO;
+        }
+
+        else if (strcasecmp(n, "FIFO") == 0) {
+            criterion.order = SelectionCriterion::FIFO;
+        }
+
+        else if (strcasecmp(n, "R") == 0) {
+            criterion.order = SelectionCriterion::RANDOM;
+        }
+
+        else if (strcasecmp(n, "LR") == 0) {
+            criterion.order = SelectionCriterion::LR;
+        }
+
+        else if (strcasecmp(n, "MR") == 0) {
+            criterion.order = SelectionCriterion::MR;
+        }
+
+        else 
+        {
+            if (criterion.non_separable || criterion.separable) 
+            {
+                // No other orders that the above can be used with threats.
+                throw InvalidFlawSelectionOrder(name);
+            }
+
+            if (strcasecmp(n, "NEW") == 0) {
+                criterion.order = SelectionCriterion::NEW;
+            }
+
+            else if (strcasecmp(n, "REUSE") == 0) {
+                criterion.order = SelectionCriterion::REUSE;
+            }
+
+            else if (strncasecmp(n, "LC_", 3) == 0) 
+            {
+                criterion.order = SelectionCriterion::LC;
+                needs_pg_ = true;
+                
+                if (strcasecmp(n + 3, "ADD") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = false;
+                }
+                
+                else if (strcasecmp(n + 3, "ADDR") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = true;
+                }
+                
+                else if (strcasecmp(n + 3, "MAKESPAN") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::MAKESPAN;
+                    criterion.reuse = false;
+                }
+
+                else {
+                    throw InvalidFlawSelectionOrder(name);
+                }
+            }
+
+            else if (strncasecmp(n, "MC_", 3) == 0) 
+            {
+                criterion.order = SelectionCriterion::MC;
+                needs_pg_ = true;
+                
+                if (strcasecmp(n + 3, "ADD") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = false;
+                }
+
+                else if (strcasecmp(n + 3, "ADDR") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = true;
+                }
+
+                else if (strcasecmp(n + 3, "MAKESPAN") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::MAKESPAN;
+                    criterion.reuse = false;
+                }
+
+                else {
+                    throw InvalidFlawSelectionOrder(name);
+                }
+            }
+
+            else if (strncasecmp(n, "LW_", 3) == 0) 
+            {
+                criterion.order = SelectionCriterion::LW;
+                needs_pg_ = true;
+                
+                if (strcasecmp(n + 3, "ADD") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = false;
+                }
+
+                else if (strcasecmp(n + 3, "ADDR") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = true;
+                }
+
+                else {
+                    throw InvalidFlawSelectionOrder(name);
+                }
+            }
+
+            else if (strncasecmp(n, "MW_", 3) == 0) 
+            {
+                criterion.order = SelectionCriterion::MW;
+                needs_pg_ = true;
+                
+                if (strcasecmp(n + 3, "ADD") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = false;
+                }
+
+                else if (strcasecmp(n + 3, "ADDR") == 0) 
+                {
+                    criterion.heuristic = SelectionCriterion::ADD;
+                    criterion.reuse = true;
+                }
+
+                else {
+                    throw InvalidFlawSelectionOrder(name);
+                }
+            }
+
+            else {
+                throw InvalidFlawSelectionOrder(name);
+            }
+        }
+
+        // End parse code for ordering criterion
+        // ----------------------------------------------------------------
+
+
+        // Setup some auxiliary information used during flaw selection to
+        // correctly identify the flaw to pick.
+
+        if (criterion.non_separable) {
+            non_separable_max_refinements = std::max(criterion.max_refinements, non_separable_max_refinements);
+        }
+
+        if (criterion.separable) {
+            separable_max_refinements = std::max(criterion.max_refinements, separable_max_refinements);
+        }
+
+        if (criterion.open_cond || criterion.local_open_cond) {
+            open_cond_max_refinements = std::max(criterion.max_refinements, open_cond_max_refinements);
+        }
+
+        selection_criteria_.push_back(criterion);
+        pos = next_pos;
+        
+        if (pos != std::string::npos && name[pos] == '/')
+        {
+            pos++;
+            if (pos >= name.length()) {
+                throw InvalidFlawSelectionOrder(name);
+            }
+        }
+    } 
+
+    // End parse code for flaw selection orders
+    // ================================================================
+
+
+    if (non_separable_max_refinements < std::numeric_limits<int>::max()
+         || separable_max_refinements < std::numeric_limits<int>::max()
+         || open_cond_max_refinements < std::numeric_limits<int>::max()) 
+    {    
+        // Incomplete flaw selection order.
+        throw InvalidFlawSelectionOrder(name);
     }
-  }
-  if (non_separable_max_refinements < std::numeric_limits<int>::max()
-      || separable_max_refinements < std::numeric_limits<int>::max()
-      || open_cond_max_refinements < std::numeric_limits<int>::max()) {
-    /* Incomplete flaw selection order. */
-    throw InvalidFlawSelectionOrder(name);
-  }
-  return *this;
+
+    return *this;
 }
 
 
