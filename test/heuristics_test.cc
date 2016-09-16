@@ -51,9 +51,16 @@ namespace test
                 Assert::IsTrue(fi->is_pocl_complete(), wstr.c_str());
             }
 
-
-
 		}
+
+        TEST_METHOD(IsDecompositionComplete)
+        {
+            FlawSelectionOrder longbow = FlawSelectionOrder("Longbow");
+            Assert::IsTrue(longbow.is_decomposition_complete());
+
+            FlawSelectionOrder ucpop = FlawSelectionOrder("UCPOP");
+            Assert::IsFalse(ucpop.is_decomposition_complete());
+        }
 
 	};
 }
