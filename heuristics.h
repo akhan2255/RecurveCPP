@@ -398,6 +398,12 @@ private:
     /* Index of the last selection criterion involving open conditions. */
     int last_open_cond_criterion_;
 
+    /* Index of the first selection criterion involving unexpanded composite steps. */
+    int first_unexpanded_composite_step_criterion_;
+
+    /* Index of the last selection criterion involving unexpanded composite steps. */
+    int last_unexpanded_composite_step_criterion_;
+
     /* Seaches threats for a flaw to select. */
     int select_unsafe(FlawSelection& selection, const Plan& plan,
         const Problem& problem,
