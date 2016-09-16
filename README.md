@@ -118,6 +118,7 @@ This applies to flaws of the given types which can be resolved in at most "max r
 
 #### Flaw Types
 
+##### POCL Flaw Types
 | Flaw Type  |  Description               |
 |-----------:|:---------------------------|
 |  `o`       | Open condition             |
@@ -126,6 +127,10 @@ This applies to flaws of the given types which can be resolved in at most "max r
 |  `u`       | Unsafe open condition      |
 |  `n`       | Non-separable threat       |
 |  `s`       | Separable threat           |
+
+##### Decompositional Flaw Types
+| Flaw Type  |  Description               |
+|-----------:|:---------------------------|
 |  `x`       | Unexpanded composite step  |
 
 #### Ordering Criteria
