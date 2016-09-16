@@ -203,7 +203,7 @@ The use of multiple flaw selection strategies is similar to running multiple ins
 * Add support for axioms (PDDL2.2).
 
 ## Copyright
-See `COPYING`.
+This project is made available under the terms of the GPL2 license.  See `LICENSE` for more information.
 
 ## Credits
 - bow (icon) by Christopher T. Howlett from the Noun Project
