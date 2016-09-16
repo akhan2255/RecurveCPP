@@ -1461,6 +1461,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         {
             switch (name[pos]) 
             {
+                // Non-separable threat
                 case 'n':
                     pos++;
 
@@ -1480,6 +1481,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
                     
                     break;
 
+                // Separable threat
                 case 's':
                     pos++;
                     
@@ -1499,6 +1501,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
                     
                     break;
 
+                // Open condition
                 case 'o':
                     pos++;
                     
@@ -1522,6 +1525,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 
                     break;
 
+                // Local open condition
                 case 'l':
                     pos++;
                     
@@ -1545,6 +1549,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 
                     break;
 
+                // Static open condition
                 case 't':
                     pos++;
 
@@ -1568,6 +1573,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 
                     break;
 
+                // Unsafe open condition
                 case 'u':
                     pos++;
                     
