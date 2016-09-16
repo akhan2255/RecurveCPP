@@ -1415,7 +1415,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 
     // The Decompositional Orders
     else if (strcasecmp(n, "Longbow") == 0) {
-        return *this = "{n,s}LIFO/{o}LIFO"; //TODO: Add {x}
+        return *this = "{n,s}LIFO/{o}LIFO/{x}LIFO";
     }
 
 
@@ -1427,6 +1427,9 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
     
     first_open_cond_criterion_ = std::numeric_limits<int>::max();
     last_open_cond_criterion_ = 0;
+
+    first_unexpanded_composite_step_criterion_ = std::numeric_limits<int>::max();
+    last_unexpanded_composite_step_criterion_ = 0;
     
     int non_separable_max_refinements = -1;
     int separable_max_refinements = -1;
@@ -1596,6 +1599,27 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
                     }
 
                     break;
+                
+                // Unexpanded composite step
+                case 'x':
+                    pos++;
+
+                    if (name[pos] == ',' || name[pos] == '}')
+                    {
+                        criterion.unexpanded_composite_step = true;
+
+                        if (first_unexpanded_composite_step_criterion_ > last_unexpanded_composite_step_criterion_) {
+                            first_unexpanded_composite_step_criterion_ = selection_criteria_.size();
+                        }
+
+                        last_unexpanded_composite_step_criterion_ = selection_criteria_.size();
+                    }
+
+                    else {
+                        throw InvalidFlawSelectionOrder(name);
+                    }
+
+                    break;
 
                 default:
                     throw InvalidFlawSelectionOrder(name);
@@ -1666,9 +1690,8 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
 
         else 
         {
-            if (criterion.non_separable || criterion.separable) 
-            {
-                // No other orders that the above can be used with threats.
+            // No other orders than the above can be used with threats and unexpanded composite steps
+            if (criterion.non_separable || criterion.separable || criterion.unexpanded_composite_step) {
                 throw InvalidFlawSelectionOrder(name);
             }
 
@@ -1789,8 +1812,7 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         // ----------------------------------------------------------------
 
 
-        // Setup some auxiliary information used during flaw selection to
-        // correctly identify the flaw to pick.
+        // Setup thresholds for the max number of refinements to consider for the corresponding criterion.
 
         if (criterion.non_separable) {
             non_separable_max_refinements = std::max(criterion.max_refinements, non_separable_max_refinements);
