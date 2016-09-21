@@ -1907,17 +1907,16 @@ bool FlawSelectionOrder::is_decomposition_complete() const
 /* Seaches threats for a flaw to select. */
 int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
 				      const Plan& plan, const Problem& problem,
-				      int first_criterion,
-				      int last_criterion) const 
+				      int first_criterion, int last_criterion) const 
 {
+    // if this criterion does not apply, or there aren't unsafe flaws in the plan
     if (first_criterion > last_criterion || plan.unsafes() == NULL) {
         return std::numeric_limits<int>::max();
     }
 
-    /* Loop through usafes. */
-    for (const Chain<Unsafe>* uc = plan.unsafes(); 
-         uc != NULL && first_criterion <= last_criterion; 
-         uc = uc->tail) 
+    // Loop through usafes.
+    const Chain<Unsafe>* uc;
+    for (uc = plan.unsafes(); uc != NULL && first_criterion <= last_criterion; uc = uc->tail) 
     {
         const Unsafe& unsafe = uc->head;
         
@@ -1933,103 +1932,142 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
         int promotable = -1;
         int demotable = -1;
         
-        /* Loop through selection criteria that are within limits. */
+        // Loop through selection criteria that are within limits.
         for (int c = first_criterion; c <= last_criterion; c++) 
         {
             const SelectionCriterion& criterion = selection_criteria_[c];
             
-            /* If criterion applies only to one type of threats, make sure
-               we know which type of threat this is. */
+            // If criterion applies to *only one* type of threats, make sure
+            // we know which type of threat this is.
             if (criterion.non_separable != criterion.separable && separable < 0) 
             {
                 separable = plan.separable(unsafe);
                 
+                // Code smell:  separable cannot be negative at this point, 
+                // so this may be a redundant safeguard
                 if (separable < 0) {
                     refinements = separable = 0;
                 }
             }
 
-            /* Test if criterion applies. */
-            if ((criterion.non_separable && criterion.separable)
-                || (criterion.separable && separable > 0)
-                || (criterion.non_separable && separable == 0)) {
-                /* Right type of threat, so now check if the refinement
-                       constraint is satisfied. */
-                if (criterion.max_refinements >= 3
-                    || plan.unsafe_refinements(refinements, separable, promotable,
-                    demotable, unsafe,
-                    criterion.max_refinements)) {
-                    /* Refinement constraint is satisfied, so criterion applies. */
-                    switch (criterion.order) {
+            // Test if criterion applies.
+            if (   
+                  // criterion applies to both separable & non-separable, or
+                  (criterion.non_separable && criterion.separable) ||
+
+                  // criterion applies to separable & flaw is separable, or
+                  (criterion.separable && separable > 0)           ||
+
+                  // criterion applies to non-separable & flaw is non-separable
+                  (criterion.non_separable && separable == 0)
+               )     
+            {
+
+                // Right type of threat, so now check if the refinement constraint is satisfied.
+                if (   
+                     // if we can execute 3+ refinements (promotion, demotion, and separation), or
+                     criterion.max_refinements >= 3 || 
+
+                     // if the number of refinements for a given threat does not exceed the limit
+                     plan.unsafe_refinements(refinements, 
+                      separable, promotable, demotable, 
+                      unsafe, criterion.max_refinements)
+                    ) 
+                {
+                    // Refinement constraint is satisfied, so criterion applies.
+                    switch (criterion.order) 
+                    {
                         case SelectionCriterion::LIFO:
                             selection.flaw = &unsafe;
                             selection.criterion = c;
                             last_criterion = c - 1;
-                            if (verbosity > 1) {
+                            
+                            if (verbosity > 1) 
+                            {
                                 std::cerr << "selecting ";
                                 unsafe.print(std::cerr, Bindings::EMPTY);
                                 std::cerr << " by criterion " << criterion << std::endl;
                             }
                             break;
+                        
                         case SelectionCriterion::FIFO:
                             selection.flaw = &unsafe;
                             selection.criterion = c;
                             last_criterion = c;
-                            if (verbosity > 1) {
+                            
+                            if (verbosity > 1) 
+                            {
                                 std::cerr << "selecting ";
                                 unsafe.print(std::cerr, Bindings::EMPTY);
                                 std::cerr << " by criterion " << criterion << std::endl;
                             }
                             break;
+
                         case SelectionCriterion::RANDOM:
                             if (c == selection.criterion) {
                                 selection.streak++;
                             }
+                            
                             else {
                                 selection.streak = 1;
                             }
-                            if (rand01ex() < 1.0 / selection.streak) {
+                            
+                            if (rand01ex() < 1.0 / selection.streak) 
+                            {
                                 selection.flaw = &unsafe;
                                 selection.criterion = c;
                                 last_criterion = c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     unsafe.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion << std::endl;
                                 }
                             }
                             break;
+
                         case SelectionCriterion::LR:
-                            if (c < selection.criterion
-                                || plan.unsafe_refinements(refinements, separable, promotable,
-                                demotable, unsafe,
-                                int(selection.rank + 0.5) - 1)) {
+                            if (c < selection.criterion || 
+                                plan.unsafe_refinements(refinements, 
+                                    separable, promotable, demotable, 
+                                    unsafe, int(selection.rank + 0.5) - 1)) 
+                            {
                                 selection.flaw = &unsafe;
                                 selection.criterion = c;
-                                plan.unsafe_refinements(refinements, separable, promotable,
-                                    demotable, unsafe,
-                                    std::numeric_limits<int>::max());
-                                selection.rank = (float)refinements;
+
+                                plan.unsafe_refinements(refinements, 
+                                    separable, promotable, demotable, 
+                                    unsafe, std::numeric_limits<int>::max());
+                                
+                                selection.rank = (float) refinements;
                                 last_criterion = (refinements == 0) ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     unsafe.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
                                         << " with rank " << refinements << std::endl;
                                 }
                             }
+
                             break;
+
                         case SelectionCriterion::MR:
-                            plan.unsafe_refinements(refinements, separable, promotable,
-                                demotable, unsafe,
-                                std::numeric_limits<int>::max());
-                            if (c < selection.criterion
-                                || refinements > selection.rank) {
+                            plan.unsafe_refinements(refinements, 
+                                separable, promotable, demotable, 
+                                unsafe, std::numeric_limits<int>::max());
+
+                            if (c < selection.criterion || refinements > selection.rank) 
+                            {
                                 selection.flaw = &unsafe;
                                 selection.criterion = c;
                                 selection.rank = (float)refinements;
                                 last_criterion = (refinements == 3) ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     unsafe.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
@@ -2037,14 +2075,17 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
                                 }
                             }
                             break;
+
                         default:
                             /* No other ordering criteria apply to threats. */
                             break;
-                    }
+
+                    } // end switch
                 }
             }
-        }
+        } // end for
     }
+
     return last_criterion;
 }
 
