@@ -2282,7 +2282,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                             break;
 
                         case SelectionCriterion::NEW:
-                        
+                        {
                             bool has_new = false;
                             
                             if (addable < 0) 
@@ -2315,19 +2315,19 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                     std::cerr << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
 
                         case SelectionCriterion::REUSE:
-                        
+                        {
                             bool has_reuse = false;
-                            
-                            if (reusable < 0) 
+
+                            if (reusable < 0)
                             {
                                 const Literal* literal = open_cond.literal();
-                                if (literal != NULL) 
+                                if (literal != NULL)
                                 {
-                                    has_reuse = !plan.reusable_steps(reusable, 
+                                    has_reuse = !plan.reusable_steps(reusable,
                                         *literal, open_cond, 0);
                                 }
                             }
@@ -2336,13 +2336,13 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                 has_reuse = (reusable > 0);
                             }
 
-                            if (has_reuse || c < selection.criterion) 
+                            if (has_reuse || c < selection.criterion)
                             {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 last_criterion = has_reuse ? c - 1 : c;
-                                
-                                if (verbosity > 1) 
+
+                                if (verbosity > 1)
                                 {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
@@ -2353,11 +2353,11 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                     std::cerr << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
 
                         case SelectionCriterion::LC:
-                        
+                        {
                             HeuristicValue h, hs;
 
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
@@ -2382,11 +2382,11 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
                         
                         case SelectionCriterion::MC:
-                        
+                        {
                             HeuristicValue h, hs;
 
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
@@ -2410,11 +2410,11 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
 
                         case SelectionCriterion::LW:
-                        
+                        {
                             HeuristicValue h, hs;
 
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
@@ -2437,11 +2437,11 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
 
                         case SelectionCriterion::MW:
-                        
+                        {
                             HeuristicValue h, hs;
 
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
@@ -2464,7 +2464,7 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        
+                        }
                             break;
 
                     } // end switch
@@ -2519,8 +2519,8 @@ int FlawSelectionOrder::select_unexpanded_step(FlawSelection& selection,
 
                     // if the no. of refinements for the unexpanded step does not exceed the limit
                     plan.unexpanded_step_refinements(refinements,
-                      expandable,
-                      unexpanded_step, criterion.max_refinements)
+                        expandable,
+                        unexpanded_step, criterion.max_refinements)
                    )
                 {
                     // Refinement constraint is satisfied, so criterion applies.
