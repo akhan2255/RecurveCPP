@@ -216,6 +216,37 @@ struct StepList : std::vector < Step > {
 
 
 /* ====================================================================== */
+/* DecompositionStep */
+
+/* Represents an instantiated decomposition. It's the decompositional analogue to
+   the basic plan step. */
+struct DecompositionStep {
+
+    /* Constructs a decomposition step instantiated from a decomposition. */
+    DecompositionStep(int id, const Decomposition& decomposition)
+        : id_(id), decomposition_(&decomposition) {}
+
+    /* Constructs a decomposition step. */
+    DecompositionStep(const DecompositionStep& ds)
+        : id_(ds.id_), decomposition_(ds.decomposition_) {}
+
+    /* Returns the decomposition step id. */
+    int id() const { return id_; }
+
+    /* Returns the decomposition that this step is instantiated from. */
+    const Decomposition& decomposition() const { return *decomposition_; }
+
+private:
+
+    /* Decomposition step id */
+    int id_;
+
+    /* Decomposition that this decomposition step is instantiated from. */
+    const Decomposition* decomposition_;
+};
+
+
+/* ====================================================================== */
 /* Plan */
 
 /*
@@ -252,6 +283,12 @@ struct Plan {
 
     /* Returns the bindings of this plan. */
     const Bindings* bindings() const;
+
+    /* Returns the decomposition steps of this plan. */
+    const Chain<DecompositionStep>* decomposition_steps() const { return decomposition_steps_; }
+
+    /* Returns the number of unique decomposition steps in this plan. */
+    size_t num_decomposition_steps() const { return num_decomposition_steps_; }
 
     /* Returns the potentially threatened links of this plan. */
     const Chain<Unsafe>* unsafes() const { return unsafes_; }
@@ -345,6 +382,12 @@ private:
     
     /* Binding constraints of this plan. */
     const Bindings* bindings_;
+
+    /* Chain of decomposition steps. */
+    const Chain<DecompositionStep>* decomposition_steps_;
+
+    /* Number of unique decomposition steps in plan. */
+    size_t num_decomposition_steps_; 
     
     /* Chain of potentially threatened links. */
     const Chain<Unsafe>* unsafes_;
@@ -385,6 +428,7 @@ private:
     Plan(const Chain<Step>* steps, size_t num_steps,
         const Chain<Link>* links, size_t num_links,
         const Orderings& orderings, const Bindings& bindings,
+        const Chain<DecompositionStep>* decomposition_steps, size_t num_decomposition_steps,
         const Chain<Unsafe>* unsafes, size_t num_unsafes,
         const Chain<OpenCondition>* open_conds, size_t num_open_conds,
         const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,
