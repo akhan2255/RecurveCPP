@@ -9,7 +9,7 @@ namespace test
 	{
 	public:
 		
-		TEST_METHOD(IsPoclComplete)
+		TEST_METHOD(FlawSelectionOrder_IsPoclComplete)
 		{
             std::vector<FlawSelectionOrder> all_orders;
             all_orders.push_back(FlawSelectionOrder("UCPOP"));
@@ -53,13 +53,31 @@ namespace test
 
 		}
 
-        TEST_METHOD(IsDecompositionComplete)
+        TEST_METHOD(FlawSelectionOrder_IsDecompositionComplete)
         {
             FlawSelectionOrder longbow = FlawSelectionOrder("Longbow");
             Assert::IsTrue(longbow.is_decomposition_complete());
 
             FlawSelectionOrder ucpop = FlawSelectionOrder("UCPOP");
             Assert::IsFalse(ucpop.is_decomposition_complete());
+        }
+
+        TEST_METHOD(FlawSelectionOrder_SelectUnexpandedStep)
+        {
+            // Setup the Longbow* order
+            std::vector<FlawSelectionOrder> orders;
+            orders.push_back(FlawSelectionOrder("Longbow*"));
+
+            read_file("..\\test\\travel_domain.pddl");
+            read_file("..\\test\\travel_problem.pddl");
+
+            const Domain* domain = Domain::find("travel");
+            const Problem* problem = Problem::find("travel-to-la");
+            Parameters params;
+            params.flaw_orders = orders;
+
+            // Create a dummy plan
+            
         }
 
 	};
