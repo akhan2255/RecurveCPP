@@ -317,6 +317,12 @@ struct Plan {
     bool reusable_steps(int& refinements, const Literal& literal_open_cond,
         const OpenCondition& open_cond, int limit) const;
 
+    /* Counts the number of refinements for the given unexpanded step, and returns true iff 
+       the number of refinements does not exceed the given limit. */
+    bool unexpanded_step_refinements(int& refinements, 
+        int& expandable, 
+        const UnexpandedCompositeStep& unexpanded_step, int limit) const;
+
 private:
     /* List of plans. */
     struct PlanList : public std::vector < const Plan* > {

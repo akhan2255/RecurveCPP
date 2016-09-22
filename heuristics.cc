@@ -2479,14 +2479,68 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 
 /* Searches unexpanded abstract steps for a flaw to select. */
 int FlawSelectionOrder::select_unexpanded_step(FlawSelection& selection,
-                      const Plan& plan,
-    const Problem& problem,
-    int first_criterion,
-    int last_criterion) const
+                      const Plan& plan, const Problem& problem,
+                      int first_criterion, int last_criterion) const
 {
-    // TODO:
-    // Depending on the values of first_criterion and last_criterion, 
-    // this method will affect the flaw identified in the FlawSelection object.
+    // if this criterion does not apply, or there aren't unexpanded steps in the plan
+    if (first_criterion > last_criterion || plan.unexpanded_steps() == NULL) {
+        return std::numeric_limits<int>::max();
+    }
+
+    // Loop through unexpanded steps.
+    const Chain<UnexpandedCompositeStep>* ucsc;
+    for (ucsc = plan.unexpanded_steps(); ucsc != NULL && first_criterion <= last_criterion;
+         ucsc = ucsc->tail)
+    {
+        const UnexpandedCompositeStep& unexpanded_step = ucsc->head;
+
+        if (verbosity > 1)
+        {
+            std::cerr << "(considering ";
+            unexpanded_step.print(std::cerr, Bindings::EMPTY);
+            std::cerr << ")" << std::endl;
+        }
+
+        int refinements = -1;
+        int expandable = -1;
+
+        // Loop through selection criteria that are within limits.
+        for (int c = first_criterion; c <= last_criterion; c++)
+        {
+            const SelectionCriterion& criterion = selection_criteria_[c];
+
+            // Test if criterion applies.
+            if (criterion.unexpanded_composite_step)
+            {
+                // Right type of flaw, so now check if the refinement constraint is satisfied.
+                if (
+                    // if we don't have an upper limit on refinements, or
+                    criterion.max_refinements == std::numeric_limits<int>::max() ||
+
+                    // if the no. of refinements for the unexpanded step does not exceed the limit
+                    plan.unexpanded_step_refinements(refinements,
+                      expandable,
+                      unexpanded_step, criterion.max_refinements)
+                   )
+                {
+                    // do stuff
+                }
+
+
+
+
+            }
+
+
+
+
+
+
+
+        }
+
+    }
+
 
     return last_criterion;
 }
