@@ -2082,8 +2082,8 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
                     } // end switch
                 }
             }
-        } // end for
-    }
+        } // end for of selection criteria
+    }// end for of unsafes
 
     return last_criterion;
 }
@@ -2104,8 +2104,8 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
 
     // Loop through open conditions.
     const Chain<OpenCondition>* occ;
-
-    for (occ = plan.open_conds(); occ != NULL && first_criterion <= last_criterion; occ = occ->tail) 
+    for (occ = plan.open_conds(); occ != NULL && first_criterion <= last_criterion; 
+         occ = occ->tail) 
     {
         const OpenCondition& open_cond = occ->head;
         
@@ -2470,8 +2470,8 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                     } // end switch
                 } 
             }
-        } // end for
-    }
+        } // end for of selection criteria
+    } // end for of open conditions
 
     return last_criterion;
 }

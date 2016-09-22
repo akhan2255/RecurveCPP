@@ -289,11 +289,10 @@ struct Plan {
     size_t depth() const { return depth_; }
 #endif
 
-    /* Counts the number of refinements for the given threat, and returns
-       true iff the number of refinements does not exceed the given
-       limit. */
-    bool unsafe_refinements(int& refinements, int& separable,
-        int& promotable, int& demotable,
+    /* Counts the number of refinements for the given threat, and returns true iff 
+       the number of refinements does not exceed the given limit. */
+    bool unsafe_refinements(int& refinements, 
+        int& separable, int& promotable, int& demotable,
         const Unsafe& unsafe, int limit) const;
 
     /* Checks if the given threat is separable. */
@@ -302,21 +301,19 @@ struct Plan {
     /* Checks if the given open condition is threatened. */
     bool unsafe_open_condition(const OpenCondition& open_cond) const;
 
-    /* Counts the number of refinements for the given open condition, and
-       returns true iff the number of refinements does not exceed the
-       given limit. */
-    bool open_cond_refinements(int& refinements, int& addable, int& reusable,
+    /* Counts the number of refinements for the given open condition, and returns true iff 
+       the number of refinements does not exceed the given limit. */
+    bool open_cond_refinements(int& refinements, 
+        int& addable, int& reusable,
         const OpenCondition& open_cond, int limit) const;
 
-    /* Counts the number of add-step refinements for the given literal
-       open condition, and returns true iff the number of refinements
-       does not exceed the given limit. */
+    /* Counts the number of add-step refinements for the given literal open condition, and returns
+       true iff the number of refinements does not exceed the given limit. */
     bool addable_steps(int& refinements, const Literal& literal,
         const OpenCondition& open_cond, int limit) const;
 
-    /* Counts the number of reuse-step refinements for the given literal
-       open condition, and returns true iff the number of refinements
-       does not exceed the given limit. */
+    /* Counts the number of reuse-step refinements for the given literal open condition, and returns 
+       true iff the number of refinements does not exceed the given limit. */
     bool reusable_steps(int& refinements, const Literal& literal_open_cond,
         const OpenCondition& open_cond, int limit) const;
 
