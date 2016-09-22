@@ -2424,6 +2424,15 @@ int Plan::make_link(
 /* ====================================================================== */
 /* Unexpanded Composite Step Flaw Handling */
 
+/* Counts the number of refinements for the given unexpanded step, and returns true iff
+   the number of refinements does not exceed the given limit. */
+bool Plan::unexpanded_step_refinements(int& refinements,
+    int& expandable,
+    const UnexpandedCompositeStep& unexpanded_step, int limit) const
+{
+    return false;
+}
+
 
 /* Handles an unexpanded composite step. */
 void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCompositeStep& open_cond) const
