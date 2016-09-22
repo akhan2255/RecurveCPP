@@ -1956,13 +1956,12 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
                   (criterion.non_separable && criterion.separable) ||
 
                   // criterion applies to separable & flaw is separable, or
-                  (criterion.separable && separable > 0)           ||
+                  (criterion.separable && separable > 0) ||
 
                   // criterion applies to non-separable & flaw is non-separable
                   (criterion.non_separable && separable == 0)
                )     
             {
-
                 // Right type of threat, so now check if the refinement constraint is satisfied.
                 if (   
                      // if we can execute 3+ refinements (promotion, demotion, and separation), or
@@ -2162,70 +2161,96 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                  criterion.open_cond ||
 
                  // criterion applies to local open conditons and the condition is local, or
-                (criterion.local_open_cond && local) ||
+                 (criterion.local_open_cond && local) ||
 
-                // TODO
-                (criterion.static_open_cond && is_static > 0) || 
-                (criterion.unsafe_open_cond && is_unsafe > 0)) {
-                /* Right type of open condition, so now check if the
-                       refinement constraint is satisfied. */
-                if (criterion.max_refinements == std::numeric_limits<int>::max()
-                    || plan.open_cond_refinements(refinements, addable, reusable,
-                    open_cond,
-                    criterion.max_refinements)) {
-                    /* Refinement constraint is satisfied, so criterion applies. */
-                    switch (criterion.order) {
+                 // criterion applies to static open conditions and the condition is static, or
+                 (criterion.static_open_cond && is_static > 0) || 
+                 
+                 // criterion applies to unsafe open conditions and the condition is unsafe
+                 (criterion.unsafe_open_cond && is_unsafe > 0)
+               ) 
+            {
+                // Right type of open cond, so now check if the refinement constraint is satisfied.
+                if (
+                     // if we don't have an upper limit on refinements, or
+                     criterion.max_refinements == std::numeric_limits<int>::max() || 
+                     
+                     // if the number of refinements for the open condition does not exceed the limit
+                     plan.open_cond_refinements(refinements, 
+                       addable, reusable,
+                       open_cond, criterion.max_refinements)
+                   ) 
+                {
+                    // Refinement constraint is satisfied, so criterion applies.
+                    switch (criterion.order) 
+                    {
                         case SelectionCriterion::LIFO:
                             selection.flaw = &open_cond;
                             selection.criterion = c;
                             last_criterion = c - 1;
-                            if (verbosity > 1) {
+                            
+                            if (verbosity > 1) 
+                            {
                                 std::cerr << "selecting ";
                                 open_cond.print(std::cerr, Bindings::EMPTY);
                                 std::cerr << " by criterion " << criterion << std::endl;
                             }
                             break;
+
                         case SelectionCriterion::FIFO:
                             selection.flaw = &open_cond;
                             selection.criterion = c;
                             last_criterion = c;
-                            if (verbosity > 1) {
+                            
+                            if (verbosity > 1) 
+                            {
                                 std::cerr << "selecting ";
                                 open_cond.print(std::cerr, Bindings::EMPTY);
                                 std::cerr << " by criterion " << criterion << std::endl;
                             }
                             break;
+                        
                         case SelectionCriterion::RANDOM:
                             if (c == selection.criterion) {
                                 selection.streak++;
                             }
+
                             else {
                                 selection.streak = 1;
                             }
-                            if (rand01ex() < 1.0 / selection.streak) {
+
+                            if (rand01ex() < 1.0 / selection.streak) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 last_criterion = c;
-                                if (verbosity > 1) {
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion << std::endl;
                                 }
                             }
                             break;
+                        
                         case SelectionCriterion::LR:
-                            if (c < selection.criterion
-                                || plan.open_cond_refinements(refinements, addable, reusable,
-                                open_cond,
-                                int(selection.rank + 0.5) - 1)) {
+                            if (c < selection.criterion || 
+                                plan.open_cond_refinements(refinements, 
+                                    addable, reusable, 
+                                    open_cond, int(selection.rank + 0.5) - 1)) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
-                                plan.open_cond_refinements(refinements, addable, reusable,
-                                    open_cond,
-                                    std::numeric_limits<int>::max());
-                                selection.rank = (float)refinements;
+                                
+                                plan.open_cond_refinements(refinements, 
+                                    addable, reusable,
+                                    open_cond, std::numeric_limits<int>::max());
+
+                                selection.rank = (float) refinements;
                                 last_criterion = (refinements == 0) ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
@@ -2233,17 +2258,21 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                 }
                             }
                             break;
+
                         case SelectionCriterion::MR:
-                            plan.open_cond_refinements(refinements, addable, reusable,
-                                open_cond,
-                                std::numeric_limits<int>::max());
-                            if (c < selection.criterion
-                                || refinements > selection.rank) {
+                            plan.open_cond_refinements(refinements, 
+                                addable, reusable,
+                                open_cond, std::numeric_limits<int>::max());
+
+                            if (c < selection.criterion || refinements > selection.rank) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
-                                selection.rank = (float)refinements;
+                                selection.rank = (float) refinements;
                                 last_criterion = c;
-                                if (verbosity > 1) {
+
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
@@ -2251,24 +2280,32 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                 }
                             }
                             break;
+
                         case SelectionCriterion::NEW:
-                        {
+                        
                             bool has_new = false;
-                            if (addable < 0) {
+                            
+                            if (addable < 0) 
+                            {
                                 const Literal* literal = open_cond.literal();
                                 if (literal != NULL) {
                                     has_new = !plan.addable_steps(addable, *literal,
                                         open_cond, 0);
                                 }
                             }
+                            
                             else {
                                 has_new = (addable > 0);
                             }
-                            if (has_new || c < selection.criterion) {
+                            
+                            if (has_new || c < selection.criterion) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 last_criterion = has_new ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion;
@@ -2278,26 +2315,35 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                     std::cerr << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
+
                         case SelectionCriterion::REUSE:
-                        {
+                        
                             bool has_reuse = false;
-                            if (reusable < 0) {
+                            
+                            if (reusable < 0) 
+                            {
                                 const Literal* literal = open_cond.literal();
-                                if (literal != NULL) {
-                                    has_reuse = !plan.reusable_steps(reusable, *literal,
-                                        open_cond, 0);
+                                if (literal != NULL) 
+                                {
+                                    has_reuse = !plan.reusable_steps(reusable, 
+                                        *literal, open_cond, 0);
                                 }
                             }
+
                             else {
                                 has_reuse = (reusable > 0);
                             }
-                            if (has_reuse || c < selection.criterion) {
+
+                            if (has_reuse || c < selection.criterion) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 last_criterion = has_reuse ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion;
@@ -2307,95 +2353,126 @@ int FlawSelectionOrder::select_open_cond(FlawSelection& selection,
                                     std::cerr << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
+
                         case SelectionCriterion::LC:
-                        {
+                        
                             HeuristicValue h, hs;
+
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
                                 plan, *pg, criterion.reuse);
-                            float rank = ((criterion.heuristic == SelectionCriterion::ADD)
-                                ? h.add_cost() : h.makespan());
-                            if (c < selection.criterion || rank < selection.rank) {
+
+                            float rank = 
+                                ((criterion.heuristic == SelectionCriterion::ADD) ? 
+                                    h.add_cost() : h.makespan());
+
+                            if (c < selection.criterion || rank < selection.rank) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 selection.rank = rank;
                                 last_criterion = (rank == 0.0f) ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
+                        
                         case SelectionCriterion::MC:
-                        {
+                        
                             HeuristicValue h, hs;
+
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
                                 plan, *pg, criterion.reuse);
-                            float rank = ((criterion.heuristic == SelectionCriterion::ADD)
-                                ? h.add_cost() : h.makespan() + 0.5f);
-                            if (c < selection.criterion || rank > selection.rank) {
+
+                            float rank = ((criterion.heuristic == SelectionCriterion::ADD) ? 
+                                h.add_cost() : h.makespan() + 0.5f);
+
+                            if (c < selection.criterion || rank > selection.rank) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 selection.rank = rank;
                                 last_criterion = c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
+
                         case SelectionCriterion::LW:
-                        {
+                        
                             HeuristicValue h, hs;
+
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
                                 plan, *pg, criterion.reuse);
+
                             int rank = h.add_work();
-                            if (c < selection.criterion || rank < selection.rank) {
+                            
+                            if (c < selection.criterion || rank < selection.rank) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 selection.rank = (float)rank;
                                 last_criterion = (rank == 0) ? c - 1 : c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
+
                         case SelectionCriterion::MW:
-                        {
+                        
                             HeuristicValue h, hs;
+
                             formula_value(h, hs, open_cond.condition(), open_cond.step_id(),
                                 plan, *pg, criterion.reuse);
+
                             int rank = h.add_work();
-                            if (c < selection.criterion || rank > selection.rank) {
+
+                            if (c < selection.criterion || rank > selection.rank) 
+                            {
                                 selection.flaw = &open_cond;
                                 selection.criterion = c;
                                 selection.rank = (float)rank;
                                 last_criterion = c;
-                                if (verbosity > 1) {
+                                
+                                if (verbosity > 1) 
+                                {
                                     std::cerr << "selecting ";
                                     open_cond.print(std::cerr, Bindings::EMPTY);
                                     std::cerr << " by criterion " << criterion
                                         << " with rank " << rank << std::endl;
                                 }
                             }
-                        }
+                        
                             break;
-                    }
-                }
+
+                    } // end switch
+                } 
             }
-        }
+        } // end for
     }
+
     return last_criterion;
 }
 
