@@ -2076,7 +2076,7 @@ int FlawSelectionOrder::select_unsafe(FlawSelection& selection,
                             break;
 
                         default:
-                            /* No other ordering criteria apply to threats. */
+                            // No other ordering criteria apply to threats.
                             break;
 
                     } // end switch
@@ -2523,23 +2523,46 @@ int FlawSelectionOrder::select_unexpanded_step(FlawSelection& selection,
                       unexpanded_step, criterion.max_refinements)
                    )
                 {
-                    // do stuff
+                    // Refinement constraint is satisfied, so criterion applies.
+                    switch (criterion.order)
+                    {
+                        case SelectionCriterion::LIFO:
+                            selection.flaw = &unexpanded_step;
+                            selection.criterion = c;
+                            last_criterion = c - 1;
+
+                            if (verbosity > 1)
+                            {
+                                std::cerr << "selecting ";
+                                unexpanded_step.print(std::cerr, Bindings::EMPTY);
+                                std::cerr << " by criterion " << criterion << std::endl;
+                            }
+                            break;
+
+                        case SelectionCriterion::FIFO:
+                            // TODO
+                            break;
+
+                        case SelectionCriterion::RANDOM:
+                            // TODO
+                            break;
+
+                        case SelectionCriterion::LR:
+                            // TODO
+                            break;
+
+                        case SelectionCriterion::MR:
+                            // TODO
+                            break;
+
+                        default:
+                            // No other ordering criteria apply to unexpanded steps.
+                            break;
+                    } // end switch
                 }
-
-
-
-
             }
-
-
-
-
-
-
-
-        }
-
-    }
+        } // end for of selection criteria
+    } // end for of open conditions
 
 
     return last_criterion;
