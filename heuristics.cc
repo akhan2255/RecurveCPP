@@ -1418,6 +1418,10 @@ FlawSelectionOrder& FlawSelectionOrder::operator=(const std::string& name)
         return *this = "{n,s}LIFO/{o}LIFO/{x}LIFO";
     }
 
+    // The Decompositional Orders
+    else if (strcasecmp(n, "Longbow*") == 0) {
+        return *this = "{x}LIFO/{n,s}LIFO/{o}LIFO";
+    }
 
     selection_criteria_.clear();
     needs_pg_ = false;
