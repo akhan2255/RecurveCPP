@@ -37,7 +37,7 @@ struct Problem;
 struct Bindings;
 struct ActionEffectMap;
 struct FlawSelectionOrder;
-
+struct Decomposition;
 
 /* ====================================================================== */
 /* Link */
@@ -122,54 +122,6 @@ public:
 };
 
 
-
-/* ====================================================================== */
-/* Decomposition Link */
-
-/*
- * A DecompositionLink is used to record the fact that the purpose of some
- * step s is to be part of a more-primitive realization of some other step.
- */
-struct DecompositionLink {
-
-    /* Constructs a decomposition link. */
-    DecompositionLink(size_t composite_id, size_t initial_id, size_t final_id);
-
-    /* Copy-constructor for a decomposition link. */
-    DecompositionLink(const DecompositionLink& dl);
-
-    /* Deletes this decomposition link. */
-    ~DecompositionLink();
-
-    /* Returns the id of the composite step being decomposed. */
-    size_t composite_id() const { return composite_id_; }
-
-    /* Returns the id of the initial step of some decomposition of the composite step.*/
-    size_t initial_id() const { return initial_id_; }
-
-    /* Returns the id of the final step of some decomposition of the composite step. */
-    size_t final_id() const { return final_id_; }
-
-
-private:
-
-    /* Id of the composite step being decomposed. */
-    size_t composite_id_;
-
-    /* Id of the initial step of some decomposition of the composite step. */
-    size_t initial_id_;
-
-    /* Id of the final step of some decomposition of the composite step. */
-    size_t final_id_;
-
-};
-
-/* Equality operator for decomposition links. */
-inline bool operator==(const DecompositionLink& l1, const DecompositionLink& l2) {
-    return &l1 == &l2;
-}
-
-
 /* ====================================================================== */
 /* Step */
 
@@ -247,6 +199,41 @@ private:
 
 
 /* ====================================================================== */
+/* Decomposition Link */
+
+/*
+* A DecompositionLink is used to record the fact that the purpose of some
+* step s is to be part of a more-primitive realization of some other step.
+*/
+struct DecompositionLink {
+
+    /* Constructs a decomposition link. */
+    DecompositionLink(int composite_id, DecompositionStep& decomposition_step)
+        : composite_id_(composite_id), decomposition_step_(decomposition_step) {}
+
+    /* Returns the id of the composite step being decomposed. */
+    int composite_id() const { return composite_id_; }
+
+    /* Returns the decomposition step that refines the composite step of this decomposition link. */
+    const DecompositionStep decomposition_step() const { return decomposition_step_; }
+
+private:
+
+    /* Id of the composite step being decomposed. */
+    int composite_id_;
+
+    /* The decomposition step that refines the composite step identified by the id. */
+    DecompositionStep decomposition_step_;
+
+};
+
+/* Equality operator for decomposition links. */
+inline bool operator==(const DecompositionLink& l1, const DecompositionLink& l2) {
+    return &l1 == &l2;
+}
+
+
+/* ====================================================================== */
 /* Plan */
 
 /*
@@ -284,11 +271,11 @@ struct Plan {
     /* Returns the bindings of this plan. */
     const Bindings* bindings() const;
 
-    /* Returns the decomposition steps of this plan. */
-    const Chain<DecompositionStep>* decomposition_steps() const { return decomposition_steps_; }
+    /* Returns the decomposition links of this plan. */
+    const Chain<DecompositionLink>* decomposition_links() const { return decomposition_links_; }
 
-    /* Returns the number of unique decomposition steps in this plan. */
-    size_t num_decomposition_steps() const { return num_decomposition_steps_; }
+    /* Returns the number of decomposition links in this plan. */
+    size_t num_decomposition_links() const { return num_decomposition_links_; }
 
     /* Returns the potentially threatened links of this plan. */
     const Chain<Unsafe>* unsafes() const { return unsafes_; }
@@ -383,11 +370,11 @@ private:
     /* Binding constraints of this plan. */
     const Bindings* bindings_;
 
-    /* Chain of decomposition steps. */
-    const Chain<DecompositionStep>* decomposition_steps_;
+    /* Chain of decomposition links. */
+    const Chain<DecompositionLink>* decomposition_links_;
 
-    /* Number of unique decomposition steps in plan. */
-    size_t num_decomposition_steps_; 
+    /* Number of decomposition links. */
+    size_t num_decomposition_links_; 
     
     /* Chain of potentially threatened links. */
     const Chain<Unsafe>* unsafes_;
@@ -428,7 +415,7 @@ private:
     Plan(const Chain<Step>* steps, size_t num_steps,
         const Chain<Link>* links, size_t num_links,
         const Orderings& orderings, const Bindings& bindings,
-        const Chain<DecompositionStep>* decomposition_steps, size_t num_decomposition_steps,
+        const Chain<DecompositionLink>* decomposition_links, size_t num_decomposition_links,
         const Chain<Unsafe>* unsafes, size_t num_unsafes,
         const Chain<OpenCondition>* open_conds, size_t num_open_conds,
         const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,

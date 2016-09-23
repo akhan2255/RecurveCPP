@@ -250,6 +250,21 @@ bool LinkList::contains_cycle() const
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ====================================================================== */
 /* Plan */
 
@@ -1084,7 +1099,7 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                                 new Plan(current_plan->steps(), current_plan->num_steps(),
                                 current_plan->links(), current_plan->num_links(),
                                 current_plan->orderings(), *new_bindings,
-                                current_plan->decomposition_steps(), current_plan->num_decomposition_steps(),
+                                current_plan->decomposition_links(), current_plan->num_decomposition_links(),
                                 NULL, 0, 
                                 NULL, 0, 
                                 NULL, 0, /* <- unexpanded composite step chain, and number */
@@ -1188,7 +1203,7 @@ Plan::Plan(
     const Chain<Step>* steps, size_t num_steps,
     const Chain<Link>* links, size_t num_links,
     const Orderings& orderings, const Bindings& bindings,
-    const Chain<DecompositionStep>* decomposition_steps, size_t num_decomposition_steps,
+    const Chain<DecompositionLink>* decomposition_links, size_t num_decomposition_links,
     const Chain<Unsafe>* unsafes, size_t num_unsafes,
     const Chain<OpenCondition>* open_conds, size_t num_open_conds,
     const Chain<UnexpandedCompositeStep>* unexpanded_steps, size_t num_unexpanded_steps,
@@ -1197,7 +1212,7 @@ Plan::Plan(
     steps_(steps), num_steps_(num_steps),
     links_(links), num_links_(num_links),
     orderings_(&orderings), bindings_(&bindings),
-    decomposition_steps_(decomposition_steps), num_decomposition_steps_(num_decomposition_steps),
+    decomposition_links_(decomposition_links), num_decomposition_links_(num_decomposition_links),
     unsafes_(unsafes), num_unsafes_(num_unsafes),
     open_conds_(open_conds), num_open_conds_(num_open_conds),
     unexpanded_steps_(unexpanded_steps), num_unexpanded_steps_(num_unexpanded_steps),
@@ -1207,7 +1222,7 @@ Plan::Plan(
     RCObject::ref(links);
     Orderings::register_use(&orderings);
     Bindings::register_use(&bindings);
-    RCObject::ref(decomposition_steps);
+    RCObject::ref(decomposition_links);
     RCObject::ref(unsafes);
     RCObject::ref(open_conds);
     RCObject::ref(unexpanded_steps);
@@ -1230,7 +1245,7 @@ Plan::~Plan() {
     RCObject::destructive_deref(links_);
     Orderings::unregister_use(orderings_);
     Bindings::unregister_use(bindings_);
-    RCObject::destructive_deref(decomposition_steps_);
+    RCObject::destructive_deref(decomposition_links_);
     RCObject::destructive_deref(unsafes_);
     RCObject::destructive_deref(open_conds_);
     RCObject::destructive_deref(unexpanded_steps_);
@@ -1415,7 +1430,7 @@ void Plan::handle_unsafe(PlanList& plans, const Unsafe& unsafe) const {
         /* bogus flaw */
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             orderings(), *bindings_,
-            decomposition_steps(), num_decomposition_steps(),
+            decomposition_links(), num_decomposition_links(),
             unsafes()->remove(unsafe), num_unsafes() - 1,
             open_conds(), num_open_conds(),
             unexpanded_steps(), num_unexpanded_steps(),
@@ -1531,7 +1546,7 @@ int Plan::separate(PlanList& plans, const Unsafe& unsafe,
                 if (new_orderings != NULL) {
                     plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
                         *new_orderings, *bindings,
-                        decomposition_steps(), num_decomposition_steps(),
+                        decomposition_links(), num_decomposition_links(),
                         unsafes()->remove(unsafe),
                         num_unsafes() - 1,
                         new_open_conds, new_num_open_conds,
@@ -1603,7 +1618,7 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
             steps(), num_steps(), 
             links(), num_links(),
             *new_orderings, *bindings_,
-            decomposition_steps(), num_decomposition_steps(),
+            decomposition_links(), num_decomposition_links(),
             unsafes()->remove(unsafe), num_unsafes() - 1,
             open_conds(), num_open_conds(),
             unexpanded_steps(), num_unexpanded_steps(),
@@ -1629,7 +1644,7 @@ void Plan::handle_mutex_threat(PlanList& plans,
         }
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             orderings(), *bindings_, 
-            decomposition_steps(), num_decomposition_steps(),
+            decomposition_links(), num_decomposition_links(),
             unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
             unexpanded_steps(), num_unexpanded_steps(),
@@ -1654,7 +1669,7 @@ void Plan::handle_mutex_threat(PlanList& plans,
         /* bogus flaw */
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             orderings(), *bindings_, 
-            decomposition_steps(), num_decomposition_steps(),
+            decomposition_links(), num_decomposition_links(),
             unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
             unexpanded_steps(), num_unexpanded_steps(),
@@ -1696,7 +1711,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
             if (bindings != NULL) {
                 plans.push_back(new Plan(steps(), num_steps(), links(),
                     num_links(), orderings(), *bindings,
-                    decomposition_steps(), num_decomposition_steps(),
+                    decomposition_links(), num_decomposition_links(),
                     unsafes(), num_unsafes(),
                     new_open_conds, new_num_open_conds,
                     NULL, 0, /* TODO: Fix the unexpanded composite step handling */
@@ -1764,7 +1779,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
                     if (new_orderings != NULL) {
                         plans.push_back(new Plan(steps(), num_steps(), links(),
                             num_links(), *new_orderings, *bindings,
-                            decomposition_steps(), num_decomposition_steps(),
+                            decomposition_links(), num_decomposition_links(),
                             unsafes(), num_unsafes(),
                             new_open_conds, new_num_open_conds,
                             NULL, 0, /* TODO: Fix the unexpanded composite step handling */
@@ -1818,7 +1833,7 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
     if (new_orderings != NULL) {
         plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
             *new_orderings, *bindings_,
-            decomposition_steps(), num_decomposition_steps(),
+            decomposition_links(), num_decomposition_links(),
             unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
             NULL, 0, /* TODO: Fix the unexpanded composite step handling */
@@ -1978,7 +1993,7 @@ int Plan::handle_disjunction(PlanList& plans, const Disjunction& disj,
                 if (!test_only) {
                     plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
                         orderings(), *bindings,
-                        decomposition_steps(), num_decomposition_steps(),
+                        decomposition_links(), num_decomposition_links(),
                         unsafes(), num_unsafes(),
                         new_open_conds, new_num_open_conds,
                         NULL, 0, /* TODO: Fix the unexpanded composite step handling */
@@ -2028,7 +2043,7 @@ int Plan::handle_inequality(PlanList& plans, const Inequality& neq,
             if (!test_only) {
                 plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
                     orderings(), *bindings,
-                    decomposition_steps(), num_decomposition_steps(),
+                    decomposition_links(), num_decomposition_links(),
                     unsafes(), num_unsafes(),
                     open_conds()->remove(open_cond),
                     num_open_conds() - 1,
@@ -2240,7 +2255,7 @@ int Plan::new_cw_link(PlanList& plans, const EffectList& effects,
                 plans.push_back(new Plan(steps(), num_steps(),
                     new_links, num_links() + 1,
                     orderings(), *bindings,
-                    decomposition_steps(), num_decomposition_steps(), // TODO: Fix unexpanded composite step handling
+                    decomposition_links(), num_decomposition_links(), // TODO: Fix unexpanded composite step handling
                     new_unsafes, new_num_unsafes,
                     new_open_conds, new_num_open_conds,
                     NULL, 0, // TODO: Fix the unexpanded composite step handling 
@@ -2436,7 +2451,7 @@ int Plan::make_link(
             new_steps, new_num_steps, 
             new_links, num_links() + 1, 
             *new_orderings, *bindings,
-            decomposition_steps(), num_decomposition_steps(), // TODO FIX
+            decomposition_links(), num_decomposition_links(), // TODO FIX
             new_unsafes, new_num_unsafes,
             new_open_conds, new_num_open_conds,
             new_unexpanded_steps, new_num_unexpanded_steps,
@@ -2462,9 +2477,23 @@ bool Plan::unexpanded_step_refinements(int& refinements,
 
 
 /* Handles an unexpanded composite step. */
-void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCompositeStep& open_cond) const
+void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCompositeStep& unexpanded) const
 {
-   // TODO
+    // TODO:
+    // Create a new plan that resolves the unexpanded composite step.
+
+    // 1. Find an applicable decomposition and instantiate it.
+
+    // 2. Create new steps out of all the decomposition's pseudo-steps
+    // TODO: Re-use of existing plan steps is possible, but we're ignoring that for now. See issue [#11]
+
+    // 3. Swap step id's in causal links, bindings, and orderings
+
+    // 4. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+
+    // 5. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
+    // decomposition link to plan
+
 }
 
 
