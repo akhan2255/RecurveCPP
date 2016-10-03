@@ -2454,7 +2454,7 @@ int Plan::make_link(
             if (step.action().composite())
             {
                 new_unexpanded_steps =
-                    new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(step.id()), 
+                    new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(&step), 
                     new_unexpanded_steps);
                 new_num_unexpanded_steps++;
             }
@@ -2494,10 +2494,70 @@ bool Plan::unexpanded_step_refinements(int& refinements,
 /* Handles an unexpanded composite step. */
 void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCompositeStep& unexpanded) const
 {
-    // TODO:
     // Create a new plan that resolves the unexpanded composite step.
 
-    // 1. Find an applicable decomposition and instantiate it.
+
+
+
+    // Find every applicable decomposition 
+    const Action* composite_action = &(unexpanded.step()->action());
+    
+    std::pair <
+        std::multimap<const Action*, const Decomposition*>::const_iterator,
+        std::multimap<const Action*, const Decomposition*>::const_iterator
+    > decomposition_range;
+    
+    decomposition_range = achieves_composite.equal_range(composite_action);
+    
+    // Iterate over all applicable decompositions
+    std::multimap<const Action*, const Decomposition*>::const_iterator di;
+    for (di = decomposition_range.first; di != decomposition_range.second; ++di)
+    {
+        // At this point, we're dealing with one applicable decomposition.
+        // Each decomposition leads to the creation of another plan on the fringe.
+        const Decomposition* applicable_decomposition = (*di).second;
+
+        // Create new steps out of all the decomposition's pseudo-steps.
+        // TODO: Re-use of existing plan steps is possible, but we're ignoring that for now.
+        // See issue [#11]
+
+        // For each pseudo-step, create a real Step.
+        for (int i = 0; i < applicable_decomposition->pseudo_steps().size(); ++i)
+        {
+            Step pseudo_step = applicable_decomposition->pseudo_steps()[i];
+            int new_step_id = num_steps() + 1 + i;
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+    
+
+
 
     // 2. Create new steps out of all the decomposition's pseudo-steps
     // TODO: Re-use of existing plan steps is possible, but we're ignoring that for now. See issue [#11]
