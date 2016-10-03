@@ -50,10 +50,10 @@ struct Flaw {
  */
 struct OpenCondition : public Flaw {
     /* Constructs an open condition. */
-    OpenCondition(size_t step_id, const Formula& condition);
+    OpenCondition(int step_id, const Formula& condition);
 
     /* Constructs an open condition. */
-    OpenCondition(size_t step_id, const Literal& condition, FormulaTime when);
+    OpenCondition(int step_id, const Literal& condition, FormulaTime when);
 
     /* Constructs an open condition. */
     OpenCondition(const OpenCondition& oc);
@@ -62,7 +62,7 @@ struct OpenCondition : public Flaw {
     virtual ~OpenCondition();
 
     /* Returns the step id. */
-    size_t step_id() const { return step_id_; }
+    int step_id() const { return step_id_; }
 
     /* Returns the open condition. */
     const Formula& condition() const { return *condition_; }
@@ -90,7 +90,7 @@ struct OpenCondition : public Flaw {
 
 private:
     /* Id of step to which this open condition belongs. */
-    size_t step_id_;
+    int step_id_;
     /* The open condition. */
     const Formula* condition_;
     /* Time stamp associated with a literal open condition. */
@@ -111,14 +111,14 @@ inline bool operator==(const OpenCondition& oc1, const OpenCondition& oc2) {
  */
 struct Unsafe : public Flaw {
     /* Constructs a threatened causal link. */
-    Unsafe(const Link& link, size_t step_id, const Effect& effect)
+    Unsafe(const Link& link, int step_id, const Effect& effect)
         : link_(&link), step_id_(step_id), effect_(&effect) {}
 
     /* Returns the threatened link. */
     const Link& link() const { return *link_; }
 
     /* Returns the id of threatening step. */
-    size_t step_id() const { return step_id_; }
+    int step_id() const { return step_id_; }
 
     /* Returns the threatening effect. */
     const Effect& effect() const { return *effect_; }
@@ -130,7 +130,7 @@ private:
     /* Threatened link. */
     const Link* link_;
     /* Id of threatening step. */
-    size_t step_id_;
+    int step_id_;
     /* Threatening effect. */
     const Effect* effect_;
 };
@@ -152,19 +152,19 @@ struct MutexThreat : public Flaw {
     MutexThreat() : step_id1_(0) {}
 
     /* Constructs a mutex threat. */
-    MutexThreat(size_t step_id1, const Effect& effect1,
-        size_t step_id2, const Effect& effect2)
+    MutexThreat(int step_id1, const Effect& effect1,
+        int step_id2, const Effect& effect2)
         : step_id1_(step_id1), effect1_(&effect1),
         step_id2_(step_id2), effect2_(&effect2) {}
 
     /* Returns the id for the first step. */
-    size_t step_id1() const { return step_id1_; }
+    int step_id1() const { return step_id1_; }
 
     /* Returns the threatening effect for the first step. */
     const Effect& effect1() const { return *effect1_; }
 
     /* Returns the id for the second step. */
-    size_t step_id2() const { return step_id2_; }
+    int step_id2() const { return step_id2_; }
 
     /* Returns the threatening effect for the second step. */
     const Effect& effect2() const { return *effect2_; }
@@ -174,11 +174,11 @@ struct MutexThreat : public Flaw {
 
 private:
     /* The id for the first step. */
-    size_t step_id1_;
+    int step_id1_;
     /* The threatening effect for the first step. */
     const Effect* effect1_;
     /* The id for the second step. */
-    size_t step_id2_;
+    int step_id2_;
     /* The threatening effect for the second step. */
     const Effect* effect2_;
 };

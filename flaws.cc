@@ -25,14 +25,14 @@
 /* OpenCondition */
 
 /* Constructs an open condition. */
-OpenCondition::OpenCondition(size_t step_id, const Formula& condition)
+OpenCondition::OpenCondition(int step_id, const Formula& condition)
     : step_id_(step_id), condition_(&condition) {
     Formula::register_use(condition_);
 }
 
 
 /* Constructs an open condition. */
-OpenCondition::OpenCondition(size_t step_id, const Literal& condition,
+OpenCondition::OpenCondition(int step_id, const Literal& condition,
     FormulaTime when)
     : step_id_(step_id), condition_(&condition), when_(when) {
     Formula::register_use(condition_);
