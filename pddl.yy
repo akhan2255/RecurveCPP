@@ -1325,9 +1325,6 @@ static void make_decomposition(const std::string* composite_action_name, const s
 /* Adds the current decomposition to the current domain. */
 static void add_decomposition()
 {
-	// Check that there exists a path of causal links from all init dummy effects to all goal dummy preconditions
-	// TODO
-
     context.pop_frame();
 
     /* If we have not declared this decomposition in the past, */
