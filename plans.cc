@@ -58,6 +58,12 @@ static PredicateAchieverMap achieves_neg_pred;
 /* Whether last flaw was a static predicate. */
 static bool static_pred_flaw;
 
+/* Mapping of composite actions to the decompositions that can realize them. */
+struct CompositeActionAchieverMap : public std::multimap < const Action*, const Decomposition* > {};
+
+/* Maps actions to decompositions. */
+static CompositeActionAchieverMap achieves_composite;
+
 
 /* ====================================================================== */
 /* Link */
@@ -829,6 +835,35 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
         }
     }
 
+
+    /*
+    * Initialize the <composite-action, decomposition> map, if necessary.
+    * This dictionary maps composite actions to the decompositions that realize them.
+    */
+    if (problem.domain().requirements.decompositions)
+    {
+        achieves_composite.clear();
+
+
+        // For each decomposition schema in the domain...
+        for (DecompositionSchemaMap::const_iterator di = domain->decompositions().begin();
+             di != domain->decompositions().end();
+             di++)
+        {
+            // Get the name of the action this decomposition applies to.
+            std::pair<std::string, std::string> composite_decomp_names = di->first;
+            std::string composite_action_name = composite_decomp_names.first;
+
+            // Attempt to find the action.
+            const ActionSchema* action = domain->find_action(composite_action_name);
+
+            // If it exists and it is composite, add it to the multimap.
+            if (action != NULL && action->composite()) {
+                achieves_composite.insert(std::make_pair(action, di->second));
+            }
+
+        }
+    }
 
     static_pred_flaw = false;
 
