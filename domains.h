@@ -96,6 +96,9 @@ struct Domain {
   /* Returns the term table of this domain. */
   const TermTable& terms() const { return terms_; }
 
+  /* Domain decompositions.*/
+  const DecompositionSchemaMap& decompositions() const { return decompositions_; }
+
   /* Adds an action to this domain. */
   void add_action(const ActionSchema& action);
 
