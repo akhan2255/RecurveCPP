@@ -23,11 +23,13 @@
 
 #include "formulas.h"
 #include "chain.h"
+#include "actions.h"
 #include <iostream>
 
 struct Domain;
 struct Effect;
 struct Link;
+
 
 
 /* ====================================================================== */
@@ -148,7 +150,8 @@ inline bool operator==(const Unsafe& u1, const Unsafe& u2) {
  * A mutex threat between effects of two separate steps.
  */
 struct MutexThreat : public Flaw {
-    /* Constructs a mutex threat place hoder. */
+
+    /* Constructs a mutex threat place holder. */
     MutexThreat() : step_id1_(0) {}
 
     /* Constructs a mutex threat. */
@@ -198,10 +201,13 @@ inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
 struct UnexpandedCompositeStep : public Flaw {
 
     /* Constructs an unexpanded composite step flaw. */
-    UnexpandedCompositeStep(size_t step_id) : step_id_(step_id) {}
+    UnexpandedCompositeStep(const Step* unexpanded_step) : unexpanded_step_(unexpanded_step) {}
+
+    /* Returns the unexpanded composite step. */
+    const Step* step() const { return unexpanded_step_; }
 
     /* Returns the id of the unexpanded composite step. */
-    size_t step_id() const { return step_id_; }
+    int step_id() const { return unexpanded_step_->id(); }
 
     /* Prints this object on the given stream. */
     virtual void print(std::ostream& os, const Bindings& bindings) const;
@@ -209,7 +215,7 @@ struct UnexpandedCompositeStep : public Flaw {
 private:
 
     /* Id of the unexpanded composite step. */
-    size_t step_id_;
+    const Step* unexpanded_step_;
 
 };
 

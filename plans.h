@@ -24,6 +24,7 @@
 #include "chain.h"
 #include "flaws.h"
 #include "orderings.h"
+#include "actions.h"
 
 struct Parameters;
 struct BindingList;
@@ -122,49 +123,7 @@ public:
 };
 
 
-/* ====================================================================== */
-/* Step */
 
-/*
- * Plan step.
- */
-struct Step {
-
-    /* Constructs a step instantiated from an action. */
-    Step(int id, const Action& action)
-        : id_(id), action_(&action) {}
-
-    /* Constructs a step. */
-    Step(const Step& s)
-        : id_(s.id_), action_(s.action_) {}
-
-    /* Tests if this object is a pseudo-step. */
-    bool pseudo_step() { return id_ < 0; }
-
-    /* Returns the step id. */
-    int id() const { return id_; }
-
-    /* Returns the action that this step is instantiated from. */
-    const Action& action() const { return *action_; }
-
-private:
-
-    /* Step id. */
-    int id_;
-
-    /* Action that this step is instantiated from. */
-    const Action* action_;
-};
-
-
-/* ====================================================================== */
-/* StepList */
-
-/*
-* List of Steps.
-*/
-struct StepList : std::vector < Step > {
-};
 
 
 /* ====================================================================== */
