@@ -136,12 +136,9 @@ private:
 /* ====================================================================== */
 /* DecompositionSchemaMap */
 
-/*
- * Table of decomposition schema definitions. This table maps a pair of strings
- * to a decomposition schema.  The pair of strings are (respectively):
- * - the name of the action being decomposed (the composite action), and 
- * - the name of a specific decomposition.
- */
+/* Table of decomposition schema definitions. This table maps a pair of strings to a decomposition
+   schema.  Each string in the pair of strings is (respectively): the name of the action being 
+   decomposed (the composite action), and the name of a specific decomposition. */
 struct DecompositionSchemaMap : 
     public std::map < std::pair<std::string, std::string>, const DecompositionSchema* > {};
 
