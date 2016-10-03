@@ -31,12 +31,8 @@
 //#include <sys/time.h>
 
 
-/*
- * Mapping of predicate names to achievers.
- */
-struct PredicateAchieverMap : public std::map < Predicate, ActionEffectMap > {
-};
-
+/* Mapping of predicate names to achievers. */
+struct PredicateAchieverMap : public std::map < Predicate, ActionEffectMap > {};
 
 /* Planning parameters. */
 static const Parameters* params;
@@ -247,22 +243,6 @@ bool LinkList::contains_cycle() const
     // No depth first search has found its corresponding starting node, so no cycles detected!
     return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* ====================================================================== */
