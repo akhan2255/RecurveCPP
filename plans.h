@@ -26,6 +26,7 @@
 #include "orderings.h"
 #include "actions.h"
 #include "links.h"
+#include "decompositions.h"
 
 struct Parameters;
 struct BindingList;
@@ -39,12 +40,6 @@ struct Problem;
 struct Bindings;
 struct ActionEffectMap;
 struct FlawSelectionOrder;
-struct Decomposition;
-
-
-
-
-
 
 
 /* ====================================================================== */
@@ -56,17 +51,39 @@ struct DecompositionStep {
 
     /* Constructs a decomposition step instantiated from a decomposition. */
     DecompositionStep(int id, const Decomposition& decomposition)
-        : id_(id), decomposition_(&decomposition) {}
+        : id_(id), 
+          decomposition_(&decomposition),
+          steps_(decomposition.pseudo_steps()),
+          binding_list_(decomposition.binding_list()),
+          ordering_list_(decomposition.ordering_list()),
+          link_list_(decomposition.link_list()) {}
 
     /* Constructs a decomposition step. */
     DecompositionStep(const DecompositionStep& ds)
-        : id_(ds.id_), decomposition_(ds.decomposition_) {}
+        : id_(ds.id_), 
+          decomposition_(ds.decomposition_),
+          steps_(ds.steps_),
+          binding_list_(ds.binding_list()),
+          ordering_list_(ds.ordering_list()),
+          link_list_(ds.link_list()) {}
 
     /* Returns the decomposition step id. */
     int id() const { return id_; }
 
     /* Returns the decomposition that this step is instantiated from. */
     const Decomposition& decomposition() const { return *decomposition_; }
+
+    /* Returns the steps that belong to this decomposition. */
+    const StepList steps() const { return steps_; }
+
+    /* Returns the list of bindings for this decomposition. */
+    const BindingList binding_list() const { return binding_list_; }
+
+    /* Returns the list of ordering constraints of this decomposition. */
+    const OrderingList ordering_list() const { return ordering_list_; }
+
+    /* Returns the list of causal links of this decomposition. */
+    const LinkList link_list() const { return link_list_; }
 
 private:
 
@@ -75,6 +92,18 @@ private:
 
     /* Decomposition that this decomposition step is instantiated from. */
     const Decomposition* decomposition_;
+
+    /* List of steps that belong to this decomposition. */
+    StepList steps_;
+
+    /* List of bindings for this decomposition. */
+    BindingList binding_list_;
+
+    /* List of ordering constraints of this decomposition. */
+    OrderingList ordering_list_;
+
+    /* List of causal links of this decomposition. */
+    LinkList link_list_;
 };
 
 
