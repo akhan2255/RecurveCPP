@@ -2312,9 +2312,6 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
 {
     // Create a new plan that resolves the unexpanded composite step.
 
-
-
-
     // Find every applicable decomposition 
     const Action* composite_action = &(unexpanded.step()->action());
     
@@ -2333,17 +2330,27 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
         // Each decomposition leads to the creation of another plan on the fringe.
         const Decomposition* applicable_decomposition = (*di).second;
 
-        // Create new steps out of all the decomposition's pseudo-steps.
-        // TODO: Re-use of existing plan steps is possible, but we're ignoring that for now.
-        // See issue [#11]
+        // Instantiate the Decomposition
+        DecompositionFrame instance(*applicable_decomposition);
 
-        // For each pseudo-step, create a real Step.
+        // The are two primary options:
+        // 1. Attempt to re-use existing plan steps.
+        // We're ignoring this option for now. See issue [#11].
+        // TODO
+        
+
+        // 2. Instantiate all pseudo-steps as wholly new steps.
+        // For each pseudo-step, create a new Step.
         for (int i = 0; i < applicable_decomposition->pseudo_steps().size(); ++i)
         {
             Step pseudo_step = applicable_decomposition->pseudo_steps()[i];
+            int old_step_id = pseudo_step.id();
+            
             int new_step_id = num_steps() + 1 + i;
+            Step new_step = Step(new_step_id, pseudo_step.action());
 
 
+            // instance.swap_steps(pseudo_step, new_step);
 
 
         }

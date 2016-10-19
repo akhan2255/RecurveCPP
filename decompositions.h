@@ -166,6 +166,11 @@ struct DecompositionFrame {
     /* Returns the decomposition step id. */
     int id() const { return id_; }
 
+    /* Swaps the old step in this Frame for the given new step. */
+
+    // TO IMPLEMENT:
+    // const DecompositionFrame swap_steps(const Step old_step, const Step new_step) const;
+
     /* Returns the decomposition that this step is instantiated from. */
     const Decomposition& decomposition() const { return *decomposition_; }
 
