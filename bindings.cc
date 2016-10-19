@@ -537,6 +537,36 @@ find_step_domain(const Chain<StepDomain>* step_domains, const Variable& var, int
     return std::pair<const StepDomain*, size_t>(0, 0);
 }
 
+/* ====================================================================== */
+/* BindingList */
+
+/* Returns a list of bindings where references to the old step id have been swapped for the new
+   step id. */
+const BindingList BindingList::swap_ids(int old_step_id, int new_step_id) const 
+{
+    BindingList swapped = *this;
+
+    // For every Binding in the list,
+    for (BindingList::iterator bi = swapped.begin(); bi != swapped.end(); ++bi)
+    {
+        // See if this Binding is applicable. The swap ought not be applicable to both, 
+        // which is why checking for each (term, var) is in a separate branch.
+        if ((*bi).term_id() == old_step_id)
+        {
+            // Swap the id
+            (*bi).term_id_ = new_step_id;
+        }
+
+        else if ((*bi).var_id() == old_step_id)
+        {
+            // Swap the id
+            (*bi).var_id_ = new_step_id;
+        }
+    }
+
+    return swapped;
+}
+
 
 /* ====================================================================== */
 /* ActionDomain */

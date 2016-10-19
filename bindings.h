@@ -32,6 +32,7 @@ struct Action;
 struct Problem;
 struct Step;
 struct PlanningGraph;
+struct BindingList;
 
 
 /* ====================================================================== */
@@ -98,6 +99,9 @@ private:
     
     /* Whether or not this is an equality binding. */
     bool equality_;
+
+    /* BindingList is a friend - needed for id swapping of pseudo-steps. */
+    friend struct BindingList;
 };
 
 
@@ -107,7 +111,12 @@ private:
 /*
  * List of bindings.
  */
-struct BindingList : std::vector < Binding > {
+struct BindingList : std::vector<Binding> {
+
+    /* Returns a list of bindings where references to the old step id have been swapped for the new
+       step id. */
+    const BindingList swap_ids(int old_step_id, int new_step_id) const;
+
 };
 
 
