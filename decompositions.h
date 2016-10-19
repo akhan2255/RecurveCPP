@@ -26,6 +26,7 @@
 #include "bindings.h"
 #include "links.h"
 
+
 /* ====================================================================== */
 /* Decomposition */
 
@@ -142,7 +143,6 @@ private:
    decomposed (the composite action), and the name of a specific decomposition. */
 struct DecompositionSchemaMap : 
     public std::map < std::pair<std::string, std::string>, const DecompositionSchema* > {};
-
 
 
 #endif /* DECOMPOSITIONS_H */

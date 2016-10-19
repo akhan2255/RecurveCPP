@@ -22,13 +22,8 @@
 #include <typeinfo>
 
 
-
-
-
-
 /* ====================================================================== */
 /* Decomposition */
-
 
 /* Next pseudo-step id. */
 size_t Decomposition::next_pseudo_step_id = 0;
@@ -133,11 +128,6 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 }
 
 
-
-
-
-
-
 /* Checks whether this decomposition satisfies the legality criteria defined by the DPOCL
    planning system, defined by Young, Pollack, and Moore. */
 bool Decomposition::satisfies_dpocl_legality_criteria() const
@@ -193,7 +183,6 @@ bool Decomposition::satisfies_dpocl_legality_criteria() const
 }
 
 
-
 /* Adds a pseudo-step to this decomposition. */
 void Decomposition::add_pseudo_step(const Step& pseudo_step) 
 {    
@@ -212,15 +201,18 @@ void Decomposition::add_pseudo_step(const Step& pseudo_step)
     this->add_ordering(Ordering(pseudo_step.id(), StepTime::AT_END, dummy_goal.id(), StepTime::AT_START));
 }
 
+
 /* Adds a binding to this decomposition. */
 void Decomposition::add_binding(const Binding& binding) {
     binding_list_.push_back(binding);
 }
 
+
 /* Adds an ordering to this decomposition. */
 void Decomposition::add_ordering(const Ordering& ordering) {
 	ordering_list_.push_back(ordering);
 }
+
 
 /* Adds a link to this decomposition. */
 void Decomposition::add_link(const Link& link) {
@@ -234,6 +226,7 @@ void Decomposition::add_link(const Link& link) {
 /* Constructs a decomposition schema for the given composite action name with the given name. */
 DecompositionSchema::DecompositionSchema(const ActionSchema* composite_action_schema, const std::string& name)
     : Decomposition(composite_action_schema, name) {}
+
 
 /* Adds a parameter to this decomposition schema. */
 void DecompositionSchema::add_parameter(Variable var) {

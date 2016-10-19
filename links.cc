@@ -20,6 +20,7 @@
 
 #include "links.h"
 
+
 /* ====================================================================== */
 /* Link */
 
@@ -49,6 +50,7 @@ Link::~Link() {
 /* ====================================================================== */
 /* LinkList */
 
+
 /* Returns a vector of all the unique step ids in this link list. */
 std::vector<int> LinkList::unique_step_ids() const
 {
@@ -76,6 +78,7 @@ std::vector<int> LinkList::unique_step_ids() const
 
 }
 
+
 /* Returns a list of Links whose source step is given by the step_id. If no such links exist,
 this method returns an empty list. */
 const LinkList LinkList::outgoing_links(int step_id) const
@@ -92,6 +95,7 @@ const LinkList LinkList::outgoing_links(int step_id) const
 
     return outgoing_links;
 }
+
 
 /* Checks whether this LinkList contains a path from the step given by the source_id to the
 step given by the destination_id. */
@@ -142,6 +146,7 @@ bool LinkList::contains_path(int source_id, int destination_id) const
 
     return false;
 }
+
 
 /* Checks whether this Links in this LinkList give rise to a cycle. */
 bool LinkList::contains_cycle() const
