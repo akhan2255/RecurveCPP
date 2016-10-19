@@ -86,6 +86,7 @@
     <ClCompile Include="getopt.c" />
     <ClCompile Include="getopt1.c" />
     <ClCompile Include="heuristics.cc" />
+    <ClCompile Include="links.cc" />
     <ClCompile Include="orderings.cc" />
     <ClCompile Include="parameters.cc" />
     <ClCompile Include="pddl.cc">
@@ -117,6 +118,7 @@
     <ClInclude Include="functions.h" />
     <ClInclude Include="getopt.h" />
     <ClInclude Include="heuristics.h" />
+    <ClInclude Include="links.h" />
     <ClInclude Include="orderings.h" />
     <ClInclude Include="parameters.h" />
     <ClInclude Include="pddl.hh" />

@@ -99,6 +99,9 @@
     <ClCompile Include="main.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="links.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="actions.h">
@@ -168,6 +171,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="decompositions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="links.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
