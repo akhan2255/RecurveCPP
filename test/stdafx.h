@@ -25,6 +25,7 @@
 #include "../pddl.hh"
 #include "../decompositions.h"
 #include "../parameters.h"
+#include "../plans.h"
 
 /* The parse function. */
 extern int yyparse();
@@ -80,9 +81,7 @@ namespace Microsoft{
                 wstr.assign(str.begin(), str.end());
                 return wstr;
             }
-
-
-
+            
 
             template<>
             static std::wstring ToString<Predicate>(const Predicate& p) {
@@ -113,6 +112,110 @@ namespace Microsoft{
                 return wstr;
             }
 
+
+            template<>
+            static std::wstring ToString<Decomposition>(const Decomposition& d) {
+                std::stringstream ss;
+
+                ss << "decomposition '" << d.name() << "'";
+                ss << " for composite action '" << d.composite_action_schema().name();
+                ss << "' at memory location ";
+                ss << &d;
+
+                std::string str = ss.str();
+                std::wstring wstr;
+                wstr.assign(str.begin(), str.end());
+                return wstr;
+            }
+
+
+            template<>
+            static std::wstring ToString<StepList>(const StepList& sl) {
+                std::stringstream ss;
+
+                ss << "step list [";
+                for (StepList::const_iterator si = sl.begin(); si != sl.end(); ++si)
+                {
+                    ss << "(";
+                    ss << (*si).action().name() << ", id=" << (*si).id();
+                    ss << ")";
+
+                    if (si + 1 != sl.end())
+                        ss << ", ";
+                }
+                ss << "]";
+
+                std::string str = ss.str();
+                std::wstring wstr;
+                wstr.assign(str.begin(), str.end());
+                return wstr;
+            }
+
+            template<>
+            static std::wstring ToString<BindingList>(const BindingList& bl) {
+                std::stringstream ss;
+
+                ss << "binding list [";
+                for (BindingList::const_iterator bi = bl.begin(); bi != bl.end(); ++bi)
+                {
+                    ss << "(";
+                    ss << "var=" << (*bi).var() << ", " << "term=" << (*bi).term();
+                    ss << ")";
+
+                    if (bi + 1 != bl.end())
+                        ss << ", ";
+                }
+                ss << "]";
+
+                std::string str = ss.str();
+                std::wstring wstr;
+                wstr.assign(str.begin(), str.end());
+                return wstr;
+            }
+
+            template<>
+            static std::wstring ToString<OrderingList>(const OrderingList& ol) {
+                std::stringstream ss;
+
+                ss << "ordering list [";
+                for (OrderingList::const_iterator oi = ol.begin(); oi != ol.end(); ++oi)
+                {
+                    ss << "(";
+                    ss <<  (*oi).before_id() << " < " << (*oi).after_id();
+                    ss << ")";
+
+                    if (oi + 1 != ol.end())
+                        ss << ", ";
+                }
+                ss << "]";
+
+                std::string str = ss.str();
+                std::wstring wstr;
+                wstr.assign(str.begin(), str.end());
+                return wstr;
+            }
+
+            template<>
+            static std::wstring ToString<LinkList>(const LinkList& ll) {
+                std::stringstream ss;
+
+                ss << "link list [";
+                for (LinkList::const_iterator li = ll.begin(); li != ll.end(); ++li)
+                {
+                    ss << "(";
+                    ss << (*li).from_id() << " -> " << (*li).to_id();
+                    ss << ")";
+
+                    if (li + 1 != ll.end())
+                        ss << ", ";
+                }
+                ss << "]";
+
+                std::string str = ss.str();
+                std::wstring wstr;
+                wstr.assign(str.begin(), str.end());
+                return wstr;
+            }
         }
     }
 }

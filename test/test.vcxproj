@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actions_test.cpp" />
+    <ClCompile Include="decomp_copy_test.cpp" />
     <ClCompile Include="decomp_parse_test.cc" />
     <ClCompile Include="decomp_plan_test.cc" />
     <ClCompile Include="heuristics_test.cc" />
