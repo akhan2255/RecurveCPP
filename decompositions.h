@@ -143,13 +143,16 @@ the basic plan step. */
 struct DecompositionFrame {
 
     /* Constructs a decomposition step instantiated from a decomposition. */
-    DecompositionFrame(int id, const Decomposition& decomposition)
-    : id_(id),
-    decomposition_(&decomposition),
+    DecompositionFrame(const Decomposition& decomposition)
+    : decomposition_(&decomposition),
     steps_(decomposition.pseudo_steps()),
     binding_list_(decomposition.binding_list()),
     ordering_list_(decomposition.ordering_list()),
-    link_list_(decomposition.link_list()) {}
+    link_list_(decomposition.link_list()) 
+    {
+        id_ = DecompositionFrame::next_id;
+        DecompositionFrame::next_id++;
+    }
 
     /* Constructs a decomposition step. */
     DecompositionFrame(const DecompositionFrame& ds)
@@ -180,7 +183,10 @@ struct DecompositionFrame {
 
 private:
 
-    /* Decomposition step id */
+    /* Next decomposition frame id. */
+    static size_t next_id;
+
+    /* Decomposition frame id */
     int id_;
 
     /* Decomposition that this decomposition step is instantiated from. */

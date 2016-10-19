@@ -232,3 +232,9 @@ DecompositionSchema::DecompositionSchema(const ActionSchema* composite_action_sc
 void DecompositionSchema::add_parameter(Variable var) {
     parameters_.push_back(var);
 }
+
+/* ====================================================================== */
+/* DecompositionFrame */
+
+size_t DecompositionFrame::next_id = 0;
+
