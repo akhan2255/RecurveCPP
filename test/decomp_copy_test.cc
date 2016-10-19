@@ -19,7 +19,7 @@ namespace test
 
             const DecompositionSchema* travel_drive_schema = domain->find_decomposition("travel", "drive");
             const Decomposition* travel_drive = dynamic_cast<const Decomposition*>(travel_drive_schema);
-            DecompositionFrame instance(1, *travel_drive);
+            DecompositionFrame instance(*travel_drive);
 
             // When a DecompositionStep is instantiated, the instance fields are copied 
             // over from the decomposition. Each field should be a distinct object, 
