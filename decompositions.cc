@@ -42,7 +42,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
 
     // Build the dummy step's schema
     ActionSchema* dummy_initial = new ActionSchema("<decomposition-init-for-" + name + ">", false, false);
-    Step* dummy_initial_step = new Step(-(++next_pseudo_step_id), *dummy_initial); // Pseudo-steps are defined with negative index
+    Step* dummy_initial_step = new Step(-((int) ++next_pseudo_step_id), *dummy_initial); // Pseudo-steps are defined with negative index
     
     const Formula& composite_precondition = composite_action_schema_->condition();
     
@@ -105,7 +105,7 @@ Decomposition::Decomposition(const ActionSchema* composite_action_schema, const 
     /* Dummy Goal Step Construction  */
 
     ActionSchema* dummy_goal_action_schema = new ActionSchema("<decomposition-goal-for-" + name + ">", false, false); 
-    Step* dummy_goal_step = new Step(-(++next_pseudo_step_id), *dummy_goal_action_schema);
+    Step* dummy_goal_step = new Step(-((int) ++next_pseudo_step_id), *dummy_goal_action_schema);
 
     Conjunction* dummy_goal_preconditions = new Conjunction();
     for (EffectList::const_iterator ei = composite_action_schema->effects().begin();
