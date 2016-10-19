@@ -87,13 +87,14 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="actions_test.cpp" />
-    <ClCompile Include="decomp_copy_test.cpp" />
+    <ClCompile Include="actions_test.cc" />
+    <ClCompile Include="bindings_test.cc" />
+    <ClCompile Include="decomp_copy_test.cc" />
     <ClCompile Include="decomp_parse_test.cc" />
     <ClCompile Include="decomp_plan_test.cc" />
     <ClCompile Include="heuristics_test.cc" />
-    <ClCompile Include="linklist_test.cpp" />
-    <ClCompile Include="literals_test.cpp" />
+    <ClCompile Include="linklist_test.cc" />
+    <ClCompile Include="literals_test.cc" />
     <ClCompile Include="orderings_test.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -101,7 +102,7 @@
     </ClCompile>
     <ClCompile Include="terms_test.cc" />
     <ClCompile Include="types_test.cc" />
-    <ClCompile Include="vhpop_plan_test.cpp" />
+    <ClCompile Include="vhpop_plan_test.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="composite_action.pddl" />

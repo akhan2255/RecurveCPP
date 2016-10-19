@@ -32,22 +32,10 @@
     <ClCompile Include="terms_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="actions_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="decomp_parse_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vhpop_plan_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="literals_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="orderings_test.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="linklist_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="decomp_plan_test.cc">
@@ -56,7 +44,22 @@
     <ClCompile Include="heuristics_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="decomp_copy_test.cpp">
+    <ClCompile Include="bindings_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decomp_copy_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vhpop_plan_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="literals_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linklist_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="actions_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
