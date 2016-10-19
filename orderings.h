@@ -28,7 +28,7 @@
 
 struct Effect;
 struct Step;
-
+struct OrderingList;
 
 /* ====================================================================== */
 /* StepTime */
@@ -118,6 +118,9 @@ private:
 
     /* Time point of suceeding step. */
     StepTime after_time_;
+
+    /* OrderingList is a friend - needed for id swapping of pseudo-steps. */
+    friend struct OrderingList;
 };
 
 /* ====================================================================== */
@@ -126,18 +129,23 @@ private:
 /*
 * List of Orderings.
 */
-struct OrderingList : std::vector < Ordering > {
+struct OrderingList : std::vector<Ordering> {
 
-	/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
-	OrderingList ordered_after(int step_id) const;
-
-	/* Returns a vector of all the unique step ids in this ordering list. */
-	std::vector<int> unique_step_ids() const;
-
-public:
+    /* Returns a list of orderings where references to the old step id have been swapped for the new
+    step id. */
+    const OrderingList swap_ids(int old_step_id, int new_step_id) const;
 
 	/* Checks whether the Orderings in this list give rise to a cycle. */
 	bool contains_cycle() const;
+
+private:
+
+    /* Returns an OrderingList of Orderings where the given step is marked to come before another. */
+    OrderingList ordered_after(int step_id) const;
+
+    /* Returns a vector of all the unique step ids in this ordering list. */
+    std::vector<int> unique_step_ids() const;
+
 };
 
 

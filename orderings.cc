@@ -94,49 +94,32 @@ StepTime start_time(FormulaTime ft) {
 /* ====================================================================== */
 /* OrderingList */
 
-/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
-OrderingList OrderingList::ordered_after(int step_id) const
+
+/* Returns a list of orderings where references to the old step id have been swapped for the new
+step id. */
+const OrderingList OrderingList::swap_ids(int old_step_id, int new_step_id) const
 {
-	// Create a list to return
-	OrderingList ordered_after;
+    OrderingList swapped = *this;
 
-	// Filter all those orderings from the copy whose "before_id" is not the parameter.
-	for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
-	{
-		const Ordering o = *oi;
-		if (o.before_id() == step_id) {
-			ordered_after.push_back(o); // add
-		}
-	}
+    // For every Ordering in the list,
+    for (OrderingList::iterator oi = swapped.begin(); oi != swapped.end(); ++oi)
+    {
+        // See if this Ordering is applicable. The swap ought not be applicable to both,
+        // which is why checking for each (before, after) is in a separate branch.
+        if ((*oi).before_id_ == old_step_id)
+        {
+            // Swap the id
+            (*oi).before_id_ = new_step_id;
+        }
 
-	return ordered_after;
-}
+        else if ((*oi).after_id_ == old_step_id)
+        {
+            // Swap the id
+            (*oi).after_id_ = new_step_id;
+        }
+    }
 
-
-/* Returns a vector of all the unique step ids in this ordering list. */
-std::vector<int> OrderingList::unique_step_ids() const 
-{
-	// collect a vector of unique ids, and return it.
-	std::vector<int> unique_step_ids;
-
-	for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
-	{
-		const Ordering o = *oi;
-
-		// if you can't find the before_id, add it
-		if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.before_id()) == 
-			unique_step_ids.end()) {
-			unique_step_ids.push_back(o.before_id());
-		}
-
-		// if you can't find the after_id, add it
-		if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.after_id()) == 
-			unique_step_ids.end()) {
-			unique_step_ids.push_back(o.after_id());
-		}
-	}
-
-	return unique_step_ids;
+    return swapped;
 }
 
 
@@ -200,6 +183,52 @@ bool OrderingList::contains_cycle() const
 
 	// No depth first search has found its corresponding starting node, so no cycles detected!
 	return false;
+}
+
+
+/* Returns an OrderingList of Orderings where the given step is marked to come before another. */
+OrderingList OrderingList::ordered_after(int step_id) const
+{
+    // Create a list to return
+    OrderingList ordered_after;
+
+    // Filter all those orderings from the copy whose "before_id" is not the parameter.
+    for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
+    {
+        const Ordering o = *oi;
+        if (o.before_id() == step_id) {
+            ordered_after.push_back(o); // add
+        }
+    }
+
+    return ordered_after;
+}
+
+
+/* Returns a vector of all the unique step ids in this ordering list. */
+std::vector<int> OrderingList::unique_step_ids() const
+{
+    // collect a vector of unique ids, and return it.
+    std::vector<int> unique_step_ids;
+
+    for (OrderingList::const_iterator oi = this->begin(); oi != this->end(); ++oi)
+    {
+        const Ordering o = *oi;
+
+        // if you can't find the before_id, add it
+        if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.before_id()) ==
+            unique_step_ids.end()) {
+            unique_step_ids.push_back(o.before_id());
+        }
+
+        // if you can't find the after_id, add it
+        if (std::find(unique_step_ids.begin(), unique_step_ids.end(), o.after_id()) ==
+            unique_step_ids.end()) {
+            unique_step_ids.push_back(o.after_id());
+        }
+    }
+
+    return unique_step_ids;
 }
 
 

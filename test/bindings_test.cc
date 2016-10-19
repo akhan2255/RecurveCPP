@@ -5,7 +5,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace test
 {
-	TEST_CLASS(BindingsTest)
+	TEST_CLASS(BindingsListTest)
 	{
 	public:
 		
