@@ -22,8 +22,9 @@
 
 #include <string>
 #include "actions.h"
-#include "plans.h"
+#include "orderings.h"
 #include "bindings.h"
+#include "links.h"
 
 /* ====================================================================== */
 /* Decomposition */
