@@ -43,14 +43,14 @@ struct FlawSelectionOrder;
 
 
 /* ====================================================================== */
-/* DecompositionStep */
+/* DecompositionFrame */
 
 /* Represents an instantiated decomposition. It's the decompositional analogue to
    the basic plan step. */
-struct DecompositionStep {
+struct DecompositionFrame {
 
     /* Constructs a decomposition step instantiated from a decomposition. */
-    DecompositionStep(int id, const Decomposition& decomposition)
+    DecompositionFrame(int id, const Decomposition& decomposition)
         : id_(id), 
           decomposition_(&decomposition),
           steps_(decomposition.pseudo_steps()),
@@ -59,7 +59,7 @@ struct DecompositionStep {
           link_list_(decomposition.link_list()) {}
 
     /* Constructs a decomposition step. */
-    DecompositionStep(const DecompositionStep& ds)
+    DecompositionFrame(const DecompositionFrame& ds)
         : id_(ds.id_), 
           decomposition_(ds.decomposition_),
           steps_(ds.steps_),
@@ -117,14 +117,14 @@ private:
 struct DecompositionLink {
 
     /* Constructs a decomposition link. */
-    DecompositionLink(int composite_id, DecompositionStep& decomposition_step)
+    DecompositionLink(int composite_id, DecompositionFrame& decomposition_step)
         : composite_id_(composite_id), decomposition_step_(decomposition_step) {}
 
     /* Returns the id of the composite step being decomposed. */
     int composite_id() const { return composite_id_; }
 
     /* Returns the decomposition step that refines the composite step of this decomposition link. */
-    const DecompositionStep decomposition_step() const { return decomposition_step_; }
+    const DecompositionFrame decomposition_step() const { return decomposition_step_; }
 
 private:
 
@@ -132,7 +132,7 @@ private:
     int composite_id_;
 
     /* The decomposition step that refines the composite step identified by the id. */
-    DecompositionStep decomposition_step_;
+    DecompositionFrame decomposition_step_;
 
 };
 
