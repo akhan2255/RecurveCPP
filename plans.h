@@ -117,14 +117,14 @@ private:
 struct DecompositionLink {
 
     /* Constructs a decomposition link. */
-    DecompositionLink(int composite_id, DecompositionFrame& decomposition_step)
-        : composite_id_(composite_id), decomposition_step_(decomposition_step) {}
+    DecompositionLink(int composite_id, DecompositionFrame& decomposition_frame)
+        : composite_id_(composite_id), decomposition_frame_(decomposition_frame) {}
 
     /* Returns the id of the composite step being decomposed. */
     int composite_id() const { return composite_id_; }
 
     /* Returns the decomposition step that refines the composite step of this decomposition link. */
-    const DecompositionFrame decomposition_step() const { return decomposition_step_; }
+    const DecompositionFrame decomposition_frame() const { return decomposition_frame_; }
 
 private:
 
@@ -132,7 +132,7 @@ private:
     int composite_id_;
 
     /* The decomposition step that refines the composite step identified by the id. */
-    DecompositionFrame decomposition_step_;
+    DecompositionFrame decomposition_frame_;
 
 };
 
