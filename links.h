@@ -23,6 +23,8 @@
 #include "orderings.h"
 #include "flaws.h"
 
+struct LinkList;
+
 /* ====================================================================== */
 /* Link */
 
@@ -71,6 +73,9 @@ private:
 
     /* Time of condition satisfied by link. */
     FormulaTime condition_time_;
+
+    /* LinkList is a friend - needed for id swapping of pseudo-steps. */
+    friend struct LinkList;
 };
 
 /* Equality operator for links. */
@@ -87,14 +92,13 @@ inline bool operator==(const Link& l1, const Link& l2) {
 */
 struct LinkList : std::vector<Link> {
 
-    /* Returns a vector of all the unique step ids in this link list. */
-    std::vector<int> unique_step_ids() const;
-
-public:
-
     /* Returns a list of links whose source step is given by the step_id. If no such links exist,
     this method returns an empty list. */
     const LinkList outgoing_links(int step_id) const;
+
+    /* Returns a list of bindings where references to the old step id have been swapped for the new
+    step id. */
+    const LinkList swap_ids(int old_step_id, int new_step_id) const;
 
     /* Checks whether this link list contains a path from the step given by the source_id to the
     step given by the destination_id.*/
@@ -102,6 +106,11 @@ public:
 
     /* Checks whether this Links in this link list give rise to a cycle. */
     bool contains_cycle() const;
+
+private: 
+
+    /* Returns a vector of all the unique step ids in this link list. */
+    std::vector<int> unique_step_ids() const;
 
 };
 

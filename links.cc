@@ -97,6 +97,34 @@ const LinkList LinkList::outgoing_links(int step_id) const
 }
 
 
+/* Returns a list of bindings where references to the old step id have been swapped for the new
+   step id. */
+const LinkList LinkList::swap_ids(int old_step_id, int new_step_id) const
+{
+    LinkList swapped = *this;
+
+    // For every Link in the list,
+    for (LinkList::iterator li = swapped.begin(); li != swapped.end(); ++li)
+    {
+        // See if this Link is applicable. The swape ought not be applicable to
+        // both source and sink steps, which is why each is in a separate branch.
+        if ((*li).from_id_ == old_step_id) 
+        {
+            // Swap the id
+            (*li).from_id_ = new_step_id;
+        }
+
+        else if ((*li).to_id_ == old_step_id)
+        {
+            // Swap the id
+            (*li).to_id_ = new_step_id;
+        }
+    }
+
+    return swapped;
+}
+
+
 /* Checks whether this LinkList contains a path from the step given by the source_id to the
 step given by the destination_id. */
 bool LinkList::contains_path(int source_id, int destination_id) const
