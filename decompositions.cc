@@ -238,3 +238,28 @@ void DecompositionSchema::add_parameter(Variable var) {
 
 size_t DecompositionFrame::next_id = 0;
 
+/* Swaps the old step in this Frame for the given new step. Returns true if swap was
+   successful. */
+bool DecompositionFrame::swap_steps(const Step old_step, const Step new_step)
+{
+    // Attempt to find the old step in the frame
+    StepList::iterator si = std::find(steps_.begin(), steps_.end(), old_step);
+
+    // If we can't find it, no swap can occur.
+    if (si == steps_.end())
+        return false;
+
+    // Otherwise,
+    else
+    {
+        // Swap the old step for the new one, and update references throughout.
+        (*si) = new_step;
+
+        binding_list_ = binding_list_.swap_ids(old_step.id(), new_step.id());
+        ordering_list_ = ordering_list_.swap_ids(old_step.id(), new_step.id());
+        link_list_ = link_list_.swap_ids(old_step.id(), new_step.id());
+        return true;
+    }
+}
+
+
