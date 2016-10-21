@@ -47,9 +47,6 @@
     <ClCompile Include="bindings_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="decomp_copy_test.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vhpop_plan_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="actions_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decompositions_test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
