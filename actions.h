@@ -288,7 +288,16 @@ private:
 
     /* Action that this step is instantiated from. */
     const Action* action_;
+
+    /* Equality operator for Steps. We assume every Step is uniquely identified by its id. */
+    friend bool operator==(const Step& s1, const Step& s2);
 };
+
+/* Equality operator for Steps. We assume every Step is uniquely identified by its id. */
+inline bool operator==(const Step& s1, const Step& s2) {
+    return s1.id_ == s2.id_;
+}
+
 
 
 /* ====================================================================== */
