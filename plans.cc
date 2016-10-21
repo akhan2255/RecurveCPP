@@ -2344,53 +2344,18 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
         for (int i = 0; i < applicable_decomposition->pseudo_steps().size(); ++i)
         {
             Step pseudo_step = applicable_decomposition->pseudo_steps()[i];
-            int old_step_id = pseudo_step.id();
-            
-            int new_step_id = num_steps() + 1 + i;
-            Step new_step = Step(new_step_id, pseudo_step.action());
-
-
-            // instance.swap_steps(pseudo_step, new_step);
-
-
+            Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
+            instance.swap_steps(pseudo_step, new_step); // replace and update references
         }
 
+        // TODO
+        // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // TODO
+        // 4. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
+        // decomposition link to plan
 
     }
-
-
-    
-
-
-
-    // 2. Create new steps out of all the decomposition's pseudo-steps
-    // TODO: Re-use of existing plan steps is possible, but we're ignoring that for now. See issue [#11]
-
-    // 3. Swap step id's in causal links, bindings, and orderings
-
-    // 4. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
-
-    // 5. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
-    // decomposition link to plan
 
 }
 
