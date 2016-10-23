@@ -80,6 +80,12 @@ struct Plan {
     /* Returns the bindings of this plan. */
     const Bindings* bindings() const;
 
+    /* Returns the decomposition frames of this plan. */
+    const Chain<DecompositionFrame>* decomposition_frames() const { return decomposition_frames_; }
+
+    /* Returns the number of decomposition frames in this plan. */
+    size_t num_decomposition_frames() const { return num_decomposition_frames_; }
+
     /* Returns the decomposition links of this plan. */
     const Chain<DecompositionLink>* decomposition_links() const { return decomposition_links_; }
 
@@ -157,6 +163,7 @@ struct Plan {
         const UnexpandedCompositeStep& unexpanded_step, int limit) const;
 
 private:
+
     /* List of plans. */
     struct PlanList : public std::vector < const Plan* > {
     };
@@ -178,6 +185,12 @@ private:
     
     /* Binding constraints of this plan. */
     const Bindings* bindings_;
+
+    /* Chain of decomposition frames. */
+    const Chain<DecompositionFrame>* decomposition_frames_;
+
+    /* Number of decomposition frames. */
+    size_t num_decomposition_frames_;
 
     /* Chain of decomposition links. */
     const Chain<DecompositionLink>* decomposition_links_;
@@ -211,6 +224,7 @@ private:
     
     /* Plan id (serial number). */
     mutable size_t id_;
+
 #ifdef DEBUG
     /* Depth of this plan in the search space. */
     size_t depth_;
@@ -224,6 +238,7 @@ private:
     Plan(const Chain<Step>* steps, size_t num_steps,
         const Chain<Link>* links, size_t num_links,
         const Orderings& orderings, const Bindings& bindings,
+        const Chain<DecompositionFrame>* decomposition_frames, size_t num_decomposition_frames,
         const Chain<DecompositionLink>* decomposition_links, size_t num_decomposition_links,
         const Chain<Unsafe>* unsafes, size_t num_unsafes,
         const Chain<OpenCondition>* open_conds, size_t num_open_conds,
