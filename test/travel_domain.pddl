@@ -7,8 +7,7 @@
 	)
     (:predicates
         (at			?thing - object		?place - place)
-        (in			?person - person	?vehicle - transport)
-        (has		?person - person	?tickets))
+        (in			?person - person	?vehicle - transport))
 		
 	;; A person travels from one place to another using some transport. 
 	(:action travel
