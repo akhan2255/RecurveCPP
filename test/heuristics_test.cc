@@ -9,7 +9,7 @@ namespace test
 	{
 	public:
 		
-		TEST_METHOD(FlawSelectionOrder_IsPoclComplete)
+		TEST_METHOD(IsPoclComplete)
 		{
             std::vector<FlawSelectionOrder> all_orders;
             all_orders.push_back(FlawSelectionOrder("UCPOP"));
@@ -53,7 +53,7 @@ namespace test
 
 		}
 
-        TEST_METHOD(FlawSelectionOrder_IsDecompositionComplete)
+        TEST_METHOD(IsDecompositionComplete)
         {
             FlawSelectionOrder longbow = FlawSelectionOrder("Longbow");
             Assert::IsTrue(longbow.is_decomposition_complete());
@@ -62,7 +62,7 @@ namespace test
             Assert::IsFalse(ucpop.is_decomposition_complete());
         }
 
-        TEST_METHOD(FlawSelectionOrder_SelectUnexpandedStep)
+        TEST_METHOD(SelectUnexpandedStep)
         {
             // Setup the Longbow* order
             std::vector<FlawSelectionOrder> orders;
