@@ -338,6 +338,10 @@ private:
     void handle_unexpanded_composite_step(PlanList& plans,
         const UnexpandedCompositeStep& unexpanded) const;
 
+    /* Handles an unexpanded composite step by adding a new decomposition frame. */
+    void add_decomposition_frame(PlanList& plans,
+        const UnexpandedCompositeStep& unexpanded, const Decomposition* expansion) const;
+
 
     friend bool operator<(const Plan& p1, const Plan& p2);
     friend std::ostream& operator<<(std::ostream& os, const Plan& p);

@@ -254,5 +254,4 @@ inline bool operator==(const DecompositionLink& l1, const DecompositionLink& l2)
 struct DecompositionSchemaMap : 
     public std::map < std::pair<std::string, std::string>, const DecompositionSchema* > {};
 
-
 #endif /* DECOMPOSITIONS_H */

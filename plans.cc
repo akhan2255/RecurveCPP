@@ -64,7 +64,9 @@ struct CompositeActionAchieverMap : public std::multimap < const Action*, const 
 /* Maps actions to decompositions. */
 static CompositeActionAchieverMap achieves_composite;
 
-
+/* Range of decompositions applicable to one composite action. */
+typedef std::pair <CompositeActionAchieverMap::const_iterator, CompositeActionAchieverMap::const_iterator> 
+    CompositeExpansionsRange;
 
 
 /* ====================================================================== */
@@ -2331,51 +2333,78 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
 
     // Find every applicable decomposition 
     const Action* composite_action = &(unexpanded.step()->action());
-    
-    std::pair <
-        std::multimap<const Action*, const Decomposition*>::const_iterator,
-        std::multimap<const Action*, const Decomposition*>::const_iterator
-    > decomposition_range;
-    
-    decomposition_range = achieves_composite.equal_range(composite_action);
-    
-    // Iterate over all applicable decompositions
-    std::multimap<const Action*, const Decomposition*>::const_iterator di;
-    for (di = decomposition_range.first; di != decomposition_range.second; ++di)
+    CompositeExpansionsRange decomposition_range = achieves_composite.equal_range(composite_action);
+
+    // If we found at least one element, process it.
+    // Otherwise, there's nothing to do.
+    if (decomposition_range.first != decomposition_range.second)
     {
-        // At this point, we're dealing with one applicable decomposition.
-        // Each decomposition leads to the creation of another plan on the fringe.
-        const Decomposition* applicable_decomposition = (*di).second;
-
-        // Instantiate the Decomposition
-        DecompositionFrame instance(*applicable_decomposition);
-
-        // The are two primary options:
-        // 1. Attempt to re-use existing plan steps.
-        // We're ignoring this option for now. See issue [#11].
-        // TODO
-        
-
-        // 2. Instantiate all pseudo-steps as wholly new steps.
-        // For each pseudo-step, create a new Step.
-        for (int i = 0; i < applicable_decomposition->pseudo_steps().size(); ++i)
+        // Iterate over all applicable decompositions
+        CompositeActionAchieverMap::const_iterator di;
+        for (di = decomposition_range.first; di != decomposition_range.second; ++di)
         {
-            Step pseudo_step = applicable_decomposition->pseudo_steps()[i];
-            Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
-            instance.swap_steps(pseudo_step, new_step); // replace and update references
+            // At this point, we're dealing with one applicable decomposition.
+            // Each decomposition leads to the creation of another plan on the fringe.
+            const Decomposition* applicable_decomposition = (*di).second;
+            add_decomposition_frame(plans, unexpanded, applicable_decomposition);
         }
+    }
+}
 
-        // TODO
-        // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
-        
 
-        // TODO
-        // 4. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
-        // decomposition link to plan
+/* Handles an unexpanded composite step by adding a new decomposition frame. */
+void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep& unexpanded,
+    const Decomposition* expansion) const
+{
+    // Instantiate the Decomposition
+    DecompositionFrame instance(*expansion);
 
+    // The are two primary options:
+    // 1. Attempt to re-use existing plan steps.
+    // We're ignoring this option for now. See issue [#11].
+    // TODO
+
+
+    // 2. Instantiate all pseudo-steps as wholly new steps.
+    // For each pseudo-step, create a new Step.
+    for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
+    {
+        Step pseudo_step = expansion->pseudo_steps()[i];
+        Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
+        instance.swap_steps(pseudo_step, new_step); // replace and update references
     }
 
+    // TODO
+    // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+
+
+    // TODO
+    // 4. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
+    // decomposition link to plan
+
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Less than operator for plans. */
