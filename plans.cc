@@ -2410,10 +2410,6 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
 
     // Find every applicable decomposition 
     const Action* composite_action = &(unexpanded.step_action());
-
-    int testid = 1 + composite_action->id();
-    
-
     CompositeExpansionsRange decomposition_range = achieves_composite.equal_range(composite_action);
 
     // If we found at least one element, process it.
@@ -2438,39 +2434,71 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
     const Decomposition* expansion) const
 {
     // Instantiate the Decomposition
-    //DecompositionFrame instance(*expansion);
+    DecompositionFrame instance(*expansion);
 
     // The are two primary options:
     // 1. Attempt to re-use existing plan steps.
-    // We're ignoring this option for now. See issue [#11].
-    // TODO
+    // We're ignoring this option for now. See issue [#11]. TODO
 
 
-    //// 2. Instantiate all pseudo-steps as wholly new steps.
-    //// For each pseudo-step, create a new Step.
-    //for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
-    //{
-    //    Step pseudo_step = expansion->pseudo_steps()[i];
-    //    Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
-    //    instance.swap_steps(pseudo_step, new_step); // replace and update references
-    //}
+    // 2. Instantiate all pseudo-steps as wholly new steps.
+    // For each pseudo-step, create a new Step.
+    for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
+    {
+        Step pseudo_step = expansion->pseudo_steps()[i];
+        Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
+        instance.swap_steps(pseudo_step, new_step); // replace and update references
+    }
 
-    //// 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
-    //const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
-    //new_decomposition_links = new Chain<DecompositionLink>(DecompositionLink(unexpanded.step_id(), instance), new_decomposition_links);
-    //int new_num_decomposition_links = num_decomposition_links() + 1;
+    // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+    const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
+    new_decomposition_links = new Chain<DecompositionLink>(DecompositionLink(unexpanded.step_id(), instance), new_decomposition_links);
+    size_t new_num_decomposition_links = num_decomposition_links() + 1;
 
-    //// 4. Create a new Decomposition Frame chain
-    //const Chain<DecompositionFrame>* new_decomposition_frames = decomposition_frames();
-    //new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
-    //int new_num_decomposition_frames = num_decomposition_frames() + 1;
+    // 4. Create a new Decomposition Frame chain
+    const Chain<DecompositionFrame>* new_decomposition_frames = decomposition_frames();
+    new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
+    int new_num_decomposition_frames = num_decomposition_frames() + 1;
 
-    //// 5. Attempt to add decomposition steps, causal links, bindings, orderings
-
-
+    // 5. Attempt to add decomposition steps, causal links, bindings, orderings
 
 
-    // Remove the unexpanded composite step flaw.
+    // 5a. Bindings
+    const Bindings* bindings = bindings_;
+    const Bindings* tmp_bindings = bindings->add(instance.binding_list(), false);
+
+    // If the Bindings are inconsistent, fail! Do cleanup of new Chains.
+    if (tmp_bindings == NULL) 
+    {
+        RCObject::ref(new_decomposition_links);
+        RCObject::destructive_deref(new_decomposition_links);
+        RCObject::ref(new_decomposition_frames);
+        RCObject::destructive_deref(new_decomposition_frames);
+    }
+
+    // If the Bindings are unchanged, delete the duplicate.
+    if (tmp_bindings == bindings) {
+        delete tmp_bindings;
+    }
+
+    bindings = tmp_bindings;
+
+
+    // 5b. Orderings
+
+    // 5c. Steps
+
+    // 5d. Causal Links
+
+    // 6. Detect open conditions
+
+    // 7. Detect threats
+
+
+
+
+
+    // n. Remove the unexpanded composite step flaw.
     const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps()->remove(unexpanded);
     size_t new_num_unexpanded_steps = num_unexpanded_steps() - 1;
 
@@ -2478,9 +2506,9 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
     plans.push_back(new Plan(
         steps(), num_steps(),
         links(), num_links(),
-        orderings(), *bindings(),
-        decomposition_frames(), num_decomposition_frames(),
-        decomposition_links(), num_decomposition_links(),
+        orderings(), *bindings,
+        new_decomposition_frames, new_num_decomposition_frames,
+        new_decomposition_links, new_num_decomposition_links,
         unsafes(), num_unsafes(),
         open_conds(), num_open_conds(),
         new_unexpanded_steps, new_num_unexpanded_steps,

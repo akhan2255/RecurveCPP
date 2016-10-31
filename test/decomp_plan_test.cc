@@ -23,13 +23,11 @@ namespace test
             params.flaw_orders = orders;
 
             // Find a plan
-            // This currently blows up->
             const Plan* plan = Plan::plan(*problem, params, true);
 
-            // TODO: UPDATE
             // For now, this plan should exist, and it should have a non-zero 
             // number of unexpanded composite step flaws.
-            // Assert::IsNull(plan, L"There should not be a plan that solves this problem.");
+            Assert::IsNotNull(plan, L"There should not be a plan that solves this problem.");
 
 
 
