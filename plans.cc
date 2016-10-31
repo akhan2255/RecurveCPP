@@ -1409,14 +1409,16 @@ int Plan::separate(PlanList& plans, const Unsafe& unsafe,
                     }
                 }
                 if (new_orderings != NULL) {
-                    plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
+                    plans.push_back(new Plan(
+                        steps(), num_steps(), 
+                        links(), num_links(),
                         *new_orderings, *bindings,
                         decomposition_frames(), num_decomposition_frames(),
                         decomposition_links(), num_decomposition_links(),
                         unsafes()->remove(unsafe),
                         num_unsafes() - 1,
                         new_open_conds, new_num_open_conds,
-                        NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+                        unexpanded_steps(), num_unexpanded_steps(), // NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                         mutex_threats(), this));
                 }
                 else {
@@ -1584,7 +1586,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
                     decomposition_links(), num_decomposition_links(),
                     unsafes(), num_unsafes(),
                     new_open_conds, new_num_open_conds,
-                    NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+                    unexpanded_steps(), num_unexpanded_steps(), // NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                     mutex_threats()->remove(mutex_threat), this));
             }
             else {
@@ -1653,7 +1655,7 @@ void Plan::separate(PlanList& plans, const MutexThreat& mutex_threat,
                             decomposition_links(), num_decomposition_links(),
                             unsafes(), num_unsafes(),
                             new_open_conds, new_num_open_conds,
-                            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+                            unexpanded_steps(), num_unexpanded_steps(),  // NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                             mutex_threats()->remove(mutex_threat),
                             this));
                     }
@@ -1708,7 +1710,7 @@ void Plan::new_ordering(PlanList& plans, size_t before_id, StepTime t1,
             decomposition_links(), num_decomposition_links(),
             unsafes(), num_unsafes(),
             open_conds(), num_open_conds(),
-            NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+            unexpanded_steps(), num_unexpanded_steps(), // NULL, 0, /* TODO: Fix the unexpanded composite step handling */
             mutex_threats()->remove(mutex_threat), this));
     }
 }
@@ -1813,9 +1815,7 @@ void Plan::handle_open_condition(PlanList& plans, const OpenCondition& open_cond
             reuse_step(plans, *literal, open_cond, *achievers);
         }
 
-        std::cout << "Hello";
-
-        const Negation* negation = dynamic_cast<const Negation*>(literal); // this is where the unexpanded step ref gets corrupted
+        const Negation* negation = dynamic_cast<const Negation*>(literal); 
         if (negation != NULL) 
         {
             new_cw_link(plans, problem->init_action().effects(), *negation, open_cond);
@@ -1845,25 +1845,32 @@ void Plan::handle_open_condition(PlanList& plans, const OpenCondition& open_cond
 
 
 /* Handles a disjunctive open condition. */
-int Plan::handle_disjunction(PlanList& plans, const Disjunction& disj,
-    const OpenCondition& open_cond,
-    bool test_only) const {
+int Plan::handle_disjunction(PlanList& plans, const Disjunction& disj, const OpenCondition& open_cond,
+    bool test_only) const 
+{
     int count = 0;
     const FormulaList& disjuncts = disj.disjuncts();
-    for (FormulaList::const_iterator fi = disjuncts.begin();
-        fi != disjuncts.end(); fi++) {
+    
+    for (FormulaList::const_iterator fi = disjuncts.begin(); fi != disjuncts.end(); fi++) 
+    {
         BindingList new_bindings;
         const Chain<OpenCondition>* new_open_conds =
             test_only ? NULL : open_conds()->remove(open_cond);
+        
         size_t new_num_open_conds = test_only ? 0 : num_open_conds() - 1;
+        
         bool added = add_goal(new_open_conds, new_num_open_conds, new_bindings,
             **fi, open_cond.step_id(), test_only);
+        
         if (!test_only) {
             RCObject::ref(new_open_conds);
         }
-        if (added) {
+        
+        if (added) 
+        {
             const Bindings* bindings = bindings_->add(new_bindings, test_only);
-            if (bindings != NULL) {
+            if (bindings != NULL) 
+            {
                 if (!test_only) {
                     plans.push_back(new Plan(steps(), num_steps(), links(), num_links(),
                         orderings(), *bindings,
@@ -1871,7 +1878,7 @@ int Plan::handle_disjunction(PlanList& plans, const Disjunction& disj,
                         decomposition_links(), num_decomposition_links(),
                         unsafes(), num_unsafes(),
                         new_open_conds, new_num_open_conds,
-                        NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+                        unexpanded_steps(), num_unexpanded_steps(), 
                         mutex_threats(), this));
                 }
                 count++;
@@ -1921,9 +1928,8 @@ int Plan::handle_inequality(PlanList& plans, const Inequality& neq,
                     decomposition_frames(), num_decomposition_frames(),
                     decomposition_links(), num_decomposition_links(),
                     unsafes(), num_unsafes(),
-                    open_conds()->remove(open_cond),
-                    num_open_conds() - 1,
-                    NULL, 0, /* TODO: Fix the unexpanded composite step handling */
+                    open_conds()->remove(open_cond), num_open_conds() - 1,
+                    unexpanded_steps(), num_unexpanded_steps(), // NULL, 0, /* TODO: Fix the unexpanded composite step handling */
                     mutex_threats(), this));
             }
             count++;
@@ -1979,6 +1985,8 @@ void Plan::add_step(PlanList& plans, const Literal& literal, const OpenCondition
         {
             // Get the effect of the action needed to satisfy the open condition,
             const Effect& effect = *(*ai).second;
+
+
 
             // Add a new causal link
             new_link(plans, Step(num_steps() + 1, action), effect, literal, open_cond);
@@ -2124,10 +2132,12 @@ int Plan::new_cw_link(PlanList& plans, const EffectList& effects,
             if (!test_only) {
                 const Chain<Unsafe>* new_unsafes = unsafes();
                 size_t new_num_unsafes = num_unsafes();
+                
                 const Chain<Link>* new_links =
                     new Chain<Link>(Link(0, StepTime::AT_END, open_cond), links());
-                link_threats(new_unsafes, new_num_unsafes, new_links->head, steps(),
-                    orderings(), *bindings);
+                
+                link_threats(new_unsafes, new_num_unsafes, new_links->head, steps(), orderings(), *bindings);
+
                 plans.push_back(new Plan(steps(), num_steps(),
                     new_links, num_links() + 1,
                     orderings(), *bindings,
@@ -2135,7 +2145,7 @@ int Plan::new_cw_link(PlanList& plans, const EffectList& effects,
                     decomposition_links(), num_decomposition_links(), // TODO: Fix unexpanded composite step handling
                     new_unsafes, new_num_unsafes,
                     new_open_conds, new_num_open_conds,
-                    NULL, 0, // TODO: Fix the unexpanded composite step handling 
+                    unexpanded_steps(), num_unexpanded_steps(), // NULL, 0, // TODO: Fix the unexpanded composite step handling 
                     mutex_threats(), this));
             }
             count++;
@@ -2331,18 +2341,20 @@ int Plan::make_link(
         }
 
         // If this is a new composite step, register an unexpanded composite step flaw
-        const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
+        const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = nullptr;
         size_t new_num_unexpanded_steps = num_unexpanded_steps();
         if (step.id() > num_steps()) 
         {
             if (step.action().composite())
             {
-                const UnexpandedCompositeStep* ucs = new UnexpandedCompositeStep(step);
-
-                new_unexpanded_steps = new Chain<UnexpandedCompositeStep>(*ucs, new_unexpanded_steps);
+                new_unexpanded_steps = new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(&step), unexpanded_steps());
                 new_num_unexpanded_steps++;
             }
 
+            else
+            {
+                new_unexpanded_steps = unexpanded_steps();
+            }
         }
 
         // Adds the new plan.
@@ -2383,7 +2395,7 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
     // Create a new plan that resolves the unexpanded composite step.
 
     // Find every applicable decomposition 
-    const Action* composite_action = &(unexpanded.step().action());
+    const Action* composite_action = &(unexpanded.step_action());
 
     int testid = 1 + composite_action->id();
     
