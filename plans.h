@@ -343,6 +343,8 @@ private:
         const UnexpandedCompositeStep& unexpanded, const Decomposition* expansion) const;
 
 
+
+
     friend bool operator<(const Plan& p1, const Plan& p2);
     friend std::ostream& operator<<(std::ostream& os, const Plan& p);
 };

@@ -200,11 +200,15 @@ inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
    steps. */
 struct UnexpandedCompositeStep : public Flaw {
 
+    /* Constructs an unexpanded composite step flaw from a step. */
+    UnexpandedCompositeStep(const Step& unexpanded_step) : unexpanded_step_(&unexpanded_step) {}
+
     /* Constructs an unexpanded composite step flaw. */
-    UnexpandedCompositeStep(const Step* unexpanded_step) : unexpanded_step_(unexpanded_step) {}
+    UnexpandedCompositeStep(const UnexpandedCompositeStep& ucs)
+        : unexpanded_step_(ucs.unexpanded_step_) {}
 
     /* Returns the unexpanded composite step. */
-    const Step* step() const { return unexpanded_step_; }
+    const Step& step() const { return *unexpanded_step_; }
 
     /* Returns the id of the unexpanded composite step. */
     int step_id() const { return unexpanded_step_->id(); }

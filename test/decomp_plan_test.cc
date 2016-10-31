@@ -24,7 +24,7 @@ namespace test
 
             // Find a plan
             // This currently blows up->
-            //const Plan* plan = Plan::plan(*problem, params, true);
+            const Plan* plan = Plan::plan(*problem, params, true);
 
             // TODO: UPDATE
             // For now, this plan should exist, and it should have a non-zero 

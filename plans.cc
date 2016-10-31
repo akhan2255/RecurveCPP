@@ -822,61 +822,76 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
             
             /* Add children to queue of pending plans. */
             bool added = false;
-            for (PlanList::const_iterator pi = refinements.begin();
-                pi != refinements.end(); pi++) {
+
+            for (PlanList::const_iterator pi = refinements.begin(); pi != refinements.end(); pi++) 
+            {
                 const Plan& new_plan = **pi;
+                
                 /* N.B. Must set id before computing rank, because it may be used. */
                 new_plan.id_ = num_generated_plans;
+                
                 if (new_plan.primary_rank() != std::numeric_limits<float>::infinity()
-                    && (generated_plans[current_flaw_order]
-                    < params->search_limits[current_flaw_order])) {
-                    if (params->search_algorithm == Parameters::IDA_STAR
-                        && new_plan.primary_rank() > f_limit) {
+                    && (generated_plans[current_flaw_order] < params->search_limits[current_flaw_order])) 
+                {
+                    if (params->search_algorithm == Parameters::IDA_STAR && new_plan.primary_rank() > f_limit) 
+                    {
                         next_f_limit = std::min(next_f_limit, new_plan.primary_rank());
                         delete &new_plan;
                         continue;
                     }
+
                     if (!added && static_pred_flaw) {
                         num_static++;
                     }
+
                     added = true;
                     plans[current_flaw_order].push(&new_plan);
                     generated_plans[current_flaw_order]++;
                     num_generated_plans++;
-                    if (verbosity > 2) {
+                    
+                    if (verbosity > 2) 
+                    {
                         std::cerr << std::endl << "####CHILD (id " << new_plan.id_ << ")"
                             << " with rank (" << new_plan.primary_rank();
+
                         for (size_t ri = 1; ri < new_plan.rank_.size(); ri++) {
                             std::cerr << ',' << new_plan.rank_[ri];
                         }
+
                         std::cerr << "):" << std::endl << new_plan << std::endl;
                     }
                 }
+
                 else {
                     delete &new_plan;
                 }
             }
+
             if (!added) {
                 num_dead_ends++;
             }
 
-            /*
-             * Process next plan.
-             */
+            /* Process next plan. */
             bool limit_reached = false;
-            if ((limit_reached = (generated_plans[current_flaw_order]
-                >= params->search_limits[current_flaw_order]))
-                || generated_plans[current_flaw_order] >= next_switch) {
-                if (verbosity > 1) {
+            if ((limit_reached = (generated_plans[current_flaw_order] >= params->search_limits[current_flaw_order]))
+                || generated_plans[current_flaw_order] >= next_switch) 
+            {
+                if (verbosity > 1) 
+                {
                     std::cerr << "time to switch ("
                         << generated_plans[current_flaw_order] << ")" << std::endl;
                 }
-                if (limit_reached) {
+
+                if (limit_reached) 
+                {
                     flaw_orders_left--;
+                
                     /* Discard the rest of the plan queue. */
                     dead_queues.push_back(&plans[current_flaw_order]);
                 }
-                if (flaw_orders_left > 0) {
+
+                if (flaw_orders_left > 0) 
+                {
                     do {
                         current_flaw_order++;
                         if (verbosity > 1) {
@@ -895,6 +910,7 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                     }
                 }
             }
+
             if (flaw_orders_left > 0) {
                 if (generated_plans[current_flaw_order] == 0) {
                     current_plan = initial_plan;
@@ -905,25 +921,28 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                     if (current_plan != initial_plan) {
                         delete current_plan;
                     }
+                    
+                    /* Problem lacks solution. */
                     if (plans[current_flaw_order].empty()) {
-                        /* Problem lacks solution. */
                         current_plan = NULL;
                     }
-                    else {
+
+                    /* Get the next plan off the fringe for the current flaw order. */
+                    else 
+                    {
                         current_plan = plans[current_flaw_order].top();
                         plans[current_flaw_order].pop();
                     }
                 }
-                /*
-                 * Instantiate all actions if the plan is otherwise complete.
-                 */
+
+                /* Instantiate all actions if the plan is otherwise complete. */
                 bool instantiated = params->ground_actions;
-                while (current_plan != NULL && current_plan->complete()
-                    && !instantiated) {
-                    const Bindings* new_bindings =
-                        step_instantiation(current_plan->steps(), 0,
-                        *current_plan->bindings_);
-                    if (new_bindings != NULL) {
+                while (current_plan != NULL && current_plan->complete() && !instantiated) 
+                {
+                    const Bindings* new_bindings = step_instantiation(current_plan->steps(), 0, *current_plan->bindings_);
+                    
+                    if (new_bindings != NULL) 
+                    {
                         instantiated = true;
                         if (new_bindings != current_plan->bindings_) 
                         {
@@ -944,20 +963,25 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
                             current_plan = inst_plan;
                         }
                     }
+
+                    /* Problem lacks solution. */
                     else if (plans[current_flaw_order].empty()) {
-                        /* Problem lacks solution. */
                         current_plan = NULL;
                     }
+
                     else {
                         current_plan = plans[current_flaw_order].top();
                         plans[current_flaw_order].pop();
                     }
                 }
             }
-            else {
+
+            else 
+            {   
                 if (next_f_limit != std::numeric_limits<float>::infinity()) {
                     current_plan = NULL;
                 }
+
                 break;
             }
         }
@@ -974,8 +998,10 @@ const Plan* Plan::plan(const Problem& problem, const Parameters& p, bool last_pr
             if (current_plan != NULL && current_plan != initial_plan) {
                 delete current_plan;
             }
+
             current_plan = initial_plan;
         }
+
     } while (f_limit != std::numeric_limits<float>::infinity());
     // END DO-WHILE
 
@@ -1787,7 +1813,9 @@ void Plan::handle_open_condition(PlanList& plans, const OpenCondition& open_cond
             reuse_step(plans, *literal, open_cond, *achievers);
         }
 
-        const Negation* negation = dynamic_cast<const Negation*>(literal);
+        std::cout << "Hello";
+
+        const Negation* negation = dynamic_cast<const Negation*>(literal); // this is where the unexpanded step ref gets corrupted
         if (negation != NULL) 
         {
             new_cw_link(plans, problem->init_action().effects(), *negation, open_cond);
@@ -2193,35 +2221,51 @@ int Plan::make_link(
     const Bindings* bindings = bindings_;
     const Chain<Step>* new_steps = test_only ? NULL : steps();
     int new_num_steps = test_only ? 0 : num_steps();
-    if (step.id() > num_steps()) {
-        if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
-            step.action().condition(), step.id(), test_only)) {
-            if (!test_only) {
+    if (step.id() > num_steps()) 
+    {
+        if (!add_goal(new_open_conds, new_num_open_conds, new_bindings, 
+                step.action().condition(), step.id(), test_only)) 
+        {
+            if (!test_only) 
+            {
                 RCObject::ref(new_open_conds);
                 RCObject::destructive_deref(new_open_conds);
             }
+
             return 0;
         }
-        if (params->domain_constraints) {
+
+        if (params->domain_constraints) 
+        {
             bindings = bindings->add(step.id(), step.action(), *planning_graph);
-            if (bindings == NULL) {
-                if (!test_only) {
+            
+            if (bindings == NULL) 
+            {
+                if (!test_only) 
+                {
                     RCObject::ref(new_open_conds);
                     RCObject::destructive_deref(new_open_conds);
                 }
+
                 return 0;
             }
         }
-        if (!test_only) {
+
+        if (!test_only) 
+        {
             new_steps = new Chain<Step>(step, new_steps);
             new_num_steps++;
         }
     }
+
     const Bindings* tmp_bindings = bindings->add(new_bindings, test_only);
+    
     if ((test_only || tmp_bindings != bindings) && bindings != bindings_) {
         delete bindings;
     }
-    if (tmp_bindings == NULL) {
+
+    if (tmp_bindings == NULL) 
+    {
         if (!test_only) {
             RCObject::ref(new_open_conds);
             RCObject::destructive_deref(new_open_conds);
@@ -2230,34 +2274,40 @@ int Plan::make_link(
             return 0;
         }
     }
-    if (!test_only) {
+
+    if (!test_only) 
+    {
         bindings = tmp_bindings;
         StepTime et = end_time(effect);
         StepTime gt = start_time(open_cond.when());
+        
         const Orderings* new_orderings =
             orderings().refine(Ordering(step.id(), et, open_cond.step_id(), gt),
-            step, planning_graph,
+                                step, planning_graph,
             params->ground_actions ? NULL : bindings);
-        if (new_orderings != NULL && !cond_goal->tautology()
-            && planning_graph != NULL) {
-            const TemporalOrderings* to =
-                dynamic_cast<const TemporalOrderings*>(new_orderings);
+
+        if (new_orderings != NULL && !cond_goal->tautology() && planning_graph != NULL) 
+        {
+            const TemporalOrderings* to = dynamic_cast<const TemporalOrderings*>(new_orderings);
+            
             if (to != NULL) {
                 HeuristicValue h, hs;
-                cond_goal->heuristic_value(h, hs, *planning_graph, step.id(),
-                    params->ground_actions ? NULL : bindings);
-                const Orderings* tmp_orderings = to->refine(step.id(), hs.makespan(),
-                    h.makespan());
+                cond_goal->heuristic_value(h, hs, *planning_graph, step.id(), params->ground_actions ? NULL : bindings);
+                const Orderings* tmp_orderings = to->refine(step.id(), hs.makespan(), h.makespan());
+                
                 if (tmp_orderings != new_orderings) {
                     delete new_orderings;
                     new_orderings = tmp_orderings;
                 }
             }
         }
-        if (new_orderings == NULL) {
+
+        if (new_orderings == NULL) 
+        {
             if (bindings != bindings_) {
                 delete bindings;
             }
+        
             RCObject::ref(new_open_conds);
             RCObject::destructive_deref(new_open_conds);
             RCObject::ref(new_steps);
@@ -2287,9 +2337,9 @@ int Plan::make_link(
         {
             if (step.action().composite())
             {
-                new_unexpanded_steps =
-                    new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(&step), 
-                    new_unexpanded_steps);
+                const UnexpandedCompositeStep* ucs = new UnexpandedCompositeStep(step);
+
+                new_unexpanded_steps = new Chain<UnexpandedCompositeStep>(*ucs, new_unexpanded_steps);
                 new_num_unexpanded_steps++;
             }
 
@@ -2301,13 +2351,14 @@ int Plan::make_link(
             new_links, num_links() + 1, 
             *new_orderings, *bindings,
             decomposition_frames(), num_decomposition_frames(),
-            decomposition_links(), num_decomposition_links(), // TODO FIX
+            decomposition_links(), num_decomposition_links(), 
             new_unsafes, new_num_unsafes,
             new_open_conds, new_num_open_conds,
             new_unexpanded_steps, new_num_unexpanded_steps,
             new_mutex_threats, 
             this));
     }
+
     return 1;
 }
 
@@ -2332,7 +2383,11 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
     // Create a new plan that resolves the unexpanded composite step.
 
     // Find every applicable decomposition 
-    const Action* composite_action = &(unexpanded.step()->action());
+    const Action* composite_action = &(unexpanded.step().action());
+
+    int testid = 1 + composite_action->id();
+    
+
     CompositeExpansionsRange decomposition_range = achieves_composite.equal_range(composite_action);
 
     // If we found at least one element, process it.
@@ -2357,7 +2412,7 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
     const Decomposition* expansion) const
 {
     // Instantiate the Decomposition
-    DecompositionFrame instance(*expansion);
+    //DecompositionFrame instance(*expansion);
 
     // The are two primary options:
     // 1. Attempt to re-use existing plan steps.
@@ -2365,24 +2420,46 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
     // TODO
 
 
-    // 2. Instantiate all pseudo-steps as wholly new steps.
-    // For each pseudo-step, create a new Step.
-    for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
-    {
-        Step pseudo_step = expansion->pseudo_steps()[i];
-        Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
-        instance.swap_steps(pseudo_step, new_step); // replace and update references
-    }
+    //// 2. Instantiate all pseudo-steps as wholly new steps.
+    //// For each pseudo-step, create a new Step.
+    //for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
+    //{
+    //    Step pseudo_step = expansion->pseudo_steps()[i];
+    //    Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
+    //    instance.swap_steps(pseudo_step, new_step); // replace and update references
+    //}
 
-    // TODO
-    // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+    //// 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+    //const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
+    //new_decomposition_links = new Chain<DecompositionLink>(DecompositionLink(unexpanded.step_id(), instance), new_decomposition_links);
+    //int new_num_decomposition_links = num_decomposition_links() + 1;
+
+    //// 4. Create a new Decomposition Frame chain
+    //const Chain<DecompositionFrame>* new_decomposition_frames = decomposition_frames();
+    //new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
+    //int new_num_decomposition_frames = num_decomposition_frames() + 1;
+
+    //// 5. Attempt to add decomposition steps, causal links, bindings, orderings
 
 
-    // TODO
-    // 4. Create a new plan with added decomposition step, steps, causal links, bindings, orderings, and 
-    // decomposition link to plan
 
-    
+
+    // Remove the unexpanded composite step flaw.
+    const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps()->remove(unexpanded);
+    size_t new_num_unexpanded_steps = num_unexpanded_steps() - 1;
+
+
+    plans.push_back(new Plan(
+        steps(), num_steps(),
+        links(), num_links(),
+        orderings(), *bindings(),
+        decomposition_frames(), num_decomposition_frames(),
+        decomposition_links(), num_decomposition_links(),
+        unsafes(), num_unsafes(),
+        open_conds(), num_open_conds(),
+        new_unexpanded_steps, new_num_unexpanded_steps,
+        mutex_threats(),
+        this));
 }
 
 
