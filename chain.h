@@ -32,8 +32,10 @@
  */
 template<typename T>
 struct Chain : RCObject {
+
   /* The data at this location in the chain. */
   T head;
+  
   /* The rest of the chain. */
   const Chain<T>* tail;
 
