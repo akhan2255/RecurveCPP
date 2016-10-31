@@ -201,17 +201,15 @@ inline bool operator==(const MutexThreat& mt1, const MutexThreat& mt2) {
 struct UnexpandedCompositeStep : public Flaw {
 
     /* Constructs an unexpanded composite step flaw from a step. */
-    UnexpandedCompositeStep(const Step& unexpanded_step) : unexpanded_step_(&unexpanded_step) {}
-
-    /* Constructs an unexpanded composite step flaw. */
-    UnexpandedCompositeStep(const UnexpandedCompositeStep& ucs)
-        : unexpanded_step_(ucs.unexpanded_step_) {}
-
-    /* Returns the unexpanded composite step. */
-    const Step& step() const { return *unexpanded_step_; }
+    UnexpandedCompositeStep(const Step* unexpanded_step) :
+        unexpanded_step_id_(unexpanded_step->id()),
+        action_(&(unexpanded_step->action())) {} 
 
     /* Returns the id of the unexpanded composite step. */
-    int step_id() const { return unexpanded_step_->id(); }
+    int step_id() const { return unexpanded_step_id_; }
+
+    /* Returns the action of the unexpanded composite step. */
+    const Action& step_action() const { return *action_; }
 
     /* Prints this object on the given stream. */
     virtual void print(std::ostream& os, const Bindings& bindings) const;
@@ -219,7 +217,10 @@ struct UnexpandedCompositeStep : public Flaw {
 private:
 
     /* Id of the unexpanded composite step. */
-    const Step* unexpanded_step_;
+    int unexpanded_step_id_;
+
+    /* Action schema of the step that is unexpanded. */
+    const Action* action_;
 
 };
 
