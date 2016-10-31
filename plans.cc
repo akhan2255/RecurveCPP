@@ -2195,34 +2195,48 @@ int Plan::make_link(
         test_only ? NULL : open_conds()->remove(open_cond);
     size_t new_num_open_conds = test_only ? 0 : num_open_conds() - 1;
     const Formula* cond_goal = &(effect.condition() && effect.link_condition());
-    if (!cond_goal->tautology()) {
-        if (!test_only) {
+    if (!cond_goal->tautology()) 
+    {
+        if (!test_only) 
+        {
             size_t n = effect.arity();
-            if (n > 0) {
-                for (size_t i = 0; i < n; i++) {
+            if (n > 0) 
+            {
+                for (size_t i = 0; i < n; i++) 
+                {
                     Variable vi = effect.parameter(i);
-                    if (forall_subst.find(vi) == forall_subst.end()) {
+                    if (forall_subst.find(vi) == forall_subst.end()) 
+                    {
                         Variable v = TermTable::add_variable(TermTable::type(vi));
                         forall_subst.insert(std::make_pair(vi, v));
                     }
                 }
+
                 const Formula* old_cond_goal = cond_goal;
                 cond_goal = &cond_goal->substitution(forall_subst);
-                if (old_cond_goal != cond_goal) {
+                
+                if (old_cond_goal != cond_goal) 
+                {
                     Formula::register_use(old_cond_goal);
                     Formula::unregister_use(old_cond_goal);
                 }
             }
         }
+
         bool added = add_goal(new_open_conds, new_num_open_conds, new_bindings,
             *cond_goal, step.id(), test_only);
+        
         Formula::register_use(cond_goal);
         Formula::unregister_use(cond_goal);
-        if (!added) {
-            if (!test_only) {
+        
+        if (!added) 
+        {
+            if (!test_only) 
+            {
                 RCObject::ref(new_open_conds);
                 RCObject::destructive_deref(new_open_conds);
             }
+
             return 0;
         }
     }
