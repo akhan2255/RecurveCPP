@@ -2430,7 +2430,7 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
 
 
 /* Handles an unexpanded composite step by adding a new decomposition frame. */
-void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep& unexpanded,
+int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep& unexpanded,
     const Decomposition* expansion) const
 {
     // Instantiate the Decomposition
@@ -2462,7 +2462,6 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
 
     // 5. Attempt to add decomposition steps, causal links, bindings, orderings
 
-
     // 5a. Bindings
     const Bindings* bindings = bindings_;
     const Bindings* tmp_bindings = bindings->add(instance.binding_list(), false);
@@ -2474,6 +2473,7 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
         RCObject::destructive_deref(new_decomposition_links);
         RCObject::ref(new_decomposition_frames);
         RCObject::destructive_deref(new_decomposition_frames);
+        return errno;
     }
 
     // If the Bindings are unchanged, delete the duplicate.
@@ -2485,8 +2485,27 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
 
 
     // 5b. Orderings
+    const Orderings* new_orderings = &orderings();
+
+    for (int i = 0; i < instance.ordering_list().size(); ++i)
+    {
+        new_orderings = new_orderings->refine((instance.ordering_list()[i]));
+
+        // If after adding the next ordering, the orderings become inconsistent, fail!
+        if (new_orderings == NULL)
+        {
+            RCObject::ref(new_decomposition_links);
+            RCObject::destructive_deref(new_decomposition_links);
+            RCObject::ref(new_decomposition_frames);
+            RCObject::destructive_deref(new_decomposition_frames);
+            delete bindings;
+            return errno;
+        }
+    }
 
     // 5c. Steps
+
+    // 5c.i. Detect unexpanded composite steps.
 
     // 5d. Causal Links
 
@@ -2514,6 +2533,8 @@ void Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeSte
         new_unexpanded_steps, new_num_unexpanded_steps,
         mutex_threats(),
         this));
+
+    return 0;
 }
 
 
