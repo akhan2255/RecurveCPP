@@ -484,26 +484,34 @@ BinaryOrderings::refine(const Ordering& new_ordering) const {
 const BinaryOrderings*
 BinaryOrderings::refine(const Ordering& new_ordering,
 			const Step& new_step, const PlanningGraph* pg,
-			const Bindings* bindings) const {
-  if (new_step.id() != 0 && new_step.id() != Plan::GOAL_ID) {
-    BinaryOrderings& orderings = *new BinaryOrderings(*this);
-    std::map<size_t, BoolVector*> own_data;
-    if (new_step.id() > (int) before_.size() + 1) {
-      if (new_step.id() > 1) {
-	BoolVector* bv = new BoolVector(2*new_step.id() - 2, false);
-	own_data.insert(std::make_pair(orderings.before_.size(), bv));
-	orderings.before_.push_back(bv);
-	BoolVector::register_use(bv);
-      }
+			const Bindings* bindings) const 
+{
+    if (new_step.id() != 0 && new_step.id() != Plan::GOAL_ID) 
+    {
+        BinaryOrderings& orderings = *new BinaryOrderings(*this);
+        std::map<size_t, BoolVector*> own_data;
+        
+        if (new_step.id() > (int)before_.size() + 1) 
+        {
+            if (new_step.id() > 1) 
+            {
+                BoolVector* bv = new BoolVector(2 * new_step.id() - 2, false);
+                own_data.insert(std::make_pair(orderings.before_.size(), bv));
+                orderings.before_.push_back(bv);
+                BoolVector::register_use(bv);
+            }
+        }
+
+        if (new_ordering.before_id() != 0 && new_ordering.after_id() != Plan::GOAL_ID) {
+            orderings.fill_transitive(own_data, new_ordering);
+        }
+
+        return &orderings;
     }
-    if (new_ordering.before_id() != 0
-	&& new_ordering.after_id() != Plan::GOAL_ID) {
-      orderings.fill_transitive(own_data, new_ordering);
+
+    else {
+        return this;
     }
-    return &orderings;
-  } else {
-    return this;
-  }
 }
 
 
@@ -649,26 +657,28 @@ BinaryOrderings::set_before(std::map<size_t, BoolVector*>& own_data,
 
 
 /* Updates the transitive closure given a new ordering constraint. */
-void BinaryOrderings::fill_transitive(std::map<size_t, BoolVector*>& own_data,
-				      const Ordering& ordering) {
-  size_t i = ordering.before_id();
-  size_t j = ordering.after_id();
-  if (!before(i, j)) {
-    /*
-     * All steps ordered before i (and i itself) must be ordered
-     * before j and all steps ordered after j.
-     */
-    size_t n = before_.size() + 1;
-    for (size_t k = 1; k <= n; k++) {
-      if ((k == i || before(k, i)) && !before(k, j)) {
-	for (size_t l = 1; l <= n; l++) {
-	  if ((j == l || before(j, l)) && !before(k, l)) {
-	    set_before(own_data, k, l);
-	  }
-	}
-      }
+void BinaryOrderings::fill_transitive(std::map<size_t, BoolVector*>& own_data, const Ordering& ordering) 
+{
+    size_t i = ordering.before_id();
+    size_t j = ordering.after_id();
+    
+    if (!before(i, j)) 
+    {
+        // All steps ordered before i (and i itself) must be ordered before j and all steps ordered after j.
+        size_t n = before_.size() + 1;
+        for (size_t k = 1; k <= n; k++) 
+        {
+            if ((k == i || before(k, i)) && !before(k, j)) 
+            {
+                for (size_t l = 1; l <= n; l++) 
+                {
+                    if ((j == l || before(j, l)) && !before(k, l)) {
+                        set_before(own_data, k, l);
+                    }
+                }
+            }
+        }
     }
-  }
 }
 
 
