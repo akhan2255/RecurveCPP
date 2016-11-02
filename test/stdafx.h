@@ -17,6 +17,7 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
+#include <algorithm>
 #include "../formulas.h"
 #include "../expressions.h"
 #include "../terms.h"

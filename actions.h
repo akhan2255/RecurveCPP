@@ -281,6 +281,9 @@ struct Step {
     /* Returns the action that this step is instantiated from. */
     const Action& action() const { return *action_; }
 
+    /* Less-than operator for Steps. Less than follows from the comparison of step ids.*/
+    bool operator<(const Step& other) const { return id_ < other.id_; }
+
 private:
 
     /* Step id. */
@@ -297,7 +300,6 @@ private:
 inline bool operator==(const Step& s1, const Step& s2) {
     return s1.id_ == s2.id_;
 }
-
 
 
 /* ====================================================================== */

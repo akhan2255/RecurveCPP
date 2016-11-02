@@ -33,5 +33,30 @@ namespace test
             fly.add_parameter(to);
 		}
 
+        TEST_METHOD(StepListSort)
+        {
+            // Setup
+            read_file("..\\test\\travel_domain.pddl");
+            read_file("..\\test\\travel_problem.pddl");
+            const Domain* domain = Domain::find("travel");
+            const Problem* problem = Problem::find("travel-to-la");
+
+
+            Step get_in_car(1, *(dynamic_cast<const Action*>(domain->find_action("get-in-car"))));
+            Step drive(2, *(dynamic_cast<const Action*>(domain->find_action("drive"))));
+            Step get_out_of_car(3, *(dynamic_cast<const Action*>(domain->find_action("get-out-of-car"))));
+
+            StepList l;
+            l.push_back(get_out_of_car);
+            l.push_back(get_in_car);
+            l.push_back(drive);
+
+            std::sort(l.begin(), l.end());
+
+            Assert::AreEqual(1, l[0].id());
+            Assert::AreEqual(2, l[1].id());
+            Assert::AreEqual(3, l[2].id());
+        }
+
 	};
 }
