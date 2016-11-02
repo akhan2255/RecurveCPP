@@ -618,41 +618,53 @@ BinaryOrderings::schedule(std::map<size_t, float>& start_times,
 
 
 /* Returns true iff the first step is ordered before the second step. */
-bool BinaryOrderings::before(int id1, int id2) const {
-  if (id1 == id2) {
-    return false;
-  } else if (id1 < id2) {
-    return (*before_[id2 - 2])[id1 - 1];
-  } else {
-    return (*before_[id1 - 2])[2*id1 - 2 - id2];
-  }
+bool BinaryOrderings::before(int id1, int id2) const
+{
+    if (id1 == id2) {
+        return false;
+    }
+
+    else if (id1 < id2) {
+        return (*before_[id2 - 2])[id1 - 1];
+    }
+
+    else {
+        return (*before_[id1 - 2])[2 * id1 - 2 - id2];
+    }
 }
 
 
 /* Orders the first step before the second step. */
-void
-BinaryOrderings::set_before(std::map<size_t, BoolVector*>& own_data,
-			    int id1, int id2) {
-  if (id1 != id2) {
-    size_t i = std::max(id1, id2) - 2;
-    BoolVector* bv;
-    std::map<size_t, BoolVector*>::const_iterator vi = own_data.find(i);
-    if (vi != own_data.end()) {
-      bv = (*vi).second;
-    } else {
-      const BoolVector* old_bv = before_[i];
-      bv = new BoolVector(*old_bv);
-      BoolVector::register_use(bv);
-      BoolVector::unregister_use(old_bv);
-      before_[i] = bv;
-      own_data.insert(std::make_pair(i, bv));
+void BinaryOrderings::set_before(std::map<size_t, BoolVector*>& own_data, int id1, int id2) 
+{
+    if (id1 != id2) 
+    {
+        size_t i = std::max(id1, id2) - 2;
+        BoolVector* bv;
+        std::map<size_t, BoolVector*>::const_iterator vi = own_data.find(i);
+        
+        if (vi != own_data.end()) {
+            bv = (*vi).second;
+        }
+        
+        else 
+        {
+            const BoolVector* old_bv = before_[i];
+            bv = new BoolVector(*old_bv);
+            BoolVector::register_use(bv);
+            BoolVector::unregister_use(old_bv);
+            before_[i] = bv;
+            own_data.insert(std::make_pair(i, bv));
+        }
+
+        if (id1 < id2) {
+            (*bv)[id1 - 1] = true;
+        }
+
+        else {
+            (*bv)[2 * id1 - 2 - id2] = true;
+        }
     }
-    if (id1 < id2) {
-      (*bv)[id1 - 1] = true;
-    } else {
-      (*bv)[2*id1 - 2 - id2] = true;
-    }
-  }
 }
 
 
