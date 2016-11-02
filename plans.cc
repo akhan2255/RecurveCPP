@@ -2443,12 +2443,15 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
     // 2. Instantiate all pseudo-steps as wholly new steps.
     // For each pseudo-step, create a new Step.
-    for (int i = 0; i < expansion->pseudo_steps().size(); ++i)
+    for (std::vector<Step>::size_type i = 0; i < expansion->pseudo_steps().size(); ++i)
     {
         Step pseudo_step = expansion->pseudo_steps()[i];
         Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
         instance.swap_steps(pseudo_step, new_step); // replace and update references
     }
+
+    StepList sorted_steps = instance.steps();
+    std::sort(sorted_steps.begin(), sorted_steps.end());
 
     // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
     const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
@@ -2484,26 +2487,77 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     bindings = tmp_bindings;
 
 
-    // 5b. Orderings
-    const Orderings* new_orderings = &orderings();
-
-    for (int i = 0; i < instance.ordering_list().size(); ++i)
+    // 5b. Steps, their associated causal links, and the causal link-related orderings
+    for (std::vector<Step>::size_type i = 0; i < sorted_steps.size(); ++i)
     {
-        new_orderings = new_orderings->refine((instance.ordering_list()[i]));
-
-        // If after adding the next ordering, the orderings become inconsistent, fail!
-        if (new_orderings == NULL)
+        Step step = sorted_steps[i];
+        if (!step.pseudo_step())
         {
-            RCObject::ref(new_decomposition_links);
-            RCObject::destructive_deref(new_decomposition_links);
-            RCObject::ref(new_decomposition_frames);
-            RCObject::destructive_deref(new_decomposition_frames);
-            delete bindings;
-            return errno;
+            LinkList outgoing_links = instance.link_list().outgoing_links(step.id());
+
+            for (std::vector<Link>::size_type j = 0; j < outgoing_links.size(); ++j)
+            {
+                Link link = outgoing_links[j];
+
+                StepTime et = link.effect_time();
+                StepTime gt = start_time(link.condition_time());
+
+                const Orderings* new_orderings = orderings().refine(
+                    Ordering(link.from_id(), et, link.to_id(), gt),
+                    step,
+                    planning_graph,
+                    params->ground_actions ? NULL : bindings
+                    );
+            }
         }
+
+
+        
+
+
+
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //const Orderings* new_orderings = &orderings();
+
+    //for (int i = 0; i < instance.ordering_list().size(); ++i)
+    //{
+    //    new_orderings = new_orderings->refine((instance.ordering_list()[i]));
+
+    //    // If after adding the next ordering, the orderings become inconsistent, fail!
+    //    if (new_orderings == NULL)
+    //    {
+    //        RCObject::ref(new_decomposition_links);
+    //        RCObject::destructive_deref(new_decomposition_links);
+    //        RCObject::ref(new_decomposition_frames);
+    //        RCObject::destructive_deref(new_decomposition_frames);
+    //        delete bindings;
+    //        return errno;
+    //    }
+    //}
 
     // 5c. Steps
+
+
+
+
 
     // 5c.i. Detect unexpanded composite steps.
 
