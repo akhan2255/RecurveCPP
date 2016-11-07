@@ -97,6 +97,24 @@ const LinkList LinkList::outgoing_links(int step_id) const
 }
 
 
+/* Returns a list of links whose sink step is given by the step_id. If no such links exist,
+this method returns an empty list. */
+const LinkList LinkList::incoming_links(int step_id) const
+{
+    LinkList incoming_links;
+
+    for (LinkList::const_iterator li = this->begin(); li != this->end(); ++li)
+    {
+        Link l = *li;
+        if (l.to_id() == step_id) {
+            incoming_links.push_back(l);
+        }
+    }
+
+    return incoming_links;
+}
+
+
 /* Returns a list of bindings where references to the old step id have been swapped for the new
    step id. */
 const LinkList LinkList::swap_ids(int old_step_id, int new_step_id) const

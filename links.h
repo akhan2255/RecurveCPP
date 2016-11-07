@@ -96,6 +96,10 @@ struct LinkList : std::vector<Link> {
     this method returns an empty list. */
     const LinkList outgoing_links(int step_id) const;
 
+    /* Returns a list of links whose sink step is given by the step_id. If no such links exist,
+    this method returns an empty list. */
+    const LinkList incoming_links(int step_id) const;
+
     /* Returns a list of bindings where references to the old step id have been swapped for the new
     step id. */
     const LinkList swap_ids(int old_step_id, int new_step_id) const;
