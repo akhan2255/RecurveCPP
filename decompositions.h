@@ -21,6 +21,7 @@
 #define DECOMPOSITIONS_H
 
 #include <string>
+#include <deque>
 #include "actions.h"
 #include "orderings.h"
 #include "bindings.h"
@@ -143,16 +144,8 @@ the basic plan step. */
 struct DecompositionFrame {
 
     /* Constructs a decomposition step instantiated from a decomposition. */
-    DecompositionFrame(const Decomposition& decomposition)
-    : decomposition_(&decomposition),
-    steps_(decomposition.pseudo_steps()),
-    binding_list_(decomposition.binding_list()),
-    ordering_list_(decomposition.ordering_list()),
-    link_list_(decomposition.link_list()) 
-    {
-        id_ = DecompositionFrame::next_id;
-        DecompositionFrame::next_id++;
-    }
+    DecompositionFrame(const Decomposition& decomposition);
+    
 
     /* Constructs a decomposition step. */
     DecompositionFrame(const DecompositionFrame& ds)
@@ -161,10 +154,18 @@ struct DecompositionFrame {
         steps_(ds.steps_),
         binding_list_(ds.binding_list()),
         ordering_list_(ds.ordering_list()),
-        link_list_(ds.link_list()) {}
+        link_list_(ds.link_list()),
+        dummy_initial_step_id_(ds.dummy_initial_step_id()),
+        dummy_final_step_id_(ds.dummy_final_step_id()) { }
 
     /* Returns the decomposition step id. */
     int id() const { return id_; }
+
+    /* Returns the id of the the dummy initial step of this decomposition. */
+    int dummy_initial_step_id() const { return dummy_initial_step_id_; }
+
+    /* Returns the id of the the dummy final step of this decomposition. */
+    int dummy_final_step_id() const { return dummy_final_step_id_; }
 
     /* Swaps the old step in this Frame for the given new step. Returns true if swap was 
        successful. */
@@ -192,6 +193,12 @@ private:
 
     /* Decomposition frame id */
     int id_;
+
+    /* Step id for the dummy initial step of this decomposition. */
+    int dummy_initial_step_id_;
+
+    /* Step id for the dummy final step of this decomposition. */
+    int dummy_final_step_id_;
 
     /* Decomposition that this decomposition step is instantiated from. */
     const Decomposition* decomposition_;

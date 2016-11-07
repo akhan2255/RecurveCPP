@@ -238,6 +238,68 @@ void DecompositionSchema::add_parameter(Variable var) {
 
 size_t DecompositionFrame::next_id = 0;
 
+/* Constructs a decomposition step instantiated from a decomposition. */
+DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) : 
+    decomposition_(&decomposition),
+    steps_(decomposition.pseudo_steps()),
+    binding_list_(decomposition.binding_list()),
+    ordering_list_(decomposition.ordering_list())
+{
+    // Set the id.
+    id_ = DecompositionFrame::next_id;
+    DecompositionFrame::next_id++;
+
+    // The dummy initial and final are (by convention) the first and second pseudo-steps.
+    dummy_initial_step_id_ = steps_[0].id();
+    dummy_final_step_id_ = steps_[1].id();
+
+    // Sort the links in breadth-first order starting at the dummy goal step and traversing
+    // causal links backward. This is needed to add steps to the plan in a least-commitment
+    // fashion that is compatible with the existing VHPOP code base.
+
+    int start_id = dummy_final_step_id_;
+
+    // Setup the visited list.
+    LinkList ordered;
+
+    // Setup the fringe.
+    std::deque<int> fringe;
+    std::deque<int> visited;
+    fringe.push_back(start_id);
+
+    // While the search fringe has elements,
+    while (!fringe.empty())
+    {
+        // Pop the front of the fringe and mark it as visited.
+        int id = fringe[0];
+        fringe.pop_front();
+        visited.push_back(id);
+
+        // Get the links that point to the step given by the id.
+        LinkList incoming = decomposition.link_list().incoming_links(id);
+
+        // Get the ids of the steps that supply the link, and place
+        // them on the fringe if they haven't already been visited.
+
+        // For each incoming link,
+        for (LinkList::size_type i = 0; i < incoming.size(); ++i)
+        {
+            Link link = incoming[i];
+            ordered.push_back(link);
+
+            // Get the id of the step that supplies the link and add it to the fringe
+            // if we have not visited that step previously.
+            if (std::find(visited.begin(), visited.end(), link.from_id()) == visited.end()) {
+                fringe.push_back(link.from_id());
+            }
+        }
+    }
+
+    link_list_ = ordered;
+}
+
+
+
 /* Swaps the old step in this Frame for the given new step. Returns true if swap was
    successful. */
 bool DecompositionFrame::swap_steps(const Step old_step, const Step new_step)
@@ -258,6 +320,15 @@ bool DecompositionFrame::swap_steps(const Step old_step, const Step new_step)
         binding_list_ = binding_list_.swap_ids(old_step.id(), new_step.id());
         ordering_list_ = ordering_list_.swap_ids(old_step.id(), new_step.id());
         link_list_ = link_list_.swap_ids(old_step.id(), new_step.id());
+
+        if (old_step.id() == dummy_initial_step_id_) {
+            dummy_initial_step_id_ = new_step.id();
+        }
+
+        if (old_step.id() == dummy_final_step_id_) {
+            dummy_final_step_id_ = new_step.id();
+        }
+
         return true;
     }
 }
