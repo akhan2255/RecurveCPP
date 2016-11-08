@@ -241,7 +241,6 @@ size_t DecompositionFrame::next_id = 0;
 /* Constructs a decomposition step instantiated from a decomposition. */
 DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) : 
     decomposition_(&decomposition),
-    steps_(decomposition.pseudo_steps()),
     binding_list_(decomposition.binding_list()),
     ordering_list_(decomposition.ordering_list())
 {
@@ -250,19 +249,19 @@ DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) :
     DecompositionFrame::next_id++;
 
     // The dummy initial and final are (by convention) the first and second pseudo-steps.
-    dummy_initial_step_id_ = steps_[0].id();
-    dummy_final_step_id_ = steps_[1].id();
+    dummy_initial_step_id_ = decomposition.pseudo_steps()[0].id();
+    dummy_final_step_id_ = decomposition.pseudo_steps()[1].id();
 
-    // Sort the links in breadth-first order starting at the dummy goal step and traversing
-    // causal links backward. This is needed to add steps to the plan in a least-commitment
-    // fashion that is compatible with the existing VHPOP code base.
+    // Sort the steps and links in breadth-first order starting at the dummy goal step and 
+    // traversing causal links backward. This is needed to add steps to the plan in a 
+    // least-commitment fashion that is compatible with the existing VHPOP code base.
 
     int start_id = dummy_final_step_id_;
 
-    // Setup the visited list.
-    LinkList ordered;
+    // Setup the ordered list of links.
+    LinkList ordered_links;
 
-    // Setup the fringe.
+    // Setup the fringe and visited list.
     std::deque<int> fringe;
     std::deque<int> visited;
     fringe.push_back(start_id);
@@ -285,7 +284,7 @@ DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) :
         for (LinkList::size_type i = 0; i < incoming.size(); ++i)
         {
             Link link = incoming[i];
-            ordered.push_back(link);
+            ordered_links.push_back(link);
 
             // Get the id of the step that supplies the link and add it to the fringe
             // if we have not visited that step previously.
@@ -295,7 +294,28 @@ DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) :
         }
     }
 
-    link_list_ = ordered;
+    link_list_ = ordered_links;
+
+
+    // Setup the ordered list of steps.
+    StepList ordered_steps;
+
+    for (std::deque<int>::const_iterator si = visited.begin(); si != visited.end(); ++si)
+    {
+        int id = (*si);
+
+        for (StepList::size_type idx = 0; idx < decomposition.pseudo_steps().size(); idx++)
+        {
+            Step step = decomposition.pseudo_steps()[idx];
+
+            if (id == step.id()) {
+                ordered_steps.push_back(step);
+                break;
+            }
+        }
+    }
+
+    steps_ = ordered_steps;
 }
 
 
