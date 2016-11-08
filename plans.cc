@@ -2443,15 +2443,12 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
     // 2. Instantiate all pseudo-steps as wholly new steps.
     // For each pseudo-step, create a new Step.
-    for (std::vector<Step>::size_type i = 0; i < expansion->pseudo_steps().size(); ++i)
+    for (std::vector<Step>::size_type i = 0; i < instance.steps().size(); ++i)
     {
-        Step pseudo_step = expansion->pseudo_steps()[i];
+        Step pseudo_step = instance.steps()[i];
         Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
         instance.swap_steps(pseudo_step, new_step); // replace and update references
     }
-
-    StepList sorted_steps = instance.steps();
-    std::sort(sorted_steps.begin(), sorted_steps.end());
 
     // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
     const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
@@ -2488,37 +2485,91 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
 
     // 5b. Steps, their associated causal links, and the causal link-related orderings
-    for (std::vector<Step>::size_type i = 0; i < sorted_steps.size(); ++i)
+    const Orderings* new_orderings = orderings_;
+
+    for (StepList::size_type i = 0; i < instance.steps().size(); ++i)
     {
-        Step step = sorted_steps[i];
-        if (!step.pseudo_step())
+        Step step = instance.steps()[i];
+
+        // Construct an ordering of the dummy goal prior to the end of the plan.
+        if (step.id() == instance.dummy_final_step_id()) 
         {
-            LinkList outgoing_links = instance.link_list().outgoing_links(step.id());
+            const Orderings* tmp_orderings = (*new_orderings).refine(
+                Ordering(step.id(), StepTime::AT_END, Plan::GOAL_ID, StepTime::AT_START),
+                step,
+                planning_graph,
+                params->ground_actions ? NULL : bindings
+            );
 
-            for (std::vector<Link>::size_type j = 0; j < outgoing_links.size(); ++j)
-            {
-                Link link = outgoing_links[j];
-
-                StepTime et = link.effect_time();
-                StepTime gt = start_time(link.condition_time());
-
-                const Orderings* new_orderings = orderings().refine(
-                    Ordering(link.from_id(), et, link.to_id(), gt),
-                    step,
-                    planning_graph,
-                    params->ground_actions ? NULL : bindings
-                    );
+            // If the orderings are consistent, update the orderings.
+            if (tmp_orderings != NULL) {
+                new_orderings = tmp_orderings;
             }
         }
 
-
         
+        LinkList incoming_links = instance.link_list().incoming_links(step.id());
+        for (LinkList::size_type j = 0; j < incoming_links.size(); ++j)
+        {
+            Link link = incoming_links[j];
+            const Step* source_step = instance.steps().find(link.from_id());
 
+            StepTime et = link.effect_time();
+            StepTime gt = start_time(link.condition_time());
 
+            const Orderings* tmp_orderings = (*new_orderings).refine(
+                Ordering(link.from_id(), et, link.to_id(), gt),
+                *source_step,
+                planning_graph,
+                params->ground_actions ? NULL : bindings
+                );
 
+            if (tmp_orderings != NULL) {
+                new_orderings = tmp_orderings;
+            }
+
+            else // ERROR
+            {
+                return 1;
+            }
+        }
     }
-    
-    
+
+
+
+
+
+    //for (std::vector<Step>::size_type i = 0; i < instance.steps().size(); ++i)
+    //{
+    //    Step step = instance.steps()[i];
+    //    if (!step.pseudo_step())
+    //    {
+    //        LinkList outgoing_links = instance.link_list().outgoing_links(step.id());
+
+    //        for (std::vector<Link>::size_type j = 0; j < outgoing_links.size(); ++j)
+    //        {
+    //            Link link = outgoing_links[j];
+
+    //            StepTime et = link.effect_time();
+    //            StepTime gt = start_time(link.condition_time());
+
+    //            const Orderings* new_orderings = orderings().refine(
+    //                Ordering(link.from_id(), et, link.to_id(), gt),
+    //                step,
+    //                planning_graph,
+    //                params->ground_actions ? NULL : bindings
+    //                );
+    //        }
+    //    }
+
+
+    //    
+
+
+
+    //}
+    //
+    //
     
     
     
