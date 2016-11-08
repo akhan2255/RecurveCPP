@@ -309,6 +309,11 @@ inline bool operator==(const Step& s1, const Step& s2) {
 * List of Steps.
 */
 struct StepList : std::vector < Step > {
+
+    /* Returns the first step in this list with the given id. If no such step exists, this
+       method returns null. */
+    const Step* find(int id) const;
+
 };
 
 

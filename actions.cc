@@ -350,3 +350,23 @@ void GroundAction::print(std::ostream& os,
   }
   os << ')';
 }
+
+
+/* ====================================================================== */
+/* StepList */
+
+
+/* Returns the first step in this list with the given id. If no such step exists, this
+   method returns null. */
+const Step* StepList::find(int id) const {
+
+    for (StepList::const_iterator si = this->begin(); si != this->end(); ++si)
+    {
+        if ((*si).id() == id) {
+            return &(*si);
+        }
+    }
+
+    return NULL;
+}
+
