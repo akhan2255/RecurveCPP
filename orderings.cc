@@ -620,16 +620,45 @@ BinaryOrderings::schedule(std::map<size_t, float>& start_times,
 /* Returns true iff the first step is ordered before the second step. */
 bool BinaryOrderings::before(int id1, int id2) const
 {
+    // If the ids are the same, it is not possible to be ordered before
     if (id1 == id2) {
         return false;
     }
 
-    else if (id1 < id2) {
-        return (*before_[id2 - 2])[id1 - 1];
+    // If step-id1 was created first, 
+    else if (id1 < id2) 
+    {
+        // Minimally, id2 has to be 2 or more.
+
+        // Technically, the first step added to the plan is assumed to be
+        // ordered between the dummy initial and final steps, so the first
+        // real ordering that occurs is between the first and second step.
+
+        // Further, because we're dealing with partial orders, we only have
+        // information of the second step relative to the first.
+
+        // The BoolVector corresponding to the orderings of step id2 is at index (id2 - 2)
+        // (because in the base case, id2 == 2, which should correspond to index 0 in the array).
+        BoolVector bv = *before_[id2 - 2];
+
+        // Then, we get the relative ordering of the id1 in the array, which is index id1 - 1 
+        // (because in the base case, id1 == 1, which should correspond to index 0 in the 'bv' array).
+        return bv[id1 - 1];
     }
 
-    else {
-        return (*before_[id1 - 2])[2 * id1 - 2 - id2];
+
+    // If step-id2 was created first,
+    else 
+    {
+        // Minimally, id1 has to be 2 or more.
+
+        // The BoolVector corresponding to the orderings of step id1 is at index (id1 - 2)
+        // (because in the base case, id1 == 2, which should correspond to index 0 in the array).
+        BoolVector bv = *before_[id1 - 2];
+
+        // Then, we get the relative ordering of the id2 in the array, which is index (2 * id1 - 2 - id2)
+        // (because in the base case id2 == 1, which should correspond to 
+        return bv[2 * id1 - 2 - id2];
     }
 }
 
@@ -671,9 +700,13 @@ void BinaryOrderings::set_before(std::map<size_t, BoolVector*>& own_data, int id
 /* Updates the transitive closure given a new ordering constraint. */
 void BinaryOrderings::fill_transitive(std::map<size_t, BoolVector*>& own_data, const Ordering& ordering) 
 {
+    // Step i 
     size_t i = ordering.before_id();
+
+    // Step j
     size_t j = ordering.after_id();
     
+    // If i is not before j in this collection of BinaryOrderings,
     if (!before(i, j)) 
     {
         // All steps ordered before i (and i itself) must be ordered before j and all steps ordered after j.

@@ -69,6 +69,16 @@ struct Chain : RCObject {
     return false;
   }
 
+  /* Returns the given element within this chain, or nullptr if no such element exists. */
+  const T* get(const T& h) const {
+      for (const Chain<T>* ci = this; ci != 0; ci = ci->tail) {
+          if (h == ci->head) {
+              return &(ci->head);
+          }
+      }
+      return nullptr;
+ }
+
   /* Returns a chain with the first occurance of the given element removed. */
   const Chain<T>* remove(const T& h) const {
     if (h == head) {
