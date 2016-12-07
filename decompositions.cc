@@ -249,6 +249,9 @@ DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) :
     DecompositionFrame::next_id++;
 
     // The dummy initial and final are (by convention) the first and second pseudo-steps.
+    dummy_initial_step_ = &(decomposition.pseudo_steps()[0]);
+    dummy_final_step_ = &(decomposition.pseudo_steps()[1]);
+
     dummy_initial_step_id_ = decomposition.pseudo_steps()[0].id();
     dummy_final_step_id_ = decomposition.pseudo_steps()[1].id();
 

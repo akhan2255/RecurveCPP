@@ -2487,6 +2487,34 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     // 5b. Steps, their associated causal links, and the causal link-related orderings
     const Orderings* new_orderings = orderings_;
 
+
+
+    // i) Order dummy goal prior to all steps the parent contributes to.
+    std::vector<int> step_ids_parent_contributes_to;
+    LinkList outgoing_parent_links = instance.link_list().outgoing_links(instance.dummy_final_step_id());
+    for (LinkList::size_type i = 0; i < instance.link_list().size(); ++i)
+    {
+        Link outgoing_link = instance.link_list()[i];
+        int receiving_step = outgoing_link.to_id();
+
+        const Orderings* tmp_orderings = (*new_orderings).refine(
+            Ordering(instance.dummy_final_step_id(), StepTime::AT_END, outgoing_link.to_id(), StepTime::AT_START),
+            instance.dummy_final_step(),
+            planning_graph,
+            params->ground_actions ? NULL : bindings
+            );
+    }
+
+
+
+
+
+    // Construct an ordering of the dummy goal prior to the end of the plan.
+
+    // Construct an ordering of the dummy start prior to the dummy goal.
+
+
+
     for (StepList::size_type i = 0; i < instance.steps().size(); ++i)
     {
         Step step = instance.steps()[i];
@@ -2508,35 +2536,37 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         }
 
         
-        LinkList incoming_links = instance.link_list().incoming_links(step.id());
-        for (LinkList::size_type j = 0; j < incoming_links.size(); ++j)
-        {
-            Link link = incoming_links[j];
-            const Step* source_step = instance.steps().find(link.from_id());
-
-            StepTime et = link.effect_time();
-            StepTime gt = start_time(link.condition_time());
-
-            const Orderings* tmp_orderings = (*new_orderings).refine(
-                Ordering(link.from_id(), et, link.to_id(), gt),
-                *source_step,
-                planning_graph,
-                params->ground_actions ? NULL : bindings
-                );
-
-            if (tmp_orderings != NULL) {
-                new_orderings = tmp_orderings;
-            }
-
-            else // ERROR
-            {
-                return 1;
-            }
-        }
+       
     }
 
 
 
+
+    //LinkList incoming_links = instance.link_list().incoming_links(step.id());
+    //for (LinkList::size_type j = 0; j < incoming_links.size(); ++j)
+    //{
+    //    Link link = incoming_links[j];
+    //    const Step* source_step = instance.steps().find(link.from_id());
+
+    //    StepTime et = link.effect_time();
+    //    StepTime gt = start_time(link.condition_time());
+
+    //    const Orderings* tmp_orderings = (*new_orderings).refine(
+    //        Ordering(link.from_id(), et, link.to_id(), gt),
+    //        step,
+    //        planning_graph,
+    //        params->ground_actions ? NULL : bindings
+    //        );
+
+    //    if (tmp_orderings != NULL) {
+    //        new_orderings = tmp_orderings;
+    //    }
+
+    //    else // ERROR
+    //    {
+    //        return 1;
+    //    }
+    //}
 
 
     //for (std::vector<Step>::size_type i = 0; i < instance.steps().size(); ++i)

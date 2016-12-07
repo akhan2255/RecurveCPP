@@ -171,6 +171,12 @@ struct DecompositionFrame {
        successful. */
     bool swap_steps(const Step old_step, const Step new_step);
 
+    /* Dummy initial step of this decomposition. */
+    const Step& dummy_initial_step() const { return *dummy_initial_step_; }
+
+    /* Dummy final step of this decomposition. */
+    const Step& dummy_final_step() const { return *dummy_final_step_; }
+
     /* Returns the decomposition that this step is instantiated from. */
     const Decomposition& decomposition() const { return *decomposition_; }
 
@@ -199,6 +205,12 @@ private:
 
     /* Step id for the dummy final step of this decomposition. */
     int dummy_final_step_id_;
+
+    /* Dummy initial step of this decomposition. */
+    const Step* dummy_initial_step_;
+
+    /* Dummy final step of this decomposition. */
+    const Step* dummy_final_step_;
 
     /* Decomposition that this decomposition step is instantiated from. */
     const Decomposition* decomposition_;
