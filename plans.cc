@@ -2514,7 +2514,12 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
                 );
 
             if (tmp_orderings == NULL) {
-                break;
+                RCObject::ref(new_decomposition_links);
+                RCObject::destructive_deref(new_decomposition_links);
+                RCObject::ref(new_decomposition_frames);
+                RCObject::destructive_deref(new_decomposition_frames);
+                delete bindings;
+                return errno;
             }
 
             else {
@@ -2551,7 +2556,12 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
                 );
 
             if (tmp_orderings == NULL) {
-                break;
+                RCObject::ref(new_decomposition_links);
+                RCObject::destructive_deref(new_decomposition_links);
+                RCObject::ref(new_decomposition_frames);
+                RCObject::destructive_deref(new_decomposition_frames);
+                delete bindings;
+                return errno;
             }
 
             else {
@@ -2561,41 +2571,8 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         }
     }
     
-    
-    
-
-
-
-
-    
-    
-    
-    
-    
-    
-    //const Orderings* new_orderings = &orderings();
-
-    //for (int i = 0; i < instance.ordering_list().size(); ++i)
-    //{
-    //    new_orderings = new_orderings->refine((instance.ordering_list()[i]));
-
-    //    // If after adding the next ordering, the orderings become inconsistent, fail!
-    //    if (new_orderings == NULL)
-    //    {
-    //        RCObject::ref(new_decomposition_links);
-    //        RCObject::destructive_deref(new_decomposition_links);
-    //        RCObject::ref(new_decomposition_frames);
-    //        RCObject::destructive_deref(new_decomposition_frames);
-    //        delete bindings;
-    //        return errno;
-    //    }
-    //}
-
+    // TODO:
     // 5c. Steps
-
-
-
-
 
     // 5c.i. Detect unexpanded composite steps.
 
