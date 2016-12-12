@@ -2444,6 +2444,29 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
 
 
+    // Bindings are needed first, because they're used in several places later on.
+    // 0. Bindings
+    const Bindings* bindings = bindings_;
+    const Bindings* tmp_bindings = bindings->add(instance.binding_list(), false);
+
+    // If the Bindings are inconsistent, fail! Do cleanup of new Chains.
+    if (tmp_bindings == NULL)
+    {
+        RCObject::ref(new_steps);
+        RCObject::destructive_deref(new_steps);
+        RCObject::ref(new_unexpanded_steps);
+        RCObject::destructive_deref(new_unexpanded_steps);
+        return errno;
+    }
+
+    // If the Bindings are unchanged, delete the duplicate.
+    if (tmp_bindings == bindings) {
+        delete tmp_bindings;
+    }
+
+    bindings = tmp_bindings;
+
+
     // 1. Attempt to re-use existing plan steps.
     // We're ignoring this option for now. See issue [#11]. TODO
 
@@ -2465,6 +2488,23 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         }
 
 
+
+
+
+     /*   if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
+            step.action().condition(), step.id(), test_only))
+        {
+            if (!test_only)
+            {
+                RCObject::ref(new_open_conds);
+                RCObject::destructive_deref(new_open_conds);
+            }
+
+            return 0;
+        }*/
+
+
+
     }
 
     // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
@@ -2480,29 +2520,7 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     // 5. Attempt to add bindings, steps, causal links, orderings
 
     // 5a. Bindings
-    const Bindings* bindings = bindings_;
-    const Bindings* tmp_bindings = bindings->add(instance.binding_list(), false);
 
-    // If the Bindings are inconsistent, fail! Do cleanup of new Chains.
-    if (tmp_bindings == NULL) 
-    {
-        RCObject::ref(new_decomposition_links);
-        RCObject::destructive_deref(new_decomposition_links);
-        RCObject::ref(new_decomposition_frames);
-        RCObject::destructive_deref(new_decomposition_frames);
-        RCObject::ref(new_steps);
-        RCObject::destructive_deref(new_steps);
-        RCObject::ref(new_unexpanded_steps);
-        RCObject::destructive_deref(new_unexpanded_steps);
-        return errno;
-    }
-
-    // If the Bindings are unchanged, delete the duplicate.
-    if (tmp_bindings == bindings) {
-        delete tmp_bindings;
-    }
-
-    bindings = tmp_bindings;
 
 
     // 5b. Steps, their associated causal links, and the causal link-related orderings
