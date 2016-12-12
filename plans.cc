@@ -2436,18 +2436,35 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     // Instantiate the Decomposition
     DecompositionFrame instance(*expansion);
 
-    // The are two primary options:
+    // The are two primary options to add steps:
+    int new_num_steps = num_steps();
+    const Chain<Step>* new_steps = steps(); // collect new steps here
+
+    int new_num_unexpanded_steps = num_unexpanded_steps();
+    const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
+
+
     // 1. Attempt to re-use existing plan steps.
     // We're ignoring this option for now. See issue [#11]. TODO
 
 
     // 2. Instantiate all pseudo-steps as wholly new steps.
     // For each pseudo-step, create a new Step.
-    for (std::vector<Step>::size_type i = 0; i < instance.steps().size(); ++i)
+    for (std::vector<Step>::size_type si = 0; si < instance.steps().size(); ++si)
     {
-        Step pseudo_step = instance.steps()[i];
-        Step new_step = Step(num_steps() + 1 + i, pseudo_step.action());
+        Step pseudo_step = instance.steps()[si];
+        Step new_step = Step(num_steps() + 1 + si, pseudo_step.action());
         instance.swap_steps(pseudo_step, new_step); // replace and update references
+        new_steps = new Chain<Step>(new_step, new_steps);
+        new_num_steps++;
+
+        // If we're adding an unexpanded composite step, we need to register it as a flaw.
+        if (new_step.action().composite()) {
+            new_unexpanded_steps = new Chain<UnexpandedCompositeStep>(UnexpandedCompositeStep(&new_step), new_unexpanded_steps);
+            new_num_unexpanded_steps++;
+        }
+
+
     }
 
     // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
@@ -2460,7 +2477,7 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
     int new_num_decomposition_frames = num_decomposition_frames() + 1;
 
-    // 5. Attempt to add decomposition steps, causal links, bindings, orderings
+    // 5. Attempt to add bindings, steps, causal links, orderings
 
     // 5a. Bindings
     const Bindings* bindings = bindings_;
@@ -2473,6 +2490,10 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         RCObject::destructive_deref(new_decomposition_links);
         RCObject::ref(new_decomposition_frames);
         RCObject::destructive_deref(new_decomposition_frames);
+        RCObject::ref(new_steps);
+        RCObject::destructive_deref(new_steps);
+        RCObject::ref(new_unexpanded_steps);
+        RCObject::destructive_deref(new_unexpanded_steps);
         return errno;
     }
 
@@ -2492,8 +2513,7 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     
     // Find all the steps the parent contributes to in the current plan.
     std::vector<int> step_ids_parent_contributes_to;
-    const Chain<Link>* plan_links = this->links();
-    for (const Chain<Link>* ci = plan_links; ci != 0; ci = ci->tail)
+    for (const Chain<Link>* ci = links(); ci != 0; ci = ci->tail)
     {
         const Link link = ci->head;
         if (link.from_id() == unexpanded.step_id()) {
@@ -2518,31 +2538,37 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
                 RCObject::destructive_deref(new_decomposition_links);
                 RCObject::ref(new_decomposition_frames);
                 RCObject::destructive_deref(new_decomposition_frames);
+                RCObject::ref(new_steps);
+                RCObject::destructive_deref(new_steps);
+                RCObject::ref(new_unexpanded_steps);
+                RCObject::destructive_deref(new_unexpanded_steps);
                 delete bindings;
                 return errno;
             }
 
-            else {
+            else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
+            {
                 delete new_orderings;
                 new_orderings = tmp_orderings;
             }
         
     }
     
-    // ii) Order steps in frame in order of ancestry.
-    for (StepList::size_type i = 0; i < instance.steps().size(); ++i)
+    // ii) Order steps in frame in order of ancestry. 
+
+    for (StepList::size_type si = 0; si < instance.steps().size(); ++si)
     {
         // Get the step
-        Step step = instance.steps()[i];
+        Step step = instance.steps()[si];
 
         // Find this step's incoming links
         LinkList incoming_links = instance.link_list().incoming_links(step.id());
 
         // For each incoming link:
-        for (LinkList::size_type j = 0; j < incoming_links.size(); ++j)
+        for (LinkList::size_type li = 0; li < incoming_links.size(); ++li)
         {
             // Get the step's ancestor:
-            Link incoming_link = incoming_links[j];
+            Link incoming_link = incoming_links[li];
             int ancestor_id = incoming_link.from_id();
             StepList::size_type ancestor_index = (ancestor_id - dummy_goal_step.id());
             Step ancestor_step = instance.steps()[ancestor_index];
@@ -2560,41 +2586,72 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
                 RCObject::destructive_deref(new_decomposition_links);
                 RCObject::ref(new_decomposition_frames);
                 RCObject::destructive_deref(new_decomposition_frames);
+                RCObject::ref(new_steps);
+                RCObject::destructive_deref(new_steps);
+                RCObject::ref(new_unexpanded_steps);
+                RCObject::destructive_deref(new_unexpanded_steps);
                 delete bindings;
                 return errno;
             }
 
-            else {
+            else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
+            {
                 delete new_orderings;
                 new_orderings = tmp_orderings;
             }
         }
     }
-    
-    // TODO:
-    // 5c. Steps
 
-    // 5c.i. Detect unexpanded composite steps.
+    // 5c. Orderings
+    for (OrderingList::size_type oi = 0; oi < instance.ordering_list().size(); ++oi)
+    {
+        Ordering ordering = instance.ordering_list()[oi];
+        const Orderings* tmp_orderings = (*new_orderings).refine(ordering);
+
+        if (tmp_orderings == NULL) {
+            RCObject::ref(new_decomposition_links);
+            RCObject::destructive_deref(new_decomposition_links);
+            RCObject::ref(new_decomposition_frames);
+            RCObject::destructive_deref(new_decomposition_frames);
+            RCObject::ref(new_steps);
+            RCObject::destructive_deref(new_steps);
+            RCObject::ref(new_unexpanded_steps);
+            RCObject::destructive_deref(new_unexpanded_steps);
+            delete bindings;
+            return errno;
+        }
+
+        else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
+        {
+            delete new_orderings;
+            new_orderings = tmp_orderings;
+        }
+    }
 
     // 5d. Causal Links
+    int new_num_links = num_links();
+    const Chain<Link>* new_links = links();
+
+    for (LinkList::size_type li = 0; li < instance.link_list().size(); ++li)
+    {
+        Link link = instance.link_list()[li];
+        new_links = new Chain<Link>(link, new_links);
+        new_num_links++;
+    }
 
     // 6. Detect open conditions
 
     // 7. Detect threats
 
-
-
-
-
-    // n. Remove the unexpanded composite step flaw.
-    const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps()->remove(unexpanded);
-    size_t new_num_unexpanded_steps = num_unexpanded_steps() - 1;
+    // 8. Remove the unexpanded composite step flaw.
+    new_unexpanded_steps = new_unexpanded_steps->remove(unexpanded);
+    new_num_unexpanded_steps = new_num_unexpanded_steps - 1;
 
 
     plans.push_back(new Plan(
-        steps(), num_steps(),
-        links(), num_links(),
-        orderings(), *bindings,
+        new_steps, new_num_steps,
+        new_links, new_num_links,
+        *new_orderings, *bindings,
         new_decomposition_frames, new_num_decomposition_frames,
         new_decomposition_links, new_num_decomposition_links,
         unsafes(), num_unsafes(),
