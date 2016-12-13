@@ -68,6 +68,12 @@ struct RCObject {
     }
   }
 
+  /* References and destructively de-references the given RCObject. */
+  static void suggest_cleanup(const RCObject* o) {
+      RCObject::ref(o);
+      RCObject::destructive_deref(o);
+  }
+
   /* Deletes this object. */
   virtual ~RCObject() {
 #ifdef DEBUG_MEMORY
