@@ -2433,40 +2433,76 @@ void Plan::handle_unexpanded_composite_step(PlanList& plans, const UnexpandedCom
 int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep& unexpanded,
     const Decomposition* expansion) const
 {
-    // Instantiate the Decomposition
-    DecompositionFrame instance(*expansion);
+    // Expanding a composite step through a decomposition involves the expansion of 
+    // several plan-related chains. Here, I store references to non-decomposition
+    // related plan constructs.
 
-    // The are two primary options to add steps:
+
+    // We're adding more steps
     int new_num_steps = num_steps();
-    const Chain<Step>* new_steps = steps(); // collect new steps here
+    const Chain<Step>* new_steps = steps();
+
+    // We're adding new causal links
+    int new_num_links = num_links();
+    const Chain<Link>* new_links = links();
+
+    // We're refining bindings
+    const Bindings* new_bindings = bindings_;
+
+    // We're refining orderings
+    const Orderings* new_orderings = orderings_;
+
+    // We can also potentially add several new flaws    
+    int new_num_open_conditions = num_open_conds();
+    const Chain<OpenCondition>* new_open_conds = open_conds();
+
+    int new_num_unsafes = num_unsafes();
+    const Chain<Unsafe>* new_unsafes = unsafes();
 
     int new_num_unexpanded_steps = num_unexpanded_steps();
     const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
 
+    const Chain<MutexThreat>* new_mutex_threats = mutex_threats();
 
-    // Bindings are needed first, because they're used in several places later on.
-    // 0. Bindings
-    const Bindings* bindings = bindings_;
-    const Bindings* tmp_bindings = bindings->add(instance.binding_list(), false);
+    // --------------------------------------------------------------------------------------------
+    // Instantiate the Decomposition
+    DecompositionFrame instance(*expansion);
 
-    // If the Bindings are inconsistent, fail! Do cleanup of new Chains.
-    if (tmp_bindings == NULL)
-    {
-        RCObject::ref(new_steps);
-        RCObject::destructive_deref(new_steps);
-        RCObject::ref(new_unexpanded_steps);
-        RCObject::destructive_deref(new_unexpanded_steps);
-        return errno;
+    // Create a decomposition link from composite step id to decomposition step dummy initial and final steps
+    const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
+    new_decomposition_links = new Chain<DecompositionLink>(DecompositionLink(unexpanded.step_id(), instance), new_decomposition_links);
+    size_t new_num_decomposition_links = num_decomposition_links() + 1;
+
+    // Create a new Decomposition Frame chain
+    const Chain<DecompositionFrame>* new_decomposition_frames = decomposition_frames();
+    new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
+    int new_num_decomposition_frames = num_decomposition_frames() + 1;
+
+
+
+    // --------------------------------------------------------------------------------------------
+    // Bindings
+
+    // Update bindings first, because they're used in several places later on.
+    const Bindings* tmp_bindings = new_bindings->add(instance.binding_list(), false);
+
+    if (tmp_bindings == NULL) { 
+        goto fail; // If the bindings are inconsistent, fail! 
     }
 
-    // If the Bindings are unchanged, delete the duplicate.
-    if (tmp_bindings == bindings) {
-        delete tmp_bindings;
+    else if (tmp_bindings == new_bindings) {
+        delete tmp_bindings; // If the Bindings are unchanged, delete the duplicate.
     }
 
-    bindings = tmp_bindings;
+    else {
+        new_bindings = tmp_bindings; // Otherwise, assign the tmp.
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Steps
 
 
+    // The are two primary options to add steps:
     // 1. Attempt to re-use existing plan steps.
     // We're ignoring this option for now. See issue [#11]. TODO
 
@@ -2488,10 +2524,10 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         }
 
 
+        
+        // Detect and register OpenCondition flaws.
 
-
-
-     /*   if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
+        /* if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
             step.action().condition(), step.id(), test_only))
         {
             if (!test_only)
@@ -2502,66 +2538,41 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
             return 0;
         }*/
-
-
-
     }
 
-    // 3. Create a decomposition link from composite step id to decomposition step dummy initial and final steps
-    const Chain<DecompositionLink>* new_decomposition_links = decomposition_links();
-    new_decomposition_links = new Chain<DecompositionLink>(DecompositionLink(unexpanded.step_id(), instance), new_decomposition_links);
-    size_t new_num_decomposition_links = num_decomposition_links() + 1;
-
-    // 4. Create a new Decomposition Frame chain
-    const Chain<DecompositionFrame>* new_decomposition_frames = decomposition_frames();
-    new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
-    int new_num_decomposition_frames = num_decomposition_frames() + 1;
-
-    // 5. Attempt to add bindings, steps, causal links, orderings
-
-    // 5a. Bindings
-
-
-
-    // 5b. Steps, their associated causal links, and the causal link-related orderings
-    const Orderings* new_orderings = orderings_;
-
-
-    // i) Order dummy goal prior to all steps the parent contributes to.
-    
-    // Find all the steps the parent contributes to in the current plan.
-    std::vector<int> step_ids_parent_contributes_to;
-    for (const Chain<Link>* ci = links(); ci != 0; ci = ci->tail)
+    // --------------------------------------------------------------------------------------------
+    // Orderings
     {
-        const Link link = ci->head;
-        if (link.from_id() == unexpanded.step_id()) {
-            step_ids_parent_contributes_to.push_back(link.to_id());
+        // N.b.: I introduced a scope here to be able to use 'goto' without the compiler giving
+        // the error: "initialization is skipped by goto"
+
+        // I. Attempt to add causal-link related orderings for steps.
+        // First, add orderings for dummy goal step.
+
+        // Find all the steps the unexpanded composite step contributes to in the current plan.
+        std::vector<int> step_ids_parent_contributes_to;
+        for (const Chain<Link>* ci = links(); ci != 0; ci = ci->tail)
+        {
+            const Link link = ci->head;
+            if (link.from_id() == unexpanded.step_id()) {
+                step_ids_parent_contributes_to.push_back(link.to_id());
+            }
         }
-    }
-    
-    // Create orderings for dummy goal step
-    const Step dummy_goal_step = instance.steps()[0];
-    for (std::vector<int>::size_type i = 0; i < step_ids_parent_contributes_to.size(); ++i)
-    {
-        int id = step_ids_parent_contributes_to[i];
-        const Orderings* tmp_orderings = (*new_orderings).refine(
-            Ordering(instance.dummy_final_step_id(), StepTime::AT_END, id, StepTime::AT_START),
+
+        // Order dummy goal prior to all steps the parent contributes to.
+        const Step dummy_goal_step = instance.steps()[0];
+        for (std::vector<int>::size_type i = 0; i < step_ids_parent_contributes_to.size(); ++i)
+        {
+            int id = step_ids_parent_contributes_to[i];
+            const Orderings* tmp_orderings = (*new_orderings).refine(
+                Ordering(instance.dummy_final_step_id(), StepTime::AT_END, id, StepTime::AT_START),
                 dummy_goal_step,
                 planning_graph,
-                params->ground_actions ? NULL : bindings
+                params->ground_actions ? NULL : new_bindings
                 );
 
             if (tmp_orderings == NULL) {
-                RCObject::ref(new_decomposition_links);
-                RCObject::destructive_deref(new_decomposition_links);
-                RCObject::ref(new_decomposition_frames);
-                RCObject::destructive_deref(new_decomposition_frames);
-                RCObject::ref(new_steps);
-                RCObject::destructive_deref(new_steps);
-                RCObject::ref(new_unexpanded_steps);
-                RCObject::destructive_deref(new_unexpanded_steps);
-                delete bindings;
-                return errno;
+                goto fail;
             }
 
             else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
@@ -2569,49 +2580,58 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
                 delete new_orderings;
                 new_orderings = tmp_orderings;
             }
-        
-    }
-    
-    // ii) Order steps in frame in order of ancestry. 
 
-    for (StepList::size_type si = 0; si < instance.steps().size(); ++si)
-    {
-        // Get the step
-        Step step = instance.steps()[si];
+        }
 
-        // Find this step's incoming links
-        LinkList incoming_links = instance.link_list().incoming_links(step.id());
-
-        // For each incoming link:
-        for (LinkList::size_type li = 0; li < incoming_links.size(); ++li)
+        // Second, add orderings for steps in order of causal link ancestry.
+        for (StepList::size_type si = 0; si < instance.steps().size(); ++si)
         {
-            // Get the step's ancestor:
-            Link incoming_link = incoming_links[li];
-            int ancestor_id = incoming_link.from_id();
-            StepList::size_type ancestor_index = (ancestor_id - dummy_goal_step.id());
-            Step ancestor_step = instance.steps()[ancestor_index];
+            // Get the step
+            Step step = instance.steps()[si];
 
-            // Create an ordering that places the ancestor before the step
-            const Orderings* tmp_orderings = (*new_orderings).refine(
-                Ordering(ancestor_id, StepTime::AT_END, step.id(), StepTime::AT_START),
-                ancestor_step,
-                planning_graph,
-                params->ground_actions ? NULL : bindings
-                );
+            // Find this step's incoming links
+            LinkList incoming_links = instance.link_list().incoming_links(step.id());
+
+            // For each incoming link:
+            for (LinkList::size_type li = 0; li < incoming_links.size(); ++li)
+            {
+                // Get the step's ancestor:
+                Link incoming_link = incoming_links[li];
+                int ancestor_id = incoming_link.from_id();
+                StepList::size_type ancestor_index = (ancestor_id - dummy_goal_step.id());
+                Step ancestor_step = instance.steps()[ancestor_index];
+
+                // Create an ordering that places the ancestor before the step
+                const Orderings* tmp_orderings = (*new_orderings).refine(
+                    Ordering(ancestor_id, StepTime::AT_END, step.id(), StepTime::AT_START),
+                    ancestor_step,
+                    planning_graph,
+                    params->ground_actions ? NULL : new_bindings
+                    );
+
+                if (tmp_orderings == NULL) {
+                    goto fail;
+                }
+
+                else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
+                {
+                    delete new_orderings;
+                    new_orderings = tmp_orderings;
+                }
+            }
+        }
+
+        // II. Add other extra orderings that were explicitly stated in the decomposition.
+        for (OrderingList::size_type oi = 0; oi < instance.ordering_list().size(); ++oi)
+        {
+            Ordering ordering = instance.ordering_list()[oi];
+            const Orderings* tmp_orderings = (*new_orderings).refine(ordering);
 
             if (tmp_orderings == NULL) {
-                RCObject::ref(new_decomposition_links);
-                RCObject::destructive_deref(new_decomposition_links);
-                RCObject::ref(new_decomposition_frames);
-                RCObject::destructive_deref(new_decomposition_frames);
-                RCObject::ref(new_steps);
-                RCObject::destructive_deref(new_steps);
-                RCObject::ref(new_unexpanded_steps);
-                RCObject::destructive_deref(new_unexpanded_steps);
-                delete bindings;
-                return errno;
+                goto fail;
             }
 
+            // needed because .refine() could return the same thing
             else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
             {
                 delete new_orderings;
@@ -2620,56 +2640,41 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         }
     }
 
-    // 5c. Orderings
-    for (OrderingList::size_type oi = 0; oi < instance.ordering_list().size(); ++oi)
-    {
-        Ordering ordering = instance.ordering_list()[oi];
-        const Orderings* tmp_orderings = (*new_orderings).refine(ordering);
-
-        if (tmp_orderings == NULL) {
-            RCObject::ref(new_decomposition_links);
-            RCObject::destructive_deref(new_decomposition_links);
-            RCObject::ref(new_decomposition_frames);
-            RCObject::destructive_deref(new_decomposition_frames);
-            RCObject::ref(new_steps);
-            RCObject::destructive_deref(new_steps);
-            RCObject::ref(new_unexpanded_steps);
-            RCObject::destructive_deref(new_unexpanded_steps);
-            delete bindings;
-            return errno;
-        }
-
-        else if (tmp_orderings != new_orderings) // needed because .refine() could return the same thing
-        {
-            delete new_orderings;
-            new_orderings = tmp_orderings;
-        }
-    }
-
-    // 5d. Causal Links
-    int new_num_links = num_links();
-    const Chain<Link>* new_links = links();
+    // --------------------------------------------------------------------------------------------
+    // Links
 
     for (LinkList::size_type li = 0; li < instance.link_list().size(); ++li)
     {
         Link link = instance.link_list()[li];
         new_links = new Chain<Link>(link, new_links);
+
+        // Detect and register Unsafe flaws: threats to this new link.
+        // TODO
+
         new_num_links++;
     }
 
-    // 6. Detect open conditions
 
-    // 7. Detect threats
 
-    // 8. Remove the unexpanded composite step flaw.
+    // --------------------------------------------------------------------------------------------
+    // Links
+
+
+    // --------------------------------------------------------------------------------------------
+    // Flaws
+
+    // Detection and registration of OpenCondition, Unsafe, and UnexpandedCompositeStep flaws have
+    // already been done.  Here, detect and register MutexThreats.
+    // TODO
+
+    // Before finishing, remove the unexpanded composite step flaw.
     new_unexpanded_steps = new_unexpanded_steps->remove(unexpanded);
     new_num_unexpanded_steps = new_num_unexpanded_steps - 1;
-
 
     plans.push_back(new Plan(
         new_steps, new_num_steps,
         new_links, new_num_links,
-        *new_orderings, *bindings,
+        *new_orderings, *new_bindings,
         new_decomposition_frames, new_num_decomposition_frames,
         new_decomposition_links, new_num_decomposition_links,
         unsafes(), num_unsafes(),
@@ -2679,6 +2684,34 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         this));
 
     return 0;
+
+
+//    Do cleanup of new Chains.
+fail:
+
+    // Bindings and Orderings
+    delete new_bindings;
+    delete new_orderings;
+
+    // Steps
+    RCObject::suggest_cleanup(new_steps);
+    
+    // Links
+    RCObject::suggest_cleanup(new_links);
+
+    // Decomposition Links
+    RCObject::suggest_cleanup(new_decomposition_links);
+   
+    // Decomposition Frames
+    RCObject::suggest_cleanup(new_decomposition_frames);
+    
+    // Flaws
+    RCObject::suggest_cleanup(new_open_conds);
+    RCObject::suggest_cleanup(new_unsafes);
+    RCObject::suggest_cleanup(new_mutex_threats);
+    RCObject::suggest_cleanup(new_unexpanded_steps);
+
+    return errno;
 }
 
 
