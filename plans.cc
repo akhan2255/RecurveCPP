@@ -2453,13 +2453,13 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     const Orderings* new_orderings = orderings_;
 
     // We can also potentially add several new flaws    
-    int new_num_open_conditions = num_open_conds();
+    size_t new_num_open_conds = num_open_conds();
     const Chain<OpenCondition>* new_open_conds = open_conds();
 
-    int new_num_unsafes = num_unsafes();
+    size_t new_num_unsafes = num_unsafes();
     const Chain<Unsafe>* new_unsafes = unsafes();
 
-    int new_num_unexpanded_steps = num_unexpanded_steps();
+    size_t new_num_unexpanded_steps = num_unexpanded_steps();
     const Chain<UnexpandedCompositeStep>* new_unexpanded_steps = unexpanded_steps();
 
     const Chain<MutexThreat>* new_mutex_threats = mutex_threats();
