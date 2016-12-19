@@ -2478,8 +2478,17 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     int new_num_decomposition_frames = num_decomposition_frames() + 1;
 
     // --------------------------------------------------------------------------------------------
-    // Steps
+    // Bindings
 
+    // Update bindings with bindings taken from the decomposition itself.
+    new_bindings = new_bindings->add(instance.binding_list(), false);
+
+    if (new_bindings == NULL) {
+        goto fail; // If the bindings are inconsistent, fail! 
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Steps
 
     // The are two primary options to add steps:
     // 1. Attempt to re-use existing plan steps.
@@ -2512,7 +2521,9 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
             goto fail;
         }
 
-        
+        // Find the links the new step threatens
+        step_threats(new_unsafes, new_num_unsafes, new_step, new_links, *new_orderings, *new_bindings);
+
         // Attempt to add bindings to new bindings
         new_bindings = new_bindings->add(open_condition_bindings, false);
 
@@ -2523,15 +2534,7 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
     }
 
-    // --------------------------------------------------------------------------------------------
-    // Bindings
-
-    // Update bindings with bindings taken from the decomposition itself.
-    new_bindings = new_bindings->add(instance.binding_list(), false);
-
-    if (new_bindings == NULL) {
-        goto fail; // If the bindings are inconsistent, fail! 
-    }
+    
 
     // --------------------------------------------------------------------------------------------
     // Orderings
@@ -2640,17 +2643,11 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     {
         Link link = instance.link_list()[li];
         new_links = new Chain<Link>(link, new_links);
-
-        // Detect and register Unsafe flaws: threats to this new link.
-        // TODO
-
         new_num_links++;
+
+        // Detect and register threats to this new link.
+        link_threats(new_unsafes, new_num_unsafes, link, new_steps, *new_orderings, *new_bindings);
     }
-
-
-
-    // --------------------------------------------------------------------------------------------
-    // Links
 
 
     // --------------------------------------------------------------------------------------------
@@ -2658,7 +2655,9 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
 
     // Detection and registration of OpenCondition, Unsafe, and UnexpandedCompositeStep flaws have
     // already been done.  Here, detect and register MutexThreats.
-    // TODO
+    // TODO - or not?
+
+
 
     // Before finishing, remove the unexpanded composite step flaw.
     new_unexpanded_steps = new_unexpanded_steps->remove(unexpanded);
@@ -2673,7 +2672,7 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         new_unsafes, new_num_unsafes,
         new_open_conds, new_num_open_conds,
         new_unexpanded_steps, new_num_unexpanded_steps,
-        mutex_threats(),
+        new_mutex_threats, // does this do anything?
         this));
 
     return 0;
