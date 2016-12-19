@@ -2437,7 +2437,6 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     // several plan-related chains. Here, I store references to non-decomposition
     // related plan constructs.
 
-
     // We're adding more steps
     int new_num_steps = num_steps();
     const Chain<Step>* new_steps = steps();
@@ -2478,26 +2477,6 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
     new_decomposition_frames = new Chain<DecompositionFrame>(instance, new_decomposition_frames);
     int new_num_decomposition_frames = num_decomposition_frames() + 1;
 
-
-
-    // --------------------------------------------------------------------------------------------
-    // Bindings
-
-    // Update bindings first, because they're used in several places later on.
-    const Bindings* tmp_bindings = new_bindings->add(instance.binding_list(), false);
-
-    if (tmp_bindings == NULL) { 
-        goto fail; // If the bindings are inconsistent, fail! 
-    }
-
-    else if (tmp_bindings == new_bindings) {
-        delete tmp_bindings; // If the Bindings are unchanged, delete the duplicate.
-    }
-
-    else {
-        new_bindings = tmp_bindings; // Otherwise, assign the tmp.
-    }
-
     // --------------------------------------------------------------------------------------------
     // Steps
 
@@ -2523,21 +2502,35 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
             new_num_unexpanded_steps++;
         }
 
+        // Detect and register OpenCondition flaws.
+        BindingList open_condition_bindings;
+
+        bool goal_is_consistent = add_goal(new_open_conds, new_num_open_conds, open_condition_bindings,
+            new_step.action().condition(), new_step.id(), false);
+
+        if (!goal_is_consistent) {
+            goto fail;
+        }
 
         
-        // Detect and register OpenCondition flaws.
+        // Attempt to add bindings to new bindings
+        new_bindings = new_bindings->add(open_condition_bindings, false);
 
-        /* if (!add_goal(new_open_conds, new_num_open_conds, new_bindings,
-            step.action().condition(), step.id(), test_only))
-        {
-            if (!test_only)
-            {
-                RCObject::ref(new_open_conds);
-                RCObject::destructive_deref(new_open_conds);
-            }
+        if (new_bindings == NULL) {
+            goto fail;
+        }
 
-            return 0;
-        }*/
+
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Bindings
+
+    // Update bindings with bindings taken from the decomposition itself.
+    new_bindings = new_bindings->add(instance.binding_list(), false);
+
+    if (new_bindings == NULL) {
+        goto fail; // If the bindings are inconsistent, fail! 
     }
 
     // --------------------------------------------------------------------------------------------
@@ -2677,8 +2670,8 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         *new_orderings, *new_bindings,
         new_decomposition_frames, new_num_decomposition_frames,
         new_decomposition_links, new_num_decomposition_links,
-        unsafes(), num_unsafes(),
-        open_conds(), num_open_conds(),
+        new_unsafes, new_num_unsafes,
+        new_open_conds, new_num_open_conds,
         new_unexpanded_steps, new_num_unexpanded_steps,
         mutex_threats(),
         this));
