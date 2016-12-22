@@ -13,10 +13,13 @@
 	(:action travel
         :parameters		(?person - person ?from - place ?to - place ?means - transport)
 
-        :precondition	(at ?person ?from)
+        :precondition	(and    (at ?person ?from)
+                                (at ?means ?from))
         
 		:effect			(and	(not (at ?person ?from))
-								(at ?person ?to))
+                                (not (at ?means ?from))
+								(at ?person ?to)
+                                (at ?means ?to))
 
 		:composite		t)
 
@@ -62,7 +65,8 @@
 						)
 
         :links		    (
-		                 (init  (at ?person rdu)  step1) ;; -1 to -3
+                         (init  (at ?person rdu)  step1) ;; -1 to -3
+                         (init  (at ?car rdu)     step1) ;; -1 to -3 
 						 (step1 (in ?person ?car) step2) ;; -3 to -4
 						 (step1 (in ?person ?car) step3) ;; -3 to -5
 						 (step2 (at ?car ?to)     step3) ;; -4 to -5

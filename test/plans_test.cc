@@ -97,8 +97,8 @@ namespace test
             const Predicate* at_p = domain->predicates().find_predicate("at");
             const Predicate* in_p = domain->predicates().find_predicate("in");
 
-            Assert::AreEqual((size_t)6, achieves_pred[*at_p].size(), L"There are three actions within the domain that assert 'at(...)', plus three dummy actions that collectively assert the initial state");
-            Assert::AreEqual((size_t)3, achieves_neg_pred[*at_p].size(), L"There are three actions within the domain that assert 'not at(...)'");
+            Assert::AreEqual((size_t)7, achieves_pred[*at_p].size(), L"There are three actions within the domain that assert 'at(...)', one action achieves two different 'at' predicates (so it counts twice), plus three dummy actions that collectively assert the initial state");
+            Assert::AreEqual((size_t)4, achieves_neg_pred[*at_p].size(), L"There are three actions within the domain that assert 'not at(...)', one action achieves two different 'not at' predicates (so it counts twice)");
             Assert::AreEqual((size_t)1, achieves_pred[*in_p].size(), L"There is one action within the domain that asserts 'in(...)'");
             Assert::AreEqual((size_t)1, achieves_neg_pred[*in_p].size(), L"There is one action within the domain that asserts 'not in(...)'");
 		}

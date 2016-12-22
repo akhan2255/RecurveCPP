@@ -287,8 +287,11 @@ DecompositionFrame::DecompositionFrame(const Decomposition& decomposition) :
             ordered_links.push_back(link);
 
             // Get the id of the step that supplies the link and add it to the fringe
-            // if we have not visited that step previously.
-            if (std::find(visited.begin(), visited.end(), link.from_id()) == visited.end()) {
+            // if we:
+            // a) have not visited that step previously, and
+            // b) have not already queued it up for visiting
+            if (std::find(visited.begin(), visited.end(), link.from_id()) == visited.end() &&
+                std::find(fringe.begin(), fringe.end(), link.from_id()) == fringe.end()) {
                 fringe.push_back(link.from_id());
             }
         }

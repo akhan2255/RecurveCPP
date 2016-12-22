@@ -50,7 +50,7 @@ namespace test
             // Check the dummy initial and final
             Step decomp_dummy_initial_step = travel_drive->pseudo_steps()[0];
             Assert::AreEqual(std::string("<decomposition-init-for-drive>"), decomp_dummy_initial_step.action().name());
-            Assert::AreEqual((size_t) 1, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 1 effect");
+            Assert::AreEqual((size_t) 2, decomp_dummy_initial_step.action().effects().size(), L"Decomposition dummy initial step should have 2 effects");
             Assert::IsTrue(decomp_dummy_initial_step.action().condition().tautology(), L"Decomposition dummy initial step should have no preconditions.");
 
 
@@ -60,7 +60,7 @@ namespace test
             Assert::IsTrue(typeid(decomp_dummy_final_step.action().condition()) == typeid(Conjunction), L"Decomposition dummy final step precondition Formula should be a Conjunction.");
 
             const Conjunction& conj = dynamic_cast<const Conjunction&>(decomp_dummy_final_step.action().condition());
-            Assert::AreEqual((size_t) 2, conj.conjuncts().size(), L"Decomposition dummy final step should have 2 preconditions.");
+            Assert::AreEqual((size_t) 4, conj.conjuncts().size(), L"Decomposition dummy final step should have 4 preconditions.");
 
             // Check a dummy step
             Step pseudo_get_in_car = travel_drive->pseudo_steps()[2];
@@ -100,7 +100,7 @@ namespace test
 			// Check causal link - step references
 			LinkList travel_drive_links = travel_drive->link_list();
 			Assert::IsFalse(travel_drive_links.empty(), L"Causal links were specified as part of the decomposition.");
-			Link step1_in_person_car_step2 = travel_drive_links[1];
+			Link step1_in_person_car_step2 = travel_drive_links[2];
 			Assert::AreEqual(pseudo_get_in_car.id(), step1_in_person_car_step2.from_id(), L"The source step is `get-in-car'");
 			Assert::AreEqual(pseudo_drive.id(), step1_in_person_car_step2.to_id(), L"The sink step is `drive'");
 
@@ -113,7 +113,7 @@ namespace test
 
 			// Check bindings
 			BindingList travel_drive_bindings = travel_drive->binding_list();
-			Assert::AreEqual((size_t) 20, travel_drive_bindings.size(), L"There should be 20 bindings.");
+			Assert::AreEqual((size_t) 22, travel_drive_bindings.size(), L"There should be 22 bindings.");
 
 			// Check causal link - term bindings
 			for (size_t i = 0; i < link_condition->arity(); ++i)

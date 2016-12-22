@@ -2521,17 +2521,12 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
             goto fail;
         }
 
-        // Find the links the new step threatens
-        step_threats(new_unsafes, new_num_unsafes, new_step, new_links, *new_orderings, *new_bindings);
-
         // Attempt to add bindings to new bindings
         new_bindings = new_bindings->add(open_condition_bindings, false);
 
         if (new_bindings == NULL) {
             goto fail;
         }
-
-
     }
 
     
@@ -2644,22 +2639,51 @@ int Plan::add_decomposition_frame(PlanList& plans, const UnexpandedCompositeStep
         Link link = instance.link_list()[li];
         new_links = new Chain<Link>(link, new_links);
         new_num_links++;
-
-        // Detect and register threats to this new link.
-        link_threats(new_unsafes, new_num_unsafes, link, new_steps, *new_orderings, *new_bindings);
     }
 
 
     // --------------------------------------------------------------------------------------------
     // Flaws
 
-    // Detection and registration of OpenCondition, Unsafe, and UnexpandedCompositeStep flaws have
-    // already been done.  Here, detect and register MutexThreats.
-    // TODO - or not?
+    // Detection and registration of OpenCondition and UnexpandedCompositeStep flaws has already
+    // been done.  Here, detect and register Unsafe and MutexThreats.
+    
+
+    // ********************************************************************************************
+    // Unsafe Flaws - these can arise from either newly added steps or newly added links.
+
+    size_t num_steps_added = new_num_steps - num_steps();
+    const Chain<Step>* step = new_steps;
+    for (size_t si = 0; si < num_steps_added; si++)
+    {
+        // Get the new step that was added previously
+        Step new_step = step->head;
+
+        // Find the links the new step threatens
+        step_threats(new_unsafes, new_num_unsafes, new_step, new_links, *new_orderings, *new_bindings);
+
+        // Advance to the next new step in the chain
+        step = step->tail;
+    }
 
 
+    size_t num_links_added = new_num_links - num_links();
+    const Chain<Link>* link = new_links;
+    for (size_t li = 0; li < num_links_added; li++)
+    {
+        // Get the new link that was added previously
+        Link new_link = link->head;
 
+        // Detect and register threats to this new link.
+        link_threats(new_unsafes, new_num_unsafes, new_link, new_steps, *new_orderings, *new_bindings);
+
+        // Advance to the next new link in the chain
+        link = link->tail;
+    }
+
+    // --------------------------------------------------------------------------------------------
     // Before finishing, remove the unexpanded composite step flaw.
+
     new_unexpanded_steps = new_unexpanded_steps->remove(unexpanded);
     new_num_unexpanded_steps = new_num_unexpanded_steps - 1;
 

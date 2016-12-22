@@ -217,7 +217,7 @@ size_t Literal::next_id = 1;
 
 
 /* Checks whether this literal is syntactically equal to the other; i.e. the valence,
-   predicate, arity, and term types are all equivalent. */
+   predicate and arity are equivalent, and that the term types are compatible. */
 bool Literal::syntactically_equal(const Literal& first, const Literal &second)
 {
     // Compare valence (whether they are both an Atom, or both a Negation)
@@ -239,10 +239,13 @@ bool Literal::syntactically_equal(const Literal& first, const Literal &second)
 
         else
         {
-            // Go through each of the terms, and compare type equality.
+            // Go through each of the terms, and compare type compatibility.
             for (size_t i = 0; i < first.arity(); ++i)
             {
-                if (TermTable::type(first.term(i)) != TermTable::type(second.term(i))) {
+                Type firstType = TermTable::type(first.term(i));
+                Type secondType = TermTable::type(second.term(i));
+
+                if (! TypeTable::compatible(firstType, secondType)) {
                     return false;
                 }
             }
